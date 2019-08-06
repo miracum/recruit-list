@@ -1,0 +1,41 @@
+version: "3.7"
+
+services:
+  fhir:
+    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:latest
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      FHIR_VERSION: R4
+      SERVER_URL: http://localhost:8080/fhir
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: fhir
+    depends_on:
+      - db
+
+  loader:
+    image: byrnedo/alpine-curl:latest
+    command: -X POST
+             -H "Content-Type:application/json"
+             --retry-connrefuse
+             --connect-timeout 10
+             --max-time 60
+             --retry 5
+             --retry-delay 10
+             --data "@/data/fhir-sample.json"
+             http://fhir:8080/fhir
+    depends_on:
+      - fhir
+    volumes:
+      - ./data:/data
+
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: fhir
