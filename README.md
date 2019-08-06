@@ -11,6 +11,11 @@ Commit Messages follow the [Conventional Commits](https://www.conventionalcommit
 npm install
 ```
 
+Setup development FHIR server:
+```
+docker-compose -f docker-compose.dev.yml up
+```
+
 ### Compiles and hot-reloads for development
 ```
 npm run serve
