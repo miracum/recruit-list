@@ -10,10 +10,38 @@
         </b-navbar-item>
       </template>
     </b-navbar>
-    <router-view />
+    <main>
+      <router-view />
+    </main>
+    <footer class="footer">
+      <div class="content has-text-centered">
+        <p>
+          {{ version }}
+        </p>
+      </div>
+    </footer>
   </div>
 </template>
 
-<style>
+<script>
+export default {
+  name: "PatientRecommendations",
+  computed: {
+    version: () => process.env.VUE_APP_VERSION,
+  },
+};
+</script>
 
+<style>
+#app {
+  height: 100%;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+  width: 100%;
+}
 </style>
