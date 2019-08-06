@@ -1,7 +1,7 @@
 FROM node:12.7.0-alpine as build
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --production
+RUN npm ci
 COPY . ./
 
 ARG VERSION=0.0.0
