@@ -3,7 +3,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --production
 COPY . ./
-RUN npm run lint
 
 ARG VERSION=0.0.0
 ENV VUE_APP_VERSION=${VERSION}
