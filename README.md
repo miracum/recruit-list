@@ -1,4 +1,10 @@
-# list
+# list - The Web-based Screening List
+
+Implemented using VueJS.
+
+## Contributing
+
+Commit Messages follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0-beta.4/) specification.
 
 ## Project setup
 ```
@@ -10,30 +16,22 @@ npm install
 npm run serve
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your tests
-```
-npm run test
-```
-
 ### Lints and fixes files
 ```
 npm run lint
 ```
 
-### Run your end-to-end tests
+### Run tests
+```
+npm run test
+```
+
+### Run end-to-end tests
 ```
 npm run test:e2e
 ```
 
-### Run your unit tests
+### Run unit tests
 ```
 npm run test:unit
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
