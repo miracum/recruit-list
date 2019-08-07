@@ -7,17 +7,25 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:e2e": "vue-cli-service test:e2e",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "vue-cli-service test:unit",
+    "server:start": "node server/server.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.21",
     "@fortawesome/free-solid-svg-icons": "^5.10.1",
     "@fortawesome/vue-fontawesome": "^0.1.6",
     "buefy": "^0.8.2",
+    "connect-history-api-fallback": "^1.6.0",
     "core-js": "^2.6.5",
+    "express": "^4.17.1",
+    "express-bearer-token": "^2.4.0",
+    "express-prom-bundle": "^5.1.5",
     "fhirclient": "^2.1.0",
+    "http-proxy-middleware": "^0.19.1",
+    "morgan": "^1.9.1",
+    "prom-client": "^11.5.3",
     "vue": "^2.6.10",
-    "vue-router": "^3.0.3"
+    "vue-router": "^3.1.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.10.0",
