@@ -1,7 +1,7 @@
 <template>
   <section>
     <b-table
-      :data="data"
+      :data="patientData"
       :loading="isLoading"
       :mobile-cards="true"
       sort-icon="menu-up"
@@ -18,37 +18,38 @@
         </b-table-column>
 
         <b-table-column
-          field="first_name"
-          label="First Name"
+          field="name.given"
+          label="Vorname"
           sortable
         >
-          {{ props.row.first_name }}
+          {{ props.row.name.given.join(" ") }}
         </b-table-column>
 
         <b-table-column
-          field="last_name"
-          label="Last Name"
+          field="name.family"
+          label="Nachname"
           sortable
         >
-          {{ props.row.last_name }}
+          {{ props.row.name.family }}
         </b-table-column>
 
         <b-table-column
-          field="date"
-          label="Date"
+          label="Alter"
+          field="birthDate"
           sortable
-          centered
         >
-          <span class="tag is-success">
-            {{ new Date(props.row.date).toLocaleDateString() }}
+          <span>
+            <span class="tag is-info">
+              {{ age(props.row.birthDate) }}
+            </span>
           </span>
         </b-table-column>
 
-        <b-table-column label="Gender">
+        <b-table-column label="Geschlecht">
           <span>
             <b-icon
               pack="fas"
-              :icon="props.row.gender === 'Male' ? 'mars' : 'venus'"
+              :icon="props.row.gender === 'male' ? 'mars' : 'venus'"
             />
             {{ props.row.gender }}
           </span>
@@ -60,7 +61,7 @@
           <div class="content has-text-grey has-text-centered">
             <p>
               <b-icon
-                icon="emoticon-sad"
+                icon="frown"
                 size="is-large"
               />
             </p>
@@ -73,31 +74,37 @@
 </template>
 
 <script>
-const data = [
-  {
-    id: 1, first_name: "Jesse", last_name: "Simmons", date: "2016/10/15 13:43:27", gender: "Male",
-  },
-  {
-    id: 2, first_name: "John", last_name: "Jacobs", date: "2016/12/15 06:00:53", gender: "Male",
-  },
-  {
-    id: 3, first_name: "Tina", last_name: "Gilbert", date: "2016/04/26 06:26:28", gender: "Female",
-  },
-  {
-    id: 4, first_name: "Clarence", last_name: "Flores", date: "2016/04/10 10:28:46", gender: "Male",
-  },
-  {
-    id: 5, first_name: "Anne", last_name: "Lee", date: "2016/12/06 14:38:38", gender: "Female",
-  },
-];
-
 export default {
-  name: "HelloWorld",
+  name: "ScreeningList",
+  props: {
+    items: {
+      default: () => [],
+      type: Array,
+    },
+  },
   data() {
     return {
-      data,
       isLoading: false,
     };
+  },
+  computed: {
+    patientData() {
+      return this.items
+        .map(entry => entry.item)
+        .map(patient => ({
+          id: patient.id,
+          name: patient.name.find(name => name.use === "official"),
+          gender: patient.gender,
+          birthDate: patient.birthDate,
+        }));
+    },
+  },
+  methods: {
+    age(birthDate) {
+      const cur = new Date();
+      const diff = cur - new Date(birthDate);
+      return Math.floor(diff / 31557600000); // Divide by 1000*60*60*24*365.25
+    },
   },
 };
 </script>
