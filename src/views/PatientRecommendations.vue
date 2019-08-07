@@ -31,6 +31,8 @@ export default {
     const client = FHIR.client(process.env.VUE_APP_FHIR_URL);
     const screeningLists = await client.request(
       "List?code=http://studien.miracum.org/fhir/screening-list|screening-recommendations",
+      // resolveReferences didn't work on item.reference in the screening list
+      // it did work when explicitely specifying the index: item.0.
     );
     const res = screeningLists.entry
       .map(entry => entry.resource)
