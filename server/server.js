@@ -41,10 +41,10 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "..", "dist")));
 
 const options = {
-  target: process.env.FHIR_BACKEND_URL || "http://localhost:8080/fhir", // target host
+  target: process.env.FHIR_BACKEND_URL || "http://localhost:8080/", // target host
   changeOrigin: true, // needed for virtual hosted sites
   pathRewrite: {
-    "^/fhir": "/",
+    "^/fhir": "/fhir",
   },
 //   headers: {
 //     Authorization:
