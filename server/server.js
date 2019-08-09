@@ -40,19 +40,20 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "..", "dist")));
 
-const options = {
-  target: process.env.FHIR_BACKEND_URL || "http://localhost:8080/", // target host
-  changeOrigin: true, // needed for virtual hosted sites
-  pathRewrite: {
-    "^/fhir": "/fhir",
-  },
-//   headers: {
-//     Authorization:
-//       process.env.API_BEARER_TOKEN,
-//   },
-};
-const apiProxy = proxy(options);
-app.use("/fhir", apiProxy);
+app.use(
+  "/fhir",
+  proxy({
+    target: process.env.FHIR_BACKEND_URL || "http://localhost:8080/fhir",
+    changeOrigin: true,
+    pathRewrite: {
+      "^/fhir": "/",
+    },
+    //   headers: {
+    //     Authorization:
+    //       process.env.API_BEARER_TOKEN,
+    //   },
+  }),
+);
 
 app.use(history());
 
