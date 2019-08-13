@@ -21,6 +21,7 @@
     "express-bearer-token": "^2.4.0",
     "express-prom-bundle": "^5.1.5",
     "fhirclient": "^2.1.0",
+    "fhirpath": "^0.16.2",
     "http-proxy-middleware": "^0.19.1",
     "morgan": "^1.9.1",
     "prom-client": "^11.5.3",
@@ -48,6 +49,6 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }  
+    }
   }
 }

@@ -74,6 +74,8 @@
 </template>
 
 <script>
+import fhirpath from "fhirpath";
+
 export default {
   name: "ScreeningList",
   props: {
@@ -93,7 +95,7 @@ export default {
         .map(entry => entry.item)
         .map(patient => ({
           id: patient.id,
-          name: patient.name.find(name => name.use === "official"),
+          name: fhirpath.evaluate(patient, "Patient.name.where(use='official').first()")[0],
           gender: patient.gender,
           birthDate: patient.birthDate,
         }));
