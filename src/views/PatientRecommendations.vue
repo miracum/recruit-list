@@ -30,15 +30,19 @@ export default {
   async mounted() {
     let fhirUrl = process.env.VUE_APP_FHIR_URL;
     if (process.env.NODE_ENV === "production") {
-      // this is an awkward workaround for FHIR.client not accepring relative paths as valid URLs
+      // this is an awkward workaround for FHIR.client not accepting relative paths as valid URLs
       fhirUrl = `${window.location.protocol}//${window.location.host}/fhir`;
     }
     const client = FHIR.client(fhirUrl);
     const screeningLists = await client.request(
-      "List?code=http://studien.miracum.org/fhir/screening-list|screening-recommendations",
-      // resolveReferences didn't work on item.reference in the screening list
-      // it did work when explicitely specifying the index: item.0.
+      "List?code=http://studien.miracum.org/fhir/screening-list|screening-recommendations", {
+        // resolveReferences: ["entry.0.item"],
+      },
     );
+
+    // resolveReferences didn't work on item.reference in the screening list
+    // it did work when explicitely specifying the index: "entry.0.item"
+    // so we need to manually resove the patient references...
     const res = screeningLists.entry
       .map(entry => entry.resource)
       .map(async (list) => {
