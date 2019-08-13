@@ -39,10 +39,10 @@ describe("ScreeningList.vue", () => {
     const wrapper = factory({ items });
 
     const firstNameRow = wrapper.find("td[data-label='Vorname']");
-    expect(firstNameRow.text()).toBe("Candace369");
+    expect(firstNameRow.text()).toMatch("Candace369");
 
     const lastNameRow = wrapper.find("td[data-label='Nachname']");
-    expect(lastNameRow.text()).toBe("Boyer713");
+    expect(lastNameRow.text()).toMatch("Boyer713");
   });
 
   it("concatenates multiple given names", () => {
@@ -63,6 +63,6 @@ describe("ScreeningList.vue", () => {
     const wrapper = factory({ items });
 
     const firstNameRow = wrapper.find("td[data-label='Vorname']");
-    expect(firstNameRow.text()).toBe("A B C");
+    expect(firstNameRow.text()).toMatch("A B C");
   });
 });
