@@ -101,7 +101,7 @@
           }
         ],
         "title": "Krankheitslast und Versorgungssituation bei Sarkomen: Eine nationale Studie zu Einflussfaktoren patientenberichteter Krankheitsfolgen bei Menschen mit Sarkomerkrankungen - PROSa - A",
-        "status": "closed-to-accrual",
+        "status": "active",
         "relatedArtifact": [
           {
             "type": "documentation",
@@ -130,7 +130,7 @@
         "code": {
           "coding": [
             {
-              "system": "http://studien.miracum.org/fhir/screening-list",
+              "system": "http://studien.miracum.org/fhir/CodeSystem/screening-list",
               "code": "screening-recommendations"
             }
           ],
