@@ -11,8 +11,8 @@
     "server:start": "node server/server.js"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.21",
-    "@fortawesome/free-solid-svg-icons": "^5.10.1",
+    "@fortawesome/fontawesome-svg-core": "^1.2.22",
+    "@fortawesome/free-solid-svg-icons": "^5.10.2",
     "@fortawesome/vue-fontawesome": "^0.1.6",
     "buefy": "^0.8.2",
     "connect-history-api-fallback": "^1.6.0",
@@ -26,16 +26,16 @@
     "morgan": "^1.9.1",
     "prom-client": "^11.5.3",
     "vue": "^2.6.10",
-    "vue-router": "^3.1.1"
+    "vue-router": "^3.1.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.1.0",
     "@commitlint/config-conventional": "^8.1.0",
-    "@vue/cli-plugin-babel": "^3.10.0",
-    "@vue/cli-plugin-e2e-cypress": "^3.10.0",
-    "@vue/cli-plugin-eslint": "^3.10.0",
-    "@vue/cli-plugin-unit-jest": "^3.10.0",
-    "@vue/cli-service": "^3.10.0",
+    "@vue/cli-plugin-babel": "^3.11.0",
+    "@vue/cli-plugin-e2e-cypress": "^3.11.0",
+    "@vue/cli-plugin-eslint": "^3.11.0",
+    "@vue/cli-plugin-unit-jest": "^3.11.0",
+    "@vue/cli-service": "^3.11.0",
     "@vue/eslint-config-airbnb": "^4.0.0",
     "@vue/test-utils": "1.0.0-beta.29",
     "babel-core": "7.0.0-bridge.0",
@@ -43,7 +43,7 @@
     "babel-jest": "^23.6.0",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
-    "husky": "^3.0.3",
+    "husky": "^3.0.4",
     "vue-template-compiler": "^2.6.10"
   },
   "husky": {
