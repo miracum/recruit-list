@@ -11,7 +11,9 @@
       </template>
     </b-navbar>
     <main>
-      <router-view />
+      <section class="container">
+        <router-view />
+      </section>
     </main>
     <footer class="footer">
       <div class="content has-text-centered">
