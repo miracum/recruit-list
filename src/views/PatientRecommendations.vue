@@ -1,11 +1,22 @@
 <template>
-  <div class="home">
+  <div>
     <b-tabs v-model="activeTab">
       <b-tab-item
         v-for="(list, index) in screeningLists"
         :key="index"
-        :label="list.id"
       >
+        <template slot="header">
+          <span> {{ getAcronymFromStudy(getStudyFromList(list)) }} <b-tag
+            rounded
+            type="is-info"
+          > {{ list.entry.length }}</b-tag> </span>
+        </template>
+        <p class="box">
+          {{ getStudyFromList(list).title }}
+        </p>
+        <h2 class="subtitle">
+          Rekrutierungsvorschläge
+        </h2>
         <ScreeningList :items="list.entry" />
       </b-tab-item>
     </b-tabs>
@@ -14,6 +25,7 @@
 
 <script>
 import FHIR from "fhirclient";
+import fhirpath from "fhirpath";
 import ScreeningList from "@/components/ScreeningList.vue";
 
 export default {
@@ -35,8 +47,10 @@ export default {
     }
     const client = FHIR.client(fhirUrl);
     const screeningLists = await client.request(
-      "List?code=http://studien.miracum.org/fhir/screening-list|screening-recommendations", {
+      "List?code=http://studien.miracum.org/fhir/CodeSystem/screening-list|screening-recommendations",
+      {
         // resolveReferences: ["entry.0.item"],
+        resolveReferences: ["extension.0.extension.0.valueReference"],
       },
     );
 
@@ -58,6 +72,16 @@ export default {
         return newList;
       });
     this.screeningLists = await Promise.all(res);
+  },
+  methods: {
+    getStudyFromList: list => list.extension[0].extension[0].valueReference,
+    getAcronymFromStudy: (study) => {
+      const acronymSystem = "http://studien.miracum.org/fhir/study-acronym";
+      return fhirpath.evaluate(
+        study,
+        `identifier.where(system='${acronymSystem}').first().value`,
+      )[0];
+    },
   },
 };
 </script>
