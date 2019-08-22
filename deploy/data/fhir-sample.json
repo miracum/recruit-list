@@ -98,6 +98,11 @@
             "use": "secondary",
             "system": "http://studien.uk-erlangen.de/fhir/study-identifier",
             "value": "xmdpldbelavr"
+          },
+          {
+            "use": "secondary",
+            "system": "http://studien.miracum.org/fhir/study-acronym",
+            "value": "PROSa"
           }
         ],
         "title": "Krankheitslast und Versorgungssituation bei Sarkomen: Eine nationale Studie zu Einflussfaktoren patientenberichteter Krankheitsfolgen bei Menschen mit Sarkomerkrankungen - PROSa - A",
@@ -107,12 +112,47 @@
             "type": "documentation",
             "url": "https://clinicaltrials.gov/ct2/show/NCT03521531"
           }
-        ],
-        "description": "Hintergrund: Sarkome sind mit ca. 5.000 neu betroffenen Erwachsenen in Deutschland pro Jahr eine sehr seltene Erkrankung. Unterschieden werden zwei Gruppen, die häufigeren Weichteilsarkome und die Knochensarkome. Aufgrund ihrer Seltenheit, Verschiedenheit und der komplexen Therapien, die zur Behandlung nötig sind, stellen Sarkome die klinische Behandlungspraxis und die wissenschaftliche Forschung vor anhaltende Herausforderungen.  Studienziel: Hauptziele der Studie sind, die Behandlungssituation von Sarkompatienten zu erfassen und deren Einfluss auf die Lebensqualität der Patienten zu bestimmen. Es sollen beeinträchtigte Lebensqualitätsbereiche und die damit zusammenhängenden Faktoren identifiziert werden.  Nutzen der Ergebnisse: Wenn bekannt ist, in welchen Bereichen die Lebensqualität beeinträchtigt ist und welche klinischen Einflussgrößen damit in Zusammenhang stehen, kann eine bedarfsgerechte und zielgruppenspezifische Behandlung von Sarkompatienten besser gewährleistet werden."
+        ]
       },
       "request": {
         "method": "POST",
-        "url": "Patient"
+        "url": "ResearchStudy"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:a68cd881-a41e-42a7-8e88-10913610163d",
+      "resource": {
+        "resourceType": "ResearchStudy",
+        "id": "a68cd881-a41e-42a7-8e88-10913610163d",
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://clinicaltrials.gov/",
+            "value": "NCT03555877"
+          },
+          {
+            "use": "secondary",
+            "system": "http://studien.uk-erlangen.de/fhir/study-identifier",
+            "value": "gbyplzyvdqwr"
+          },
+          {
+            "use": "secondary",
+            "system": "http://studien.miracum.org/fhir/study-acronym",
+            "value": "AMICA"
+          }
+        ],
+        "title": "Antihormonelle Erhaltungstherapie nach First-Line-Chemotherapie mit oder ohne CDK4/6-Inhibitor Ribociclib bei Hormonrezeptor-positivem/HER2-negativem, metastasiertem Brustkrebs: Eine Phase-II-Studie",
+        "status": "active",
+        "relatedArtifact": [
+          {
+            "type": "documentation",
+            "url": "https://clinicaltrials.gov/ct2/show/NCT03555877"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "ResearchStudy"
       }
     },
     {
@@ -158,6 +198,53 @@
           {
             "item": {
               "reference": "urn:uuid:fe6850ca-c81d-4f92-be6c-f7a5a990bae7"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "List"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "List",
+        "id": "ec736a74-5b0d-4026-ba07-8c8f3809cc6e",
+        "identifier": [
+          {
+            "use": "usual",
+            "system": "http://studien.miracum.org/fhir/screening-list-identifier",
+            "value": "456"
+          }
+        ],
+        "mode": "working",
+        "code": {
+          "coding": [
+            {
+              "system": "http://studien.miracum.org/fhir/CodeSystem/screening-list",
+              "code": "screening-recommendations"
+            }
+          ],
+          "text": "Screening Recommendations"
+        },
+        "extension": [
+          {
+            "url": "http://studien.miracum.org/fhir/StructureDefinition/recommendation-list-study-reference",
+            "extension": [
+              {
+                "url": "studyReference",
+                "valueResource": {
+                  "reference": "urn:uuid:a68cd881-a41e-42a7-8e88-10913610163d"
+                }
+              }
+            ]
+          }
+        ],
+        "entry": [
+          {
+            "item": {
+              "reference": "urn:uuid:19ae02e8-7b9a-408f-9f98-200c0b5fec25"
             }
           }
         ]
