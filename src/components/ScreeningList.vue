@@ -39,19 +39,13 @@
           sortable
         >
           <span>
-            <span class="tag is-info">
-              {{ age(props.row.birthDate) }}
-            </span>
+            {{ age(props.row.birthDate) }}
           </span>
         </b-table-column>
 
         <b-table-column label="Geschlecht">
           <span>
-            <b-icon
-              pack="fas"
-              :icon="props.row.gender === 'male' ? 'mars' : 'venus'"
-            />
-            {{ props.row.gender }}
+            {{ props.row.gender === 'male' ? 'männlich' : 'weiblich' }}
           </span>
         </b-table-column>
       </template>
@@ -95,7 +89,10 @@ export default {
         .map(entry => entry.item)
         .map(patient => ({
           id: patient.id,
-          name: fhirpath.evaluate(patient, "Patient.name.where(use='official').first()")[0],
+          name: fhirpath.evaluate(
+            patient,
+            "Patient.name.where(use='official').first()",
+          )[0],
           gender: patient.gender,
           birthDate: patient.birthDate,
         }));
