@@ -17,6 +17,9 @@
           Rekrutierungsvorschläge
         </h2>
         <ScreeningList :items="list.entry" />
+        <p class="has-text-grey">
+          Letzte Änderung: {{ new Date(list.meta.lastUpdated).toLocaleString() }}
+        </p>
       </b-tab-item>
     </b-tabs>
   </div>
