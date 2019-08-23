@@ -8,7 +8,6 @@
         <template slot="header">
           <span> {{ getAcronymFromStudy(getStudyFromList(list)) }} <b-tag
             rounded
-            type="is-info"
           > {{ list.entry.length }}</b-tag> </span>
         </template>
         <p class="box">
