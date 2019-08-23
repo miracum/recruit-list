@@ -48,6 +48,18 @@
             {{ props.row.gender === 'male' ? 'männlich' : 'weiblich' }}
           </span>
         </b-table-column>
+
+        <b-table-column label="">
+          <b-button
+            type="is-info"
+            icon-right="external-link-alt"
+            outlined
+            tag="a"
+            href="#"
+          >
+            Patientenakte öffnen
+          </b-button>
+        </b-table-column>
       </template>
 
       <template slot="empty">
@@ -59,7 +71,7 @@
                 size="is-large"
               />
             </p>
-            <p>Nothing here.</p>
+            <p>Keine Vorschläge vorhanden.</p>
           </div>
         </section>
       </template>
