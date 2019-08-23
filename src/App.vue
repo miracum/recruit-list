@@ -4,7 +4,7 @@
       <template slot="brand">
         <b-navbar-item href="/">
           <img
-            src="https://www.miracum.org/wp-content/uploads/2018/09/miracum_Logo_Titel_G_D.png"
+            src="@/assets/miracum-logo.png"
             alt="MIRACUM"
           >
         </b-navbar-item>
@@ -71,6 +71,7 @@ $link-focus-border: $primary;
   display: flex;
   min-height: 100vh;
   flex-direction: column;
+  background-color: #f0f3fb;
 }
 
 main {
