@@ -43,7 +43,7 @@ app.use(express.static(path.join(__dirname, "..", "dist")));
 app.use(
   "/fhir",
   proxy({
-    target: process.env.FHIR_URL || "http://localhost:8080/fhir",
+    target: process.env.FHIR_URL || "http://localhost:9090/fhir",
     changeOrigin: true,
     pathRewrite: {
       "^/fhir": "/",
