@@ -31,7 +31,7 @@
         </h2>
         <ScreeningList :items="list.entry" />
         <p class="has-text-grey">
-          Letzte Änderung: {{ new Date(list.meta.lastUpdated).toLocaleString() }}
+          Letzte Änderung: {{ new Date(list.meta.lastUpdated).toLocaleString("de-DE") }}
         </p>
       </b-tab-item>
     </b-tabs>
