@@ -6,7 +6,6 @@
       "fullUrl": "urn:uuid:92dc3de0-05c6-473e-a38a-1918c874a420",
       "resource": {
         "resourceType": "Patient",
-        "id": "92dc3de0-05c6-473e-a38a-1918c874a420",
         "identifier": [
           {
             "system": "https://github.com/synthetichealth/synthea",
@@ -26,14 +25,14 @@
       },
       "request": {
         "method": "POST",
-        "url": "Patient"
+        "url": "Patient",
+        "ifNoneExist": "identifier=https://github.com/synthetichealth/synthea|92dc3de0-05c6-473e-a38a-1918c874a420"
       }
     },
     {
       "fullUrl": "urn:uuid:fe6850ca-c81d-4f92-be6c-f7a5a990bae7",
       "resource": {
         "resourceType": "Patient",
-        "id": "fe6850ca-c81d-4f92-be6c-f7a5a990bae7",
         "identifier": [
           {
             "system": "https://github.com/synthetichealth/synthea",
@@ -53,14 +52,14 @@
       },
       "request": {
         "method": "POST",
-        "url": "Patient"
+        "url": "Patient",
+        "ifNoneExist": "identifier=https://github.com/synthetichealth/synthea|fe6850ca-c81d-4f92-be6c-f7a5a990bae7"
       }
     },
     {
       "fullUrl": "urn:uuid:19ae02e8-7b9a-408f-9f98-200c0b5fec25",
       "resource": {
         "resourceType": "Patient",
-        "id": "19ae02e8-7b9a-408f-9f98-200c0b5fec25",
         "identifier": [
           {
             "system": "https://github.com/synthetichealth/synthea",
@@ -80,14 +79,14 @@
       },
       "request": {
         "method": "POST",
-        "url": "Patient"
+        "url": "Patient",
+        "ifNoneExist": "identifier=https://github.com/synthetichealth/synthea|19ae02e8-7b9a-408f-9f98-200c0b5fec25"
       }
     },
     {
       "fullUrl": "urn:uuid:87990c74-c1b0-49a2-965c-61164fb99476",
       "resource": {
         "resourceType": "ResearchStudy",
-        "id": "87990c74-c1b0-49a2-965c-61164fb99476",
         "identifier": [
           {
             "use": "official",
@@ -116,14 +115,14 @@
       },
       "request": {
         "method": "POST",
-        "url": "ResearchStudy"
+        "url": "ResearchStudy",
+        "ifNoneExist": "identifier=http://clinicaltrials.gov/|NCT03521531"
       }
     },
     {
       "fullUrl": "urn:uuid:a68cd881-a41e-42a7-8e88-10913610163d",
       "resource": {
         "resourceType": "ResearchStudy",
-        "id": "a68cd881-a41e-42a7-8e88-10913610163d",
         "identifier": [
           {
             "use": "official",
@@ -152,18 +151,18 @@
       },
       "request": {
         "method": "POST",
-        "url": "ResearchStudy"
+        "url": "ResearchStudy",
+        "ifNoneExist": "identifier=http://clinicaltrials.gov/|NCT03555877"
       }
     },
     {
       "resource": {
         "resourceType": "List",
-        "id": "a7c97dd9-92e1-47a2-8c76-c9383b32d7c9",
         "identifier": [
           {
             "use": "usual",
             "system": "http://studien.miracum.org/fhir/screening-list-identifier",
-            "value": "123"
+            "value": "1"
           }
         ],
         "mode": "working",
@@ -204,18 +203,18 @@
       },
       "request": {
         "method": "POST",
-        "url": "List"
+        "url": "List",
+        "ifNoneExist": "identifier=http://studien.miracum.org/fhir/screening-list-identifier|1"
       }
     },
     {
       "resource": {
         "resourceType": "List",
-        "id": "ec736a74-5b0d-4026-ba07-8c8f3809cc6e",
         "identifier": [
           {
             "use": "usual",
             "system": "http://studien.miracum.org/fhir/screening-list-identifier",
-            "value": "456"
+            "value": "2"
           }
         ],
         "mode": "working",
@@ -251,7 +250,8 @@
       },
       "request": {
         "method": "POST",
-        "url": "List"
+        "url": "List",
+        "ifNoneExist": "identifier=http://studien.miracum.org/fhir/screening-list-identifier|2"
       }
     }
   ]
