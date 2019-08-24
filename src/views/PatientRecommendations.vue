@@ -1,6 +1,19 @@
 <template>
   <div>
-    <b-tabs v-model="activeTab">
+    <b-loading
+      :active="isLoading"
+    />
+
+    <b-message
+      v-if="failedToLoad"
+      type="is-danger"
+    >
+      Rekrutierungsvorschläge konnten nicht geladen werden.
+    </b-message>
+    <b-tabs
+      v-else
+      v-model="activeTab"
+    >
       <b-tab-item
         v-for="(list, index) in screeningLists"
         :key="index"
@@ -39,6 +52,8 @@ export default {
     return {
       screeningLists: {},
       activeTab: 0,
+      failedToLoad: false,
+      isLoading: true,
     };
   },
   async mounted() {
@@ -47,33 +62,40 @@ export default {
       // this is an awkward workaround for FHIR.client not accepting relative paths as valid URLs
       fhirUrl = `${window.location.protocol}//${window.location.host}/fhir`;
     }
-    const client = FHIR.client(fhirUrl);
-    const screeningLists = await client.request(
-      "List?code=http://studien.miracum.org/fhir/CodeSystem/screening-list|screening-recommendations",
-      {
+    try {
+      const client = FHIR.client(fhirUrl);
+      const screeningLists = await client.request(
+        "List?code=http://studien.miracum.org/fhir/CodeSystem/screening-list|screening-recommendations",
+        {
         // resolveReferences: ["entry.0.item"],
-        resolveReferences: ["extension.0.extension.0.valueReference"],
-      },
-    );
+          resolveReferences: ["extension.0.extension.0.valueReference"],
+        },
+      );
 
-    // resolveReferences didn't work on item.reference in the screening list
-    // it did work when explicitely specifying the index: "entry.0.item"
-    // so we need to manually resove the patient references...
-    const res = screeningLists.entry
-      .map(entry => entry.resource)
-      .map(async (list) => {
-        const newList = list;
-        newList.entry = await Promise.all(
-          list.entry.map(async (entry) => {
-            const newEntry = entry;
-            const patient = client.request(newEntry.item.reference);
-            newEntry.item = await patient;
-            return newEntry;
-          }),
-        );
-        return newList;
-      });
-    this.screeningLists = await Promise.all(res);
+      // resolveReferences didn't work on item.reference in the screening list
+      // it did work when explicitely specifying the index: "entry.0.item"
+      // so we need to manually resove the patient references...
+      const res = screeningLists.entry
+        .map(entry => entry.resource)
+        .map(async (list) => {
+          const newList = list;
+          newList.entry = await Promise.all(
+            list.entry.map(async (entry) => {
+              const newEntry = entry;
+              const patient = client.request(newEntry.item.reference);
+              newEntry.item = await patient;
+              return newEntry;
+            }),
+          );
+          return newList;
+        });
+      this.screeningLists = await Promise.all(res);
+      this.isLoading = false;
+    } catch (exc) {
+      console.error(exc);
+      this.failedToLoad = true;
+      this.isLoading = false;
+    }
   },
   methods: {
     getStudyFromList: list => list.extension[0].extension[0].valueReference,
