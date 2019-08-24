@@ -10,6 +10,12 @@
     >
       Rekrutierungsvorschläge konnten nicht geladen werden.
     </b-message>
+    <b-message
+      v-else-if="noLists"
+      type="is-warning"
+    >
+      Keine Rekrutierungsvorschläge vorhanden.
+    </b-message>
     <b-tabs
       v-else
       v-model="activeTab"
@@ -54,6 +60,7 @@ export default {
       activeTab: 0,
       failedToLoad: false,
       isLoading: true,
+      noLists: false,
     };
   },
   async mounted() {
@@ -67,29 +74,35 @@ export default {
       const screeningLists = await client.request(
         "List?code=http://studien.miracum.org/fhir/CodeSystem/screening-list|screening-recommendations",
         {
-        // resolveReferences: ["entry.0.item"],
+          // resolveReferences: ["entry.0.item"],
           resolveReferences: ["extension.0.extension.0.valueReference"],
+          flat: true,
         },
       );
 
-      // resolveReferences didn't work on item.reference in the screening list
-      // it did work when explicitely specifying the index: "entry.0.item"
-      // so we need to manually resove the patient references...
-      const res = screeningLists.entry
-        .map(entry => entry.resource)
-        .map(async (list) => {
-          const newList = list;
-          newList.entry = await Promise.all(
-            list.entry.map(async (entry) => {
-              const newEntry = entry;
-              const patient = client.request(newEntry.item.reference);
-              newEntry.item = await patient;
-              return newEntry;
-            }),
-          );
-          return newList;
-        });
-      this.screeningLists = await Promise.all(res);
+      if (screeningLists.length !== 0) {
+        // resolveReferences didn't work on item.reference in the screening list
+        // it did work when explicitely specifying the index: "entry.0.item"
+        // so we need to manually resove the patient references...
+        const res = screeningLists.entry
+          .map(entry => entry.resource)
+          .map(async (list) => {
+            const newList = list;
+            newList.entry = await Promise.all(
+              list.entry.map(async (entry) => {
+                const newEntry = entry;
+                const patient = client.request(newEntry.item.reference);
+                newEntry.item = await patient;
+                return newEntry;
+              }),
+            );
+            return newList;
+          });
+        this.screeningLists = await Promise.all(res);
+      } else {
+        this.noLists = true;
+      }
+
       this.isLoading = false;
     } catch (exc) {
       console.error(exc);
