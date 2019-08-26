@@ -84,8 +84,7 @@ export default {
         // resolveReferences didn't work on item.reference in the screening list
         // it did work when explicitely specifying the index: "entry.0.item"
         // so we need to manually resove the patient references...
-        const res = screeningLists.entry
-          .map(entry => entry.resource)
+        const res = screeningLists
           .map(async (list) => {
             const newList = list;
             newList.entry = await Promise.all(
@@ -102,7 +101,6 @@ export default {
       } else {
         this.noLists = true;
       }
-
       this.isLoading = false;
     } catch (exc) {
       console.error(exc);
