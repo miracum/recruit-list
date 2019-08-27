@@ -15,20 +15,6 @@ services:
       - traefik
       - recruit-staging
 
-  loader:
-    image: byrnedo/alpine-curl:latest
-    command: -X POST
-             -H "Content-Type:application/json"
-             --retry-connrefuse
-             --connect-timeout 10
-             --max-time 60
-             --retry 5
-             --retry-delay 10
-             --data "@/data/fhir-sample.json"
-             http://fhir:8080/fhir
-    volumes:
-      - ./data:/data
-
 networks:
   recruit-staging:
     external: true
