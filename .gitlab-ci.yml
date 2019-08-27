@@ -70,3 +70,22 @@ git release:
     - npx semantic-release
   only:
     - master
+
+staging:
+  image: tiangolo/docker-with-compose
+  stage: deploy
+  extends: .docker_registry
+  script:
+    - export IMAGE_TAG=v$(cat .VERSION)
+    - docker-compose -p $CI_PROJECT_NAME -f deploy/docker-compose.staging.yml pull
+    - docker-compose -p $CI_PROJECT_NAME -f deploy/docker-compose.staging.yml up -d
+  environment:
+    name: staging
+    url: https://lists.recruit.miracum.org/
+  only:
+    - master
+  tags:
+    - ume
+    - uc1
+    - recruit
+    - staging
