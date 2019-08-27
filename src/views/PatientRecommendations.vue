@@ -8,7 +8,8 @@
       v-if="failedToLoad"
       type="is-danger"
     >
-      Rekrutierungsvorschläge konnten nicht geladen werden.
+      Rekrutierungsvorschläge konnten nicht geladen werden:<br>
+      <pre>{{ errorMessage }}</pre>
     </b-message>
     <b-message
       v-else-if="noLists"
@@ -61,6 +62,7 @@ export default {
       failedToLoad: false,
       isLoading: true,
       noLists: false,
+      errorMessage: "",
     };
   },
   async mounted() {
@@ -103,7 +105,7 @@ export default {
       }
       this.isLoading = false;
     } catch (exc) {
-      console.error(exc);
+      this.errorMessage = exc;
       this.failedToLoad = true;
       this.isLoading = false;
     }
