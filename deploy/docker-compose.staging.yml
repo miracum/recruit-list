@@ -1,0 +1,36 @@
+version: "3.7"
+
+services:
+  list:
+    image: docker.miracum.org/uc1-recruit/list:${IMAGE_TAG}
+    restart: always
+    environment:
+      - FHIR_URL=http://fhir:8080/fhir
+    labels:
+      - traefik.docker.network=traefik
+      - traefik.frontend.rule=Host:lists.recruit.miracum.org
+      - traefik.enable=true
+      - traefik.port=3000
+    networks:
+      - traefik
+      - recruit-staging
+
+  loader:
+    image: byrnedo/alpine-curl:latest
+    command: -X POST
+             -H "Content-Type:application/json"
+             --retry-connrefuse
+             --connect-timeout 10
+             --max-time 60
+             --retry 5
+             --retry-delay 10
+             --data "@/data/fhir-sample.json"
+             http://fhir:8080/fhir
+    volumes:
+      - ./data:/data
+
+networks:
+  recruit-staging:
+    external: true
+  traefik:
+    external: true
