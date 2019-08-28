@@ -77,8 +77,8 @@ staging:
   extends: .docker_registry
   script:
     - export IMAGE_TAG=v$(cat .VERSION)
-    - docker-compose -p $CI_PROJECT_NAME -f deploy/docker-compose.staging.yml pull
-    - docker-compose -p $CI_PROJECT_NAME -f deploy/docker-compose.staging.yml up -d
+    - docker-compose -p $CI_PROJECT_NAME -f deploy/docker-compose.staging.yml --verbose pull
+    - docker-compose -p $CI_PROJECT_NAME -f deploy/docker-compose.staging.yml --verbose up -d
   environment:
     name: staging
     url: https://lists.recruit.miracum.org/
