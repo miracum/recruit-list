@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   fhir:
-    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:latest
+    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:v2.4.0
     restart: always
     ports:
       - "${FHIR_PORT:-9090}:8080"
@@ -18,7 +18,7 @@ services:
       - db
 
   loader:
-    image: byrnedo/alpine-curl:latest
+    image: byrnedo/alpine-curl:0.1.7
     command: -X POST
              -H "Content-Type:application/json"
              --retry-connrefuse
@@ -34,7 +34,7 @@ services:
       - ./data:/data
 
   db:
-    image: postgres:latest
+    image: postgres:11.5-alpine
     restart: always
     environment:
       POSTGRES_PASSWORD: postgres
