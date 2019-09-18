@@ -30,6 +30,60 @@
       }
     },
     {
+      "fullUrl": "urn:uuid:39af9e7e-4a23-49cb-8d13-fafa37098d85",
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "39af9e7e-4a23-49cb-8d13-fafa37098d85"
+          }
+        ],
+        "name": [
+          {
+            "use": "official",
+            "family": "Marc391",
+            "given": ["Houston278"],
+            "prefix": ["Mr."]
+          }
+        ],
+        "gender": "male",
+        "birthDate": "1975-06-20"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Patient",
+        "ifNoneExist": "identifier=https://github.com/synthetichealth/synthea|39af9e7e-4a23-49cb-8d13-fafa37098d85"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:809eeb5c-5b1b-400d-bb31-88d3de27a6b8",
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "809eeb5c-5b1b-400d-bb31-88d3de27a6b8"
+          }
+        ],
+        "name": [
+          {
+            "use": "official",
+            "family": "Jill403",
+            "given": ["Weng389"],
+            "prefix": ["Mr."]
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1985-09-12"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Patient",
+        "ifNoneExist": "identifier=https://github.com/synthetichealth/synthea|809eeb5c-5b1b-400d-bb31-88d3de27a6b8"
+      }
+    },
+    {
       "fullUrl": "urn:uuid:fe6850ca-c81d-4f92-be6c-f7a5a990bae7",
       "resource": {
         "resourceType": "Patient",
@@ -197,6 +251,16 @@
           {
             "item": {
               "reference": "urn:uuid:fe6850ca-c81d-4f92-be6c-f7a5a990bae7"
+            }
+          },
+          {
+            "item": {
+              "reference": "urn:uuid:809eeb5c-5b1b-400d-bb31-88d3de27a6b8"
+            }
+          },
+          {
+            "item": {
+              "reference": "urn:uuid:39af9e7e-4a23-49cb-8d13-fafa37098d85"
             }
           }
         ]
