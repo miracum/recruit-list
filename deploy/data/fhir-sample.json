@@ -42,8 +42,8 @@
         "name": [
           {
             "use": "official",
-            "family": "Marc391",
-            "given": ["Houston278"],
+            "family": "Houston278",
+            "given": ["Marc391"],
             "prefix": ["Mr."]
           }
         ],
@@ -69,8 +69,8 @@
         "name": [
           {
             "use": "official",
-            "family": "Jill403",
-            "given": ["Weng389"],
+            "family": "Weng389",
+            "given": ["Jill403"],
             "prefix": ["Mr."]
           }
         ],
