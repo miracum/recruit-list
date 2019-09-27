@@ -1,8 +1,6 @@
 <template>
   <div>
-    <b-loading
-      :active="isLoading"
-    />
+    <b-loading :active="isLoading" />
 
     <b-message
       v-if="failedToLoad"
@@ -26,19 +24,21 @@
         :key="index"
       >
         <template slot="header">
-          <span> {{ getAcronymFromStudy(getStudyFromList(list)) }} <b-tag
-            rounded
-          > {{ list.entry.length }}</b-tag> </span>
+          <span>
+            {{ getStudyFromList(list).title }}
+            <b-tag rounded> {{ list.entry.length }}</b-tag>
+          </span>
         </template>
         <p class="box">
-          {{ getStudyFromList(list).title }}
+          {{ getStudyFromList(list).description }}
         </p>
         <h2 class="subtitle">
           Rekrutierungsvorschläge
         </h2>
         <ScreeningList :items="list.entry" />
         <p class="has-text-grey">
-          Letzte Änderung: {{ new Date(list.meta.lastUpdated).toLocaleString("de-DE") }}
+          Letzte Änderung:
+          {{ new Date(list.meta.lastUpdated).toLocaleString("de-DE") }}
         </p>
       </b-tab-item>
     </b-tabs>
@@ -47,7 +47,6 @@
 
 <script>
 import FHIR from "fhirclient";
-import fhirpath from "fhirpath";
 import ScreeningList from "@/components/ScreeningList.vue";
 
 export default {
@@ -86,39 +85,31 @@ export default {
         // resolveReferences didn't work on item.reference in the screening list
         // it did work when explicitely specifying the index: "entry.0.item"
         // so we need to manually resove the patient references...
-        const res = screeningLists
-          .map(async (list) => {
-            const newList = list;
-            newList.entry = await Promise.all(
-              list.entry.map(async (entry) => {
-                const newEntry = entry;
-                const patient = client.request(newEntry.item.reference);
-                newEntry.item = await patient;
-                return newEntry;
-              }),
-            );
-            return newList;
-          });
+        const res = screeningLists.map(async (list) => {
+          const newList = list;
+          newList.entry = await Promise.all(
+            list.entry.map(async (entry) => {
+              const newEntry = entry;
+              const patient = client.request(newEntry.item.reference);
+              newEntry.item = await patient;
+              return newEntry;
+            }),
+          );
+          return newList;
+        });
         this.screeningLists = await Promise.all(res);
       } else {
         this.noLists = true;
       }
-      this.isLoading = false;
     } catch (exc) {
       this.errorMessage = exc;
       this.failedToLoad = true;
+    } finally {
       this.isLoading = false;
     }
   },
   methods: {
     getStudyFromList: list => list.extension[0].extension[0].valueReference,
-    getAcronymFromStudy: (study) => {
-      const acronymSystem = "http://studien.miracum.org/fhir/study-acronym";
-      return fhirpath.evaluate(
-        study,
-        `identifier.where(system='${acronymSystem}').first().value`,
-      )[0];
-    },
   },
 };
 </script>

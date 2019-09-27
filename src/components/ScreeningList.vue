@@ -45,7 +45,7 @@
 
         <b-table-column label="Geschlecht">
           <span>
-            {{ props.row.gender === 'male' ? 'männlich' : 'weiblich' }}
+            {{ props.row.gender === "male" ? "männlich" : "weiblich" }}
           </span>
         </b-table-column>
 
@@ -100,7 +100,10 @@ export default {
       return this.items
         .map(entry => entry.item)
         .map(patient => ({
-          id: patient.id,
+          id: fhirpath.evaluate(
+            patient,
+            "Patient.identifier.where(system='http://ohdsi.org/omop/fhir/subject-identifier').value",
+          )[0],
           name: fhirpath.evaluate(
             patient,
             "Patient.name.where(use='official').first()",
