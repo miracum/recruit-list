@@ -10,6 +10,10 @@
           {
             "system": "https://github.com/synthetichealth/synthea",
             "value": "92dc3de0-05c6-473e-a38a-1918c874a420"
+          },
+          {
+            "system": "http://ohdsi.org/omop/fhir/subject-identifier",
+            "value": "1"
           }
         ],
         "name": [
@@ -37,6 +41,10 @@
           {
             "system": "https://github.com/synthetichealth/synthea",
             "value": "39af9e7e-4a23-49cb-8d13-fafa37098d85"
+          },
+          {
+            "system": "http://ohdsi.org/omop/fhir/subject-identifier",
+            "value": "2"
           }
         ],
         "name": [
@@ -64,6 +72,10 @@
           {
             "system": "https://github.com/synthetichealth/synthea",
             "value": "809eeb5c-5b1b-400d-bb31-88d3de27a6b8"
+          },
+          {
+            "system": "http://ohdsi.org/omop/fhir/subject-identifier",
+            "value": "3"
           }
         ],
         "name": [
@@ -91,6 +103,10 @@
           {
             "system": "https://github.com/synthetichealth/synthea",
             "value": "fe6850ca-c81d-4f92-be6c-f7a5a990bae7"
+          },
+          {
+            "system": "http://ohdsi.org/omop/fhir/subject-identifier",
+            "value": "4"
           }
         ],
         "name": [
@@ -118,6 +134,10 @@
           {
             "system": "https://github.com/synthetichealth/synthea",
             "value": "19ae02e8-7b9a-408f-9f98-200c0b5fec25"
+          },
+          {
+            "system": "http://ohdsi.org/omop/fhir/subject-identifier",
+            "value": "5"
           }
         ],
         "name": [
@@ -146,19 +166,10 @@
             "use": "official",
             "system": "http://clinicaltrials.gov/",
             "value": "NCT03521531"
-          },
-          {
-            "use": "secondary",
-            "system": "http://studien.uk-erlangen.de/fhir/study-identifier",
-            "value": "xmdpldbelavr"
-          },
-          {
-            "use": "secondary",
-            "system": "http://studien.miracum.org/fhir/study-acronym",
-            "value": "PROSa"
           }
         ],
-        "title": "Krankheitslast und Versorgungssituation bei Sarkomen: Eine nationale Studie zu Einflussfaktoren patientenberichteter Krankheitsfolgen bei Menschen mit Sarkomerkrankungen - PROSa - A",
+        "title": "PROSa",
+        "description": "Krankheitslast und Versorgungssituation bei Sarkomen: Eine nationale Studie zu Einflussfaktoren patientenberichteter Krankheitsfolgen bei Menschen mit Sarkomerkrankungen - PROSa - A",
         "status": "active",
         "relatedArtifact": [
           {
@@ -182,19 +193,10 @@
             "use": "official",
             "system": "http://clinicaltrials.gov/",
             "value": "NCT03555877"
-          },
-          {
-            "use": "secondary",
-            "system": "http://studien.uk-erlangen.de/fhir/study-identifier",
-            "value": "gbyplzyvdqwr"
-          },
-          {
-            "use": "secondary",
-            "system": "http://studien.miracum.org/fhir/study-acronym",
-            "value": "AMICA"
           }
         ],
-        "title": "Antihormonelle Erhaltungstherapie nach First-Line-Chemotherapie mit oder ohne CDK4/6-Inhibitor Ribociclib bei Hormonrezeptor-positivem/HER2-negativem, metastasiertem Brustkrebs: Eine Phase-II-Studie",
+        "title": "AMICA",
+        "description": "Antihormonelle Erhaltungstherapie nach First-Line-Chemotherapie mit oder ohne CDK4/6-Inhibitor Ribociclib bei Hormonrezeptor-positivem/HER2-negativem, metastasiertem Brustkrebs: Eine Phase-II-Studie",
         "status": "active",
         "relatedArtifact": [
           {
