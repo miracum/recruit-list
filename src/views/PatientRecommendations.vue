@@ -76,7 +76,7 @@ export default {
         "List?code=http://miracum.org/fhir/CodeSystem/screening-list|screening-recommendations",
         {
           // resolveReferences: ["entry.0.item"],
-          resolveReferences: ["extension.0.extension.0.valueReference"],
+          resolveReferences: ["extension.0.valueReference"],
           flat: true,
         },
       );
@@ -109,7 +109,7 @@ export default {
     }
   },
   methods: {
-    getStudyFromList: list => list.extension[0].extension[0].valueReference,
+    getStudyFromList: list => list.extension[0].valueReference,
   },
 };
 </script>
