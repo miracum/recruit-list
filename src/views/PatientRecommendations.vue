@@ -73,7 +73,7 @@ export default {
     try {
       const client = FHIR.client(fhirUrl);
       const screeningLists = await client.request(
-        "List?code=http://studien.miracum.org/fhir/CodeSystem/screening-list|screening-recommendations",
+        "List?code=http://miracum.org/fhir/CodeSystem/screening-list|screening-recommendations",
         {
           // resolveReferences: ["entry.0.item"],
           resolveReferences: ["extension.0.extension.0.valueReference"],

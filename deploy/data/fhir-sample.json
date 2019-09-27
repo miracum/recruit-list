@@ -217,7 +217,7 @@
         "identifier": [
           {
             "use": "usual",
-            "system": "http://studien.miracum.org/fhir/screening-list-identifier",
+            "system": "http://miracum.org/fhir/screening-list-cohort-identifier",
             "value": "1"
           }
         ],
@@ -225,7 +225,7 @@
         "code": {
           "coding": [
             {
-              "system": "http://studien.miracum.org/fhir/CodeSystem/screening-list",
+              "system": "http://miracum.org/fhir/CodeSystem/screening-list",
               "code": "screening-recommendations"
             }
           ],
@@ -233,10 +233,9 @@
         },
         "extension": [
           {
-            "url": "http://studien.miracum.org/fhir/StructureDefinition/recommendation-list-study-reference",
+            "url": "http://miracum.org/fhir/screening-list-study-reference",
             "extension": [
               {
-                "url": "studyReference",
                 "valueResource": {
                   "reference": "urn:uuid:87990c74-c1b0-49a2-965c-61164fb99476"
                 }
@@ -270,7 +269,7 @@
       "request": {
         "method": "POST",
         "url": "List",
-        "ifNoneExist": "identifier=http://studien.miracum.org/fhir/screening-list-identifier|1"
+        "ifNoneExist": "identifier=http://miracum.org/fhir/screening-list-cohort-identifier|1"
       }
     },
     {
@@ -279,7 +278,7 @@
         "identifier": [
           {
             "use": "usual",
-            "system": "http://studien.miracum.org/fhir/screening-list-identifier",
+            "system": "http://miracum.org/fhir/screening-list-cohort-identifier",
             "value": "2"
           }
         ],
@@ -287,7 +286,7 @@
         "code": {
           "coding": [
             {
-              "system": "http://studien.miracum.org/fhir/CodeSystem/screening-list",
+              "system": "http://miracum.org/fhir/CodeSystem/screening-list",
               "code": "screening-recommendations"
             }
           ],
@@ -295,10 +294,9 @@
         },
         "extension": [
           {
-            "url": "http://studien.miracum.org/fhir/StructureDefinition/recommendation-list-study-reference",
+            "url": "http://miracum.org/fhir/screening-list-study-reference",
             "extension": [
               {
-                "url": "studyReference",
                 "valueResource": {
                   "reference": "urn:uuid:a68cd881-a41e-42a7-8e88-10913610163d"
                 }
@@ -317,7 +315,7 @@
       "request": {
         "method": "POST",
         "url": "List",
-        "ifNoneExist": "identifier=http://studien.miracum.org/fhir/screening-list-identifier|2"
+        "ifNoneExist": "identifier=http://miracum.org/fhir/screening-list-cohort-identifier|2"
       }
     }
   ]
