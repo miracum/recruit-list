@@ -22,7 +22,7 @@
           label="Vorname"
           sortable
         >
-          {{ props.row.name.given.join(" ") }}
+          {{ props.row.name ? props.row.name.given.join(" ") : "?" }}
         </b-table-column>
 
         <b-table-column
@@ -30,7 +30,7 @@
           label="Nachname"
           sortable
         >
-          {{ props.row.name.family }}
+          {{ props.row.name ? props.row.name.family : "?" }}
         </b-table-column>
 
         <b-table-column
@@ -39,13 +39,19 @@
           sortable
         >
           <span>
-            {{ age(props.row.birthDate) }}
+            {{ props.row.birthDate ? age(props.row.birthDate) : "?" }}
           </span>
         </b-table-column>
 
         <b-table-column label="Geschlecht">
           <span>
-            {{ props.row.gender === "male" ? "männlich" : "weiblich" }}
+            {{
+              props.row.gender
+                ? props.row.gender === "male"
+                  ? "männlich"
+                  : "weiblich"
+                : "?"
+            }}
           </span>
         </b-table-column>
 
