@@ -49,16 +49,14 @@ build:
   except:
     - tags
 
-push to registry:
+publish to harbor:
   image: docker:git
   stage: release
   extends: .docker_registry
   script:
     - export IMAGE_TAG=v$(cat .VERSION)
     - docker pull $IMAGE_PATH:$CI_COMMIT_SHORT_SHA
-    - docker tag $IMAGE_PATH:$CI_COMMIT_SHORT_SHA $IMAGE_PATH:latest
     - docker tag $IMAGE_PATH:$CI_COMMIT_SHORT_SHA $IMAGE_PATH:$IMAGE_TAG
-    - docker push $IMAGE_PATH:latest
     - docker push $IMAGE_PATH:$IMAGE_TAG
   only:
     - master
