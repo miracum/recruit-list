@@ -20,21 +20,21 @@ services:
   loader:
     image: byrnedo/alpine-curl:0.1.7
     command: -X POST
-             -H "Content-Type:application/json"
-             --retry-connrefuse
-             --connect-timeout 10
-             --max-time 60
-             --retry 5
-             --retry-delay 10
-             --data "@/data/fhir-sample.json"
-             http://fhir:8080/fhir
+      -H "Content-Type:application/json"
+      --retry-connrefuse
+      --connect-timeout 10
+      --max-time 60
+      --retry 5
+      --retry-delay 10
+      --data "@/data/fhir-sample.json"
+      http://fhir:8080/fhir
     depends_on:
       - fhir
     volumes:
       - ./data:/data
 
   db:
-    image: postgres:11.5-alpine
+    image: postgres:12.0-alpine
     restart: always
     environment:
       POSTGRES_PASSWORD: postgres
