@@ -6,7 +6,8 @@
       v-if="failedToLoad"
       type="is-danger"
     >
-      Rekrutierungsvorschläge konnten nicht geladen werden:<br>
+      Rekrutierungsvorschläge konnten nicht geladen werden:
+      <br>
       <pre>{{ errorMessage }}</pre>
     </b-message>
     <b-message
@@ -26,7 +27,7 @@
         <template slot="header">
           <span>
             {{ getStudyFromList(list).title }}
-            <b-tag rounded> {{ list.entry.length }}</b-tag>
+            <b-tag rounded>{{ list.entry.length }}</b-tag>
           </span>
         </template>
         <p class="box">
@@ -76,7 +77,7 @@ export default {
         "List?code=http://miracum.org/fhir/CodeSystem/screening-list|screening-recommendations",
         {
           // resolveReferences: ["entry.0.item"],
-          resolveReferences: ["extension.0.valueReference"],
+          resolveReferences: ["extension.0.extension.0.valueReference"],
           flat: true,
         },
       );
@@ -109,7 +110,7 @@ export default {
     }
   },
   methods: {
-    getStudyFromList: list => list.extension[0].valueReference,
+    getStudyFromList: list => list.extension[0].extension[0].valueReference,
   },
 };
 </script>
