@@ -5,9 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "test:e2e": "vue-cli-service test:e2e",
     "test:unit": "vue-cli-service test:unit",
+    "test:e2e": "vue-cli-service test:e2e",
+    "lint": "vue-cli-service lint",
     "server:start": "node server/server.js"
   },
   "dependencies": {
@@ -16,7 +16,7 @@
     "@fortawesome/vue-fontawesome": "^0.1.6",
     "buefy": "^0.8.2",
     "connect-history-api-fallback": "^1.6.0",
-    "core-js": "^2.6.5",
+    "core-js": "^3.3.2",
     "express": "^4.17.1",
     "express-bearer-token": "^2.4.0",
     "express-prom-bundle": "^5.1.5",
@@ -31,9 +31,9 @@
   "devDependencies": {
     "@commitlint/cli": "^8.1.0",
     "@commitlint/config-conventional": "^8.1.0",
-    "@vue/cli-plugin-babel": "^3.11.0",
-    "@vue/cli-plugin-eslint": "^3.11.0",
-    "@vue/cli-plugin-unit-jest": "^3.11.0",
+    "@vue/cli-plugin-babel": "^4.0.5",
+    "@vue/cli-plugin-eslint": "^4.0.5",
+    "@vue/cli-plugin-unit-jest": "^4.0.5",
     "@vue/cli-service": "^3.11.0",
     "@vue/eslint-config-airbnb": "^4.0.0",
     "@vue/test-utils": "1.0.0-beta.29",
