@@ -2,42 +2,28 @@ version: "3.7"
 
 services:
   fhir:
-    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:v3.0.0
-    restart: always
+    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:v6.0.0
     ports:
       - "${FHIR_PORT:-9090}:8080"
     environment:
-      FHIR_VERSION: R4
-      SERVER_URL: http://fhir:8080/fhir
-      POSTGRES_HOST: db
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: fhir
+      server.address: "http://localhost:8082/fhir"
+      subscription.resthook.enabled: "true"
+      subscription.websocket.enabled: "false"
     depends_on:
       - db
 
   loader:
-    image: byrnedo/alpine-curl:0.1.7
+    image: byrnedo/alpine-curl:0.1.8
     command: -X POST
-             -H "Content-Type:application/json"
-             --retry-connrefuse
-             --connect-timeout 10
-             --max-time 60
-             --retry 5
-             --retry-delay 10
-             --data "@/data/fhir-sample.json"
-             http://fhir:8080/fhir
+      -H "Content-Type:application/json"
+      --retry-connrefuse
+      --connect-timeout 10
+      --max-time 60
+      --retry 5
+      --retry-delay 10
+      --data "@/data/fhir-sample.json"
+      http://fhir:8080/fhir
     depends_on:
       - fhir
     volumes:
       - ./data:/data
-
-  db:
-    image: postgres:11.5-alpine
-    restart: always
-    environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: fhir
-    tmpfs:
-      - /var/lib/postgresql/data
