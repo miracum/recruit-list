@@ -109,7 +109,7 @@ export default {
     }
   },
   methods: {
-    getStudyFromList: list => list.extension[0].valueReference,
+    getStudyFromList: (list) => list.extension[0].valueReference,
   },
 };
 </script>

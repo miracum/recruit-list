@@ -104,8 +104,8 @@ export default {
   computed: {
     patientData() {
       return this.items
-        .map(entry => entry.item)
-        .map(patient => ({
+        .map((entry) => entry.item)
+        .map((patient) => ({
           id: fhirpath.evaluate(
             patient,
             "Patient.identifier.where(system='http://ohdsi.org/omop/fhir/subject-identifier').value",
