@@ -15,6 +15,6 @@ services:
       --silent
       --show-error
       --fail
-      http://list:3000/soda
+      http://list:3000/
     depends_on:
       - list
