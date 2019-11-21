@@ -20,7 +20,7 @@
     "express-bearer-token": "2.4.0",
     "express-prom-bundle": "5.1.5",
     "fhirclient": "2.1.0",
-    "fhirpath": "0.17.4",
+    "fhirpath": "0.17.5",
     "http-proxy-middleware": "0.20.0",
     "morgan": "1.9.1",
     "prom-client": "11.5.3",
