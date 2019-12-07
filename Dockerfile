@@ -1,4 +1,4 @@
-FROM node:13.2.0-alpine as build
+FROM node:13.3.0-alpine as build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
@@ -8,7 +8,7 @@ ARG VERSION=0.0.0
 ENV VUE_APP_VERSION=${VERSION}
 RUN npm run build
 
-FROM node:13.2.0-alpine as deploy
+FROM node:13.3.0-alpine as deploy
 WORKDIR /app
 COPY --from=build /app/dist dist
 COPY --from=build /app/server server
