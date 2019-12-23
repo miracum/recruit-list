@@ -1,40 +1,23 @@
 <template>
-  <div>
-    <b-loading :active="isLoading" />
+  <div class="patient-recommendations">
+    <b-loading :active="isLoading" :is-full-page="false" />
 
-    <b-message
-      v-if="failedToLoad"
-      type="is-danger"
-    >
-      Rekrutierungsvorschläge konnten nicht geladen werden:<br>
+    <b-message v-if="failedToLoad" type="is-danger">
+      Rekrutierungsvorschläge konnten nicht geladen werden:
+      <br />
       <pre>{{ errorMessage }}</pre>
     </b-message>
-    <b-message
-      v-else-if="noLists"
-      type="is-warning"
-    >
-      Keine Rekrutierungsvorschläge vorhanden.
-    </b-message>
-    <b-tabs
-      v-else
-      v-model="activeTab"
-    >
-      <b-tab-item
-        v-for="(list, index) in screeningLists"
-        :key="index"
-      >
+    <b-message v-else-if="noLists" type="is-warning">Keine Rekrutierungsvorschläge vorhanden.</b-message>
+    <b-tabs v-else v-model="activeTab">
+      <b-tab-item v-for="(list, index) in screeningLists" :key="index">
         <template slot="header">
           <span>
             {{ getStudyFromList(list).title }}
-            <b-tag rounded> {{ list.entry.length }}</b-tag>
+            <b-tag rounded>{{ list.entry.length }}</b-tag>
           </span>
         </template>
-        <p class="box">
-          {{ getStudyFromList(list).description }}
-        </p>
-        <h2 class="subtitle">
-          Rekrutierungsvorschläge
-        </h2>
+        <p class="box">{{ getStudyFromList(list).description }}</p>
+        <h2 class="subtitle">Rekrutierungsvorschläge</h2>
         <ScreeningList :items="list.entry" />
         <p class="has-text-grey">
           Letzte Änderung:
@@ -66,19 +49,20 @@ export default {
   },
   async mounted() {
     let fhirUrl = process.env.VUE_APP_FHIR_URL;
-    if (process.env.NODE_ENV === "production") {
+    if (!fhirUrl) {
       // this is an awkward workaround for FHIR.client not accepting relative paths as valid URLs
       fhirUrl = `${window.location.protocol}//${window.location.host}/fhir`;
     }
+
     try {
       const client = FHIR.client(fhirUrl);
       const screeningLists = await client.request(
         "List?code=http://miracum.org/fhir/CodeSystem/screening-list|screening-recommendations",
         {
           // resolveReferences: ["entry.0.item"],
-          resolveReferences: ["extension.0.valueReference"],
+          resolveReferences: ["extension.0.valueReference", ""],
           flat: true,
-        },
+        }
       );
 
       if (screeningLists.length !== 0) {
@@ -87,14 +71,20 @@ export default {
         // so we need to manually resove the patient references...
         const res = screeningLists.map(async (list) => {
           const newList = list;
-          newList.entry = await Promise.all(
-            list.entry.map(async (entry) => {
-              const newEntry = entry;
-              const patient = client.request(newEntry.item.reference);
-              newEntry.item = await patient;
-              return newEntry;
-            }),
-          );
+          if (newList.entry) {
+            newList.entry = await Promise.all(
+              list.entry.map(async (entry) => {
+                const newEntry = entry;
+                const subject = client.request(newEntry.item.reference, {
+                  // resolveReferences: ["entry.0.item"],
+                  resolveReferences: ["study", "individual"],
+                  flat: true,
+                });
+                newEntry.item = await subject;
+                return newEntry;
+              })
+            );
+          }
           return newList;
         });
         this.screeningLists = await Promise.all(res);
@@ -113,3 +103,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.patient-recommendations {
+  min-height: 100px;
+}
+</style>

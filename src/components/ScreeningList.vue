@@ -1,70 +1,45 @@
 <template>
   <section>
-    <b-table
-      :data="patientData"
-      :loading="isLoading"
-      :mobile-cards="true"
-      sort-icon="menu-up"
-    >
+    <b-table :data="patientData" :loading="isLoading" :mobile-cards="true" sort-icon="menu-up">
       <template slot-scope="props">
-        <b-table-column
-          field="id"
-          label="ID"
-          width="40"
-          sortable
-          numeric
-        >
-          {{ props.row.id }}
-        </b-table-column>
+        <b-table-column field="id" label="ID" width="40" sortable numeric>{{ props.row.id }}</b-table-column>
 
         <b-table-column
           field="name.given"
           label="Vorname"
           sortable
-        >
-          {{ props.row.name ? props.row.name.given.join(" ") : "?" }}
-        </b-table-column>
+        >{{ props.row.name ? props.row.name.given.join(" ") : "?" }}</b-table-column>
 
         <b-table-column
           field="name.family"
           label="Nachname"
           sortable
-        >
-          {{ props.row.name ? props.row.name.family : "?" }}
-        </b-table-column>
+        >{{ props.row.name ? props.row.name.family : "?" }}</b-table-column>
 
-        <b-table-column
-          label="Alter"
-          field="birthDate"
-          sortable
-        >
-          <span>
-            {{ props.row.birthDate ? age(props.row.birthDate) : "?" }}
-          </span>
+        <b-table-column label="Alter" field="birthDate" sortable>
+          <span>{{ props.row.birthDate ? age(props.row.birthDate) : "?" }}</span>
         </b-table-column>
 
         <b-table-column label="Geschlecht">
           <span>
             {{
-              props.row.gender
-                ? props.row.gender === "male"
-                  ? "männlich"
-                  : "weiblich"
-                : "?"
+            props.row.gender
+            ? props.row.gender === "male"
+            ? "männlich"
+            : "weiblich"
+            : "?"
             }}
           </span>
         </b-table-column>
 
-        <b-table-column label="">
+        <b-table-column label>
           <b-button
             type="is-info"
             icon-right="external-link-alt"
             outlined
             tag="a"
             href="#"
-          >
-            Patientenakte öffnen
-          </b-button>
+          >Patientenakte öffnen</b-button>
         </b-table-column>
       </template>
 
@@ -72,10 +47,7 @@
         <section class="section">
           <div class="content has-text-grey has-text-centered">
             <p>
-              <b-icon
-                icon="frown"
-                size="is-large"
-              />
+              <b-icon icon="frown" size="is-large" />
             </p>
             <p>Keine Vorschläge vorhanden.</p>
           </div>
@@ -87,6 +59,7 @@
 
 <script>
 import fhirpath from "fhirpath";
+import Constants from "@/const";
 
 export default {
   name: "ScreeningList",
@@ -105,18 +78,23 @@ export default {
     patientData() {
       return this.items
         .map((entry) => entry.item)
-        .map((patient) => ({
-          id: fhirpath.evaluate(
-            patient,
-            "Patient.identifier.where(system='http://ohdsi.org/omop/fhir/subject-identifier').value",
-          )[0],
-          name: fhirpath.evaluate(
-            patient,
-            "Patient.name.where(use='official').first()",
-          )[0],
-          gender: patient.gender,
-          birthDate: patient.birthDate,
-        }));
+        .map((subject) => {
+          return {
+            id: fhirpath.evaluate(
+              subject,
+              "ResearchSubject.individual.identifier.where(system=%subjectIdSystem).value",
+              {
+                subjectIdSystem: Constants.SYSTEM_SUBJECT_IDENTIFIER,
+              }
+            )[0],
+            name: fhirpath.evaluate(
+              subject,
+              "ResearchSubject.individual.name.first()"
+            )[0],
+            gender: subject.individual.gender,
+            birthDate: subject.individual.birthDate,
+          };
+        });
     },
   },
   methods: {

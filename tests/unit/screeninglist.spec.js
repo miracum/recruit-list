@@ -14,49 +14,21 @@ const factory = (values = {}) => {
 };
 
 describe("ScreeningList.vue", () => {
-  it("uses only the official name for display", () => {
-    const items = [
-      {
-        item: {
-          name: [
-            {
-              use: "old",
-              family: "Old",
-              given: ["Name"],
-              prefix: ["Ms."],
-            },
-            {
-              use: "official",
-              family: "Boyer713",
-              given: ["Candace369"],
-              prefix: ["Ms."],
-            },
-          ],
-        },
-      },
-    ];
-
-    const wrapper = factory({ items });
-
-    const firstNameRow = wrapper.find("td[data-label='Vorname']");
-    expect(firstNameRow.text()).toMatch("Candace369");
-
-    const lastNameRow = wrapper.find("td[data-label='Nachname']");
-    expect(lastNameRow.text()).toMatch("Boyer713");
-  });
-
   it("concatenates multiple given names", () => {
     const items = [
       {
         item: {
-          name: [
-            {
-              use: "official",
-              family: "Boyer713",
-              given: ["A", "B", "C"],
-              prefix: ["Ms."],
-            },
-          ],
+          resourceType: "ResearchSubject",
+          individual: {
+            name: [
+              {
+                use: "official",
+                family: "Boyer713",
+                given: ["A", "B", "C"],
+                prefix: ["Ms."],
+              },
+            ],
+          },
         },
       },
     ];

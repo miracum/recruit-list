@@ -2,15 +2,13 @@ version: "3.7"
 
 services:
   fhir:
-    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:v6.1.0
+    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:v6.4.0
     ports:
-      - "${FHIR_PORT:-9090}:8080"
+      - "8082:8080"
     environment:
       server.address: "http://localhost:8082/fhir"
       subscription.resthook.enabled: "true"
       subscription.websocket.enabled: "false"
-    depends_on:
-      - db
 
   loader:
     image: byrnedo/alpine-curl:0.1.8
@@ -21,9 +19,9 @@ services:
       --max-time 60
       --retry 5
       --retry-delay 10
-      --data "@/data/fhir-sample.json"
+      --data "@/lists.fhir.sample.json"
       http://fhir:8080/fhir
     depends_on:
       - fhir
     volumes:
-      - ./data:/data
+      - ./lists.fhir.sample.json:/lists.fhir.sample.json
