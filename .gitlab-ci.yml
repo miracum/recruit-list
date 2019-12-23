@@ -107,7 +107,7 @@ staging:
   stage: deploy
   extends: .docker_registry
   script:
-    - export IMAGE_TAG=$(cat .VERSION)
+    - export IMAGE_TAG=v$(cat .VERSION)
     - docker-compose -p $CI_PROJECT_NAME
       -f deploy/docker-compose.staging.yml
       pull
