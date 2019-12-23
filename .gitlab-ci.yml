@@ -2,7 +2,8 @@ image: docker:stable
 
 variables:
   DOCKER_REGISTRY: docker.miracum.org
-  IMAGE_PATH: $DOCKER_REGISTRY/uc1-recruit/list
+  PROJECT_PATH: /uc1-recruit/list
+  IMAGE_PATH: $DOCKER_REGISTRY$PROJECT_PATH
 
 .docker_registry:
   before_script:
@@ -10,7 +11,27 @@ variables:
   after_script:
     - docker logout $DOCKER_REGISTRY
 
+.job_defaults:
+  only:
+    - merge_requests
+    - master
+
+include:
+  - project: "devops/ci-templates"
+    file: "/preflight/.tidy-files.yml"
+  - project: "devops/ci-templates"
+    file: "/linting/.yamllint.yml"
+  - project: "devops/ci-templates"
+    file: "/linting/.hadolint.yml"
+  - project: "devops/ci-templates"
+    file: "/linting/.markdownlint.yml"
+  - project: "devops/ci-templates"
+    file: "/versioning/.semantic-release-get-version.yml"
+  - project: "devops/ci-templates"
+    file: "/image-scanning/.trivy-scan.yml"
+
 stages:
+  - preflight
   - lint
   - version
   - build
@@ -18,60 +39,56 @@ stages:
   - release
   - deploy
 
-lint dockerfile:
-  stage: lint
-  image: hadolint/hadolint:latest-debian
-  script:
-    - hadolint Dockerfile
-  except:
-    - tags
+check file tidiness:
+  extends: .job_defaults
 
-determine next version:
-  image: docker.miracum.org/miracum-devops/semantic-release
-  stage: version
-  script:
-    - npx semantic-release --dry-run
-    - test -e .VERSION || echo $(git describe --abbrev=0 --tags | tr -d v) > .VERSION
-  artifacts:
-    paths:
-      - .VERSION
-    expire_in: 1 hour
-  except:
-    - tags
+hadolint:
+  extends: .job_defaults
+
+yamllint:
+  extends: .job_defaults
+
+markdownlint:
+  extends: .job_defaults
+
+get next version:
+  extends: .job_defaults
 
 build:
   stage: build
-  extends: .docker_registry
+  extends:
+    - .docker_registry
+    - .job_defaults
   script:
     - export VERSION=$(cat .VERSION)
+    - export DOCKER_BUILDKIT=1
     - docker build -t $IMAGE_PATH:$CI_COMMIT_SHORT_SHA --build-arg VERSION=$VERSION .
     - docker push $IMAGE_PATH:$CI_COMMIT_SHORT_SHA
-  except:
-    - tags
 
-integration test:
+trivy:
+  extends: .job_defaults
+  allow_failure: true
+  variables:
+    IMAGE_FQN: $DOCKER_REGISTRY$PROJECT_PATH:$CI_COMMIT_SHORT_SHA
+
+unit:
   stage: test
-  image:
-    name: docker/compose:1.25.0
-    entrypoint: ["/bin/sh", "-c"]
-  extends: .docker_registry
+  extends: .job_defaults
   script:
-    - export IMAGE_TAG=$CI_COMMIT_SHORT_SHA
-    - docker-compose -p $CI_PROJECT_NAME-integrationtests -f tests/integration/docker-compose.yml up --abort-on-container-exit
-  after_script:
-    - docker-compose -p $CI_PROJECT_NAME-integrationtests -f tests/integration/docker-compose.yml down --volumes
-  except:
-    - tags
+    - export VERSION=$(cat .VERSION)
+    - export DOCKER_BUILDKIT=1
+    - docker build --build-arg VERSION=$VERSION -f tests/unit/Dockerfile .
+  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
 
-push to harbor:
+push to registry:
   image: docker:git
   stage: release
   extends: .docker_registry
   script:
-    - export IMAGE_TAG=v$(cat .VERSION)
+    - export IMAGE_TAG=$(cat .VERSION)
     - docker pull $IMAGE_PATH:$CI_COMMIT_SHORT_SHA
-    - docker tag $IMAGE_PATH:$CI_COMMIT_SHORT_SHA $IMAGE_PATH:$IMAGE_TAG
-    - docker push $IMAGE_PATH:$IMAGE_TAG
+    - docker tag $IMAGE_PATH:$CI_COMMIT_SHORT_SHA $IMAGE_PATH:v$IMAGE_TAG
+    - docker push $IMAGE_PATH:v$IMAGE_TAG
   only:
     - master
 
@@ -86,13 +103,17 @@ git release:
 staging:
   image:
     name: docker/compose:1.25.0
-    entrypoint: ["/bin/sh", "-c"]
+    entrypoint: [""]
   stage: deploy
   extends: .docker_registry
   script:
-    - export IMAGE_TAG=v$(cat .VERSION)
-    - docker-compose -p staging-$CI_PROJECT_NAME -f deploy/docker-compose.staging.yml --verbose pull
-    - docker-compose -p staging-$CI_PROJECT_NAME -f deploy/docker-compose.staging.yml --verbose up -d
+    - export IMAGE_TAG=$(cat .VERSION)
+    - docker-compose -p $CI_PROJECT_NAME
+      -f deploy/docker-compose.staging.yml
+      pull
+    - docker-compose -p $CI_PROJECT_NAME
+      -f deploy/docker-compose.staging.yml
+      up -d --remove-orphans
   environment:
     name: staging
     url: https://lists.recruit.miracum.org/

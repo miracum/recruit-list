@@ -1,30 +1,43 @@
-# list - The Web-based Screening List
-
-Implemented using VueJS.
-
+# FHIR-based Clinical Trials Registry
 
 ## Project setup
 
-### Install dependencies
-```
+```sh
 npm install
-```
-
-### Start development FHIR server
-
-This automatically seeds the server with the sample data from deploy/data/fhir-sample.json)
-```
-docker-compose -f deploy/docker-compose.dev.yml up
+# starts a FHIR-server preloaded with sample studies @ localhost:8089
+docker-compose -f deploy/docker-compose.dev.yml
 ```
 
 ### Compiles and hot-reloads for development
-```
+
+```sh
 npm run serve
 ```
-You can now access the app @ [http://localhost:8080/](http://localhost:8080/)
 
+### Compiles and minifies for production
 
-## Contributing
+```sh
+npm run build
+```
 
-Commit Messages follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0-beta.4/) specification.
-Running `npm install` automatically installs git hooks which check whether a commit follows the specification before commiting.
+### Run your unit tests
+
+```sh
+npm run test:unit
+```
+
+### Run your end-to-end tests
+
+```sh
+npm run test:e2e
+```
+
+### Lints and fixes files
+
+```sh
+npm run lint
+```
+
+### Customize configuration
+
+See [Configuration Reference](https://cli.vuejs.org/config/).

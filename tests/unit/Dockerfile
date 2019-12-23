@@ -1,6 +1,6 @@
-FROM node:13.1.0-alpine
+FROM node:13.5-alpine
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --no-optional
 COPY . ./
 RUN npm run test:unit

@@ -3,16 +3,22 @@ module.exports = {
   env: {
     node: true,
   },
-  extends: ["plugin:vue/recommended", "@vue/airbnb"],
+  extends: ["plugin:vue/essential", "@vue/airbnb", "prettier"],
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "error" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
-    "import/no-unresolved": 0,
-    "import/no-unassigned-import": 0,
     quotes: ["error", "double"],
-    "linebreak-style": 0,
+    "max-len": "off",
   },
   parserOptions: {
     parser: "babel-eslint",
   },
+  overrides: [
+    {
+      files: ["**/__tests__/*.{j,t}s?(x)", "**/tests/unit/**/*.spec.{j,t}s?(x)"],
+      env: {
+        jest: true,
+      },
+    },
+  ],
 };

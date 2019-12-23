@@ -3,10 +3,7 @@
     <b-navbar>
       <template slot="brand">
         <b-navbar-item href="/">
-          <img
-            src="@/assets/miracum-logo.png"
-            alt="MIRACUM"
-          >
+          <img src="@/assets/miracum-logo.png" alt="MIRACUM" />
         </b-navbar-item>
       </template>
     </b-navbar>
@@ -17,9 +14,7 @@
     </main>
     <footer class="footer">
       <div class="content has-text-centered">
-        <p>
-          {{ version }}
-        </p>
+        <p>{{ version }}</p>
       </div>
     </footer>
   </div>
@@ -44,15 +39,42 @@ $primary-invert: findColorInvert($primary);
 
 // Setup $colors to use as bulma classes (e.g. 'is-twitter')
 $colors: (
-    "white": ($white, $black),
-    "black": ($black, $white),
-    "light": ($light, $light-invert),
-    "dark": ($dark, $dark-invert),
-    "primary": ($primary, $primary-invert),
-    "info": ($info, $info-invert),
-    "success": ($success, $success-invert),
-    "warning": ($warning, $warning-invert),
-    "danger": ($danger, $danger-invert),
+  "white": (
+    $white,
+    $black,
+  ),
+  "black": (
+    $black,
+    $white,
+  ),
+  "light": (
+    $light,
+    $light-invert,
+  ),
+  "dark": (
+    $dark,
+    $dark-invert,
+  ),
+  "primary": (
+    $primary,
+    $primary-invert,
+  ),
+  "info": (
+    $info,
+    $info-invert,
+  ),
+  "success": (
+    $success,
+    $success-invert,
+  ),
+  "warning": (
+    $warning,
+    $warning-invert,
+  ),
+  "danger": (
+    $danger,
+    $danger-invert,
+  ),
 );
 
 // Links
