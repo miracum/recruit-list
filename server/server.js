@@ -9,7 +9,7 @@ const promBundle = require("express-prom-bundle");
 const history = require("connect-history-api-fallback");
 const axios = require("axios");
 
-const FHIR_URL = process.env.FHIR_URL || "http://localhost:8089/fhir";
+const FHIR_URL = process.env.FHIR_URL || "http://localhost:8082/fhir";
 
 const metricsMiddleware = promBundle({
   includeMethod: true,
@@ -67,7 +67,7 @@ app.use(logger("dev"));
 app.use(express.json());
 
 const proxyRequestFilter = (_pathname, req) => {
-  return req.method === "GET";
+  return req.method === "GET" || req.method === "PUT";
 };
 
 app.use(

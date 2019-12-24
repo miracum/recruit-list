@@ -2,7 +2,13 @@
   <section>
     <b-table :data="patientData" :loading="isLoading" :mobile-cards="true" sort-icon="menu-up">
       <template slot-scope="props">
-        <b-table-column field="id" label="ID" width="40" sortable numeric>{{ props.row.id }}</b-table-column>
+        <b-table-column
+          field="patientId"
+          label="ID"
+          width="40"
+          sortable
+          numeric
+        >{{ props.row.patientId }}</b-table-column>
 
         <b-table-column
           field="name.given"
@@ -16,15 +22,15 @@
           sortable
         >{{ props.row.name ? props.row.name.family : "?" }}</b-table-column>
 
-        <b-table-column label="Alter" field="birthDate" sortable>
-          <span>{{ props.row.birthDate ? age(props.row.birthDate) : "?" }}</span>
+        <b-table-column label="Alter" field="subject.individual.birthDate" sortable>
+          <span>{{ props.row.subject.individual.birthDate ? age(props.row.subject.individual.birthDate) : "?" }}</span>
         </b-table-column>
 
         <b-table-column label="Geschlecht">
           <span>
             {{
-            props.row.gender
-            ? props.row.gender === "male"
+            props.row.subject.individual
+            ? props.row.subject.individual.gender === "male"
             ? "männlich"
             : "weiblich"
             : "?"
@@ -32,14 +38,22 @@
           </span>
         </b-table-column>
 
-        <b-table-column label>
-          <b-button
-            type="is-info"
-            icon-right="external-link-alt"
-            outlined
-            tag="a"
-            href="#"
-          >Patientenakte öffnen</b-button>
+        <b-table-column label="Status">
+          <b-field :type="typeFromStatus(props.row.subject.status)">
+            <b-select
+              @input="onStatusSelectionChanged($event, props.row)"
+              placeholder="Status ändern"
+              v-model="props.row.subject.status"
+              type="is-danger"
+              class="recruitment-status-select"
+            >
+              <option
+                v-for="option in recruitmentStatusOptions"
+                :value="option.name"
+                :key="option.name"
+              >{{ option.display }}</option>
+            </b-select>
+          </b-field>
         </b-table-column>
       </template>
 
@@ -68,10 +82,37 @@ export default {
       default: () => [],
       type: Array,
     },
+    fhirClient: {},
   },
   data() {
     return {
       isLoading: false,
+      recruitmentStatusOptions: [
+        {
+          name: "candidate",
+          display: "Möglicher Studienpatient",
+        },
+        {
+          name: "eligible",
+          display: "Erfüllt EA-Kriterien",
+        },
+        {
+          name: "ineligible",
+          display: "Keine Erfüllung der EA-Kriterien",
+        },
+        {
+          name: "on-study",
+          display: "Nimmt an Studie teil",
+        },
+        {
+          name: "screening",
+          display: "Wird gescreent",
+        },
+        {
+          name: "withdrawn",
+          display: "Aus Studie zurückgezogen",
+        },
+      ],
     };
   },
   computed: {
@@ -80,7 +121,8 @@ export default {
         .map((entry) => entry.item)
         .map((subject) => {
           return {
-            id: fhirpath.evaluate(
+            id: subject.id,
+            patientId: fhirpath.evaluate(
               subject,
               "ResearchSubject.individual.identifier.where(system=%subjectIdSystem).value",
               {
@@ -91,8 +133,7 @@ export default {
               subject,
               "ResearchSubject.individual.name.first()"
             )[0],
-            gender: subject.individual.gender,
-            birthDate: subject.individual.birthDate,
+            subject,
           };
         });
     },
@@ -102,6 +143,43 @@ export default {
       const cur = new Date();
       const diff = cur - new Date(birthDate);
       return Math.floor(diff / 31557600000); // Divide by 1000*60*60*24*365.25
+    },
+    typeFromStatus(status) {
+      const lookup = {
+        candidate: "is-info",
+        eligible: "is-success",
+        ineligible: "is-danger",
+        default: "",
+      };
+
+      return lookup[status] || lookup.default;
+    },
+    async onStatusSelectionChanged(event, row) {
+      const updateResource = {
+        id: row.subject.id,
+        resourceType: "ResearchSubject",
+        status: row.subject.status,
+        study: {
+          reference: `ResearchStudy/${row.subject.study.id}`,
+        },
+        individual: {
+          reference: `Patient/${row.subject.individual.id}`,
+        },
+      };
+
+      try {
+        await this.fhirClient.update(updateResource);
+        this.$buefy.toast.open({
+          message: "Rekrutierungsstatus aktualisiert!",
+          type: "is-success",
+        });
+      } catch (exc) {
+        this.$buefy.toast.open({
+          message: `Fehler beim setzen des Rekrutierungsstatus: ${exc.message}.`,
+          type: "is-danger",
+          duration: 15000,
+        });
+      }
     },
   },
 };
