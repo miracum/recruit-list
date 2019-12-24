@@ -12,13 +12,13 @@
       <b-tab-item v-for="(list, index) in screeningLists" :key="index">
         <template slot="header">
           <span>
-            {{ getStudyFromList(list).title }}
+            {{ getStudyAcronymFromList(list) }}
             <b-tag rounded>{{ list.entry.length }}</b-tag>
           </span>
         </template>
-        <p class="box">{{ getStudyFromList(list).description }}</p>
+        <p class="box">{{ getStudyDescriptionFromList(list) }}</p>
         <h2 class="subtitle">Rekrutierungsvorschläge</h2>
-        <ScreeningList :items="list.entry" />
+        <ScreeningList :fhirClient="fhirClient" :items="list.entry" />
         <p class="has-text-grey">
           Letzte Änderung:
           {{ new Date(list.meta.lastUpdated).toLocaleString("de-DE") }}
@@ -30,7 +30,9 @@
 
 <script>
 import FHIR from "fhirclient";
+import fhirpath from "fhirpath";
 import ScreeningList from "@/components/ScreeningList.vue";
+import Constants from "@/const";
 
 export default {
   name: "PatientRecommendations",
@@ -45,6 +47,7 @@ export default {
       isLoading: true,
       noLists: false,
       errorMessage: "",
+      fhirClient: {},
     };
   },
   async mounted() {
@@ -55,9 +58,9 @@ export default {
     }
 
     try {
-      const client = FHIR.client(fhirUrl);
-      const screeningLists = await client.request(
-        "List?code=http://miracum.org/fhir/CodeSystem/screening-list|screening-recommendations",
+      this.fhirClient = FHIR.client(fhirUrl);
+      const screeningLists = await this.fhirClient.request(
+        `List?code=${Constants.SYSTEM_SCREENING_LIST}|screening-recommendations`,
         {
           // resolveReferences: ["entry.0.item"],
           resolveReferences: ["extension.0.valueReference", ""],
@@ -75,11 +78,14 @@ export default {
             newList.entry = await Promise.all(
               list.entry.map(async (entry) => {
                 const newEntry = entry;
-                const subject = client.request(newEntry.item.reference, {
-                  // resolveReferences: ["entry.0.item"],
-                  resolveReferences: ["study", "individual"],
-                  flat: true,
-                });
+                const subject = this.fhirClient.request(
+                  newEntry.item.reference,
+                  {
+                    // resolveReferences: ["entry.0.item"],
+                    resolveReferences: ["study", "individual"],
+                    flat: true,
+                  }
+                );
                 newEntry.item = await subject;
                 return newEntry;
               })
@@ -99,7 +105,18 @@ export default {
     }
   },
   methods: {
-    getStudyFromList: (list) => list.extension[0].valueReference,
+    getStudyAcronymFromList: (list) => {
+      return fhirpath.evaluate(
+        list.extension[0].valueReference,
+        "ResearchStudy.extension.where(url=%acronymSystem).valueString",
+        {
+          acronymSystem: Constants.SYSTEM_STUDY_ACRONYM,
+        }
+      )[0];
+    },
+    getStudyDescriptionFromList: (list) => {
+      return list.extension[0].valueReference.description;
+    },
   },
 };
 </script>
@@ -107,5 +124,6 @@ export default {
 <style scoped>
 .patient-recommendations {
   min-height: 100px;
+  margin-top: 15px;
 }
 </style>

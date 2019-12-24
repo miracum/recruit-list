@@ -5,7 +5,6 @@ FROM base as build
 COPY package*.json ./
 RUN npm ci --no-optional
 COPY . ./
-RUN npm run lint
 ARG VERSION=0.0.0
 ENV VUE_APP_VERSION=${VERSION}
 RUN npm run build

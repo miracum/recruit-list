@@ -1,12 +1,19 @@
 <template>
   <div id="app">
-    <b-navbar>
-      <template slot="brand">
-        <b-navbar-item href="/">
-          <img src="@/assets/miracum-logo.png" alt="MIRACUM" />
-        </b-navbar-item>
-      </template>
-    </b-navbar>
+    <header class="has-background-white">
+      <nav class="navbar container" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+          <a class="navbar-item" href="/">
+            <picture>
+              <source srcset="@/assets/miracum-logo.webp" type="image/webp" />
+              <source srcset="@/assets/miracum-logo.png" type="image/png" />
+              <img src="@/assets/miracum-logo.png" alt="Logo MIRACUM" />
+            </picture>
+            <span class="navbar-item has-text-white">MIRACUM Rekrutierungsvorschläge</span>
+          </a>
+        </div>
+      </nav>
+    </header>
     <main>
       <section class="container">
         <router-view />
@@ -36,6 +43,9 @@ export default {
 // Set your colors
 $primary: #1b2259;
 $primary-invert: findColorInvert($primary);
+
+$success: #00a579;
+$success-invert: findColorInvert($success);
 
 // Setup $colors to use as bulma classes (e.g. 'is-twitter')
 $colors: (
