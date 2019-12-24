@@ -16,8 +16,16 @@
             <b-tag rounded>{{ list.entry.length }}</b-tag>
           </span>
         </template>
-        <p class="box">{{ getStudyDescriptionFromList(list) }}</p>
-        <h2 class="subtitle">Rekrutierungsvorschläge</h2>
+        <b-message type="is-info" aria-close-label="Informationen schließen">
+          <h3 class="title is-6">{{ getStudyFromList(list).title }}</h3>
+          <p>{{ getStudyFromList(list).description }}</p>
+          <ul>
+            <li v-for="(artifact, index) in getStudyFromList(list).relatedArtifact" :key="index">
+              <a :href="artifact.url">{{artifact.display || artifact.label || artifact.url}}</a>
+            </li>
+          </ul>
+        </b-message>
+        <h2 class="title is-5">Rekrutierungsvorschläge</h2>
         <ScreeningList :fhirClient="fhirClient" :items="list.entry" />
         <p class="has-text-grey">
           Letzte Änderung:
@@ -114,8 +122,8 @@ export default {
         }
       )[0];
     },
-    getStudyDescriptionFromList: (list) => {
-      return list.extension[0].valueReference.description;
+    getStudyFromList: (list) => {
+      return list.extension[0].valueReference;
     },
   },
 };
