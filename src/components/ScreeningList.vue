@@ -90,7 +90,7 @@ export default {
       recruitmentStatusOptions: [
         {
           name: "candidate",
-          display: "Möglicher Studienpatient",
+          display: "Rekrutierungsvorschlag",
         },
         {
           name: "eligible",
@@ -98,19 +98,19 @@ export default {
         },
         {
           name: "ineligible",
-          display: "Keine Erfüllung der EA-Kriterien",
+          display: "E/A-Kriterien wurden nicht erfüllt",
         },
         {
           name: "on-study",
-          display: "Nimmt an Studie teil",
+          display: "Wurde eingeschlossen",
         },
         {
           name: "screening",
-          display: "Wird gescreent",
+          display: "Wird geprüft",
         },
         {
           name: "withdrawn",
-          display: "Aus Studie zurückgezogen",
+          display: "Nicht in der Lage oder nicht gewillt teilzunehmen",
         },
       ],
     };
