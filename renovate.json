@@ -9,8 +9,5 @@
       "groupName": "all dependencies",
       "groupSlug": "all"
     }
-  ],
-  "lockFileMaintenance": {
-    "enabled": true
-  }
+  ]
 }
