@@ -5,7 +5,7 @@
 ```sh
 npm install
 # starts a FHIR-server preloaded with sample studies @ localhost:8089
-docker-compose -f deploy/docker-compose.dev.yml
+docker-compose -f deploy/docker-compose.dev.yml up
 ```
 
 ### Compiles and hot-reloads for development
