@@ -23,7 +23,7 @@
     "express-bearer-token": "^2.4.0",
     "express-prom-bundle": "^5.1.5",
     "fhirclient": "^2.1.0",
-    "fhirpath": "^0.17.5",
+    "fhirpath": "^1.0.0",
     "http-proxy-middleware": "^0.20.0",
     "morgan": "^1.9.1",
     "path": "^0.12.7",
@@ -45,7 +45,7 @@
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-vue": "^6.0.1",
-    "husky": "3.1.0",
+    "husky": "4.0.7",
     "node-sass": "^4.13.0",
     "sass-loader": "^8.0.0",
     "vue-template-compiler": "^2.6.10"
