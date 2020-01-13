@@ -82,7 +82,7 @@ unit:
 
 e2e:
   image:
-    name: docker/compose:1.25.0
+    name: docker/compose:1.25.1
     entrypoint: [""]
   stage: test
   extends: .job_defaults
@@ -123,7 +123,7 @@ git release:
 
 staging:
   image:
-    name: docker/compose:1.25.0
+    name: docker/compose:1.25.1
     entrypoint: [""]
   stage: deploy
   extends: .docker_registry
