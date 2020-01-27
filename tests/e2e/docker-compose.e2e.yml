@@ -9,7 +9,7 @@ services:
       - fhir
 
   e2e:
-    image: cypress/included:3.8.2
+    image: cypress/included:3.8.3
     working_dir: /e2e
     depends_on:
       - list
@@ -20,7 +20,7 @@ services:
       - ${E2E_PATH}:/e2e
 
   fhir:
-    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:6.5.0
+    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:v6.5.1
 
   loader:
     image: byrnedo/alpine-curl:0.1.8
