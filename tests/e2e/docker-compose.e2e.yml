@@ -14,7 +14,7 @@ services:
     depends_on:
       - list
     environment:
-      - CYPRESS_baseUrl=http://list:3000/
+      - CYPRESS_baseUrl=http://list:8080/
       - CYPRESS_browser=chrome
     volumes:
       - ${E2E_PATH}:/e2e
