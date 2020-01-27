@@ -25,6 +25,10 @@ const metricsMiddleware = promBundle({
 
 const app = express();
 app.use(bearerToken());
+app.use(logger("dev"));
+app.use(express.json());
+app.use(metricsMiddleware);
+
 app.use((req, res, next) => {
   if (req.path.endsWith("/metrics")) {
     const expectedToken = process.env.METRICS_BEARER_TOKEN;
@@ -45,6 +49,7 @@ app.get("/health", async (_req, res) => {
   try {
     const response = await axios.get(`${FHIR_URL}/metadata`);
     if (response.status !== 200) {
+      debug(`calling FHIR API returned non-OK status code: ${response.status}`);
       return res.status(503).json({
         status: "unhealthy",
         description: `calling FHIR API returned non-OK status code: ${response.status}`,
@@ -55,16 +60,13 @@ app.get("/health", async (_req, res) => {
       description: "application is healthy",
     });
   } catch (error) {
+    debug(`Healthcheck caused error: ${error}`);
     return res.status(503).json({
       status: "unhealthy",
       description: `failed to call api: ${error.code}`,
     });
   }
 });
-
-app.use(metricsMiddleware);
-app.use(logger("dev"));
-app.use(express.json());
 
 const proxyRequestFilter = (_pathname, req) => {
   return req.method === "GET" || req.method === "PUT";

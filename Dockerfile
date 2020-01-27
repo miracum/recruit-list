@@ -19,7 +19,9 @@ COPY package*.json ./
 ENV NODE_ENV=production
 RUN npm ci --no-optional
 
-EXPOSE 3000
+ENV PORT=8080
+EXPOSE 8080
+HEALTHCHECK CMD curl -f http://localhost:8080/health || exit 1
 ENTRYPOINT [ "npm" ]
 CMD ["run", "server:start"]
 
