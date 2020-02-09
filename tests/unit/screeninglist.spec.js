@@ -7,6 +7,7 @@ const factory = (values = {}) => {
   localVue.use(Buefy);
   return mount(ScreeningList, {
     localVue,
+    stubs: ["router-link", "router-view"],
     propsData: {
       ...values,
     },
@@ -14,7 +15,7 @@ const factory = (values = {}) => {
 };
 
 describe("ScreeningList.vue", () => {
-  it("concatenates multiple given names", () => {
+  it("displays gender and birthdate", () => {
     const items = [
       {
         item: {
@@ -28,13 +29,18 @@ describe("ScreeningList.vue", () => {
                 prefix: ["Ms."],
               },
             ],
+            gender: "male",
+            birthDate: "2000-01-01",
           },
         },
       },
     ];
     const wrapper = factory({ items });
 
-    const firstNameRow = wrapper.find("td[data-label='Vorname']");
-    expect(firstNameRow.text()).toMatch("A B C");
+    const genderColumn = wrapper.find("td[data-label='Geschlecht']");
+    expect(genderColumn.text()).toMatch("männlich");
+
+    const birthDateColumn = wrapper.find("td[data-label='Geburtsdatum']");
+    expect(birthDateColumn.text()).toMatch("1.1.2000");
   });
 });

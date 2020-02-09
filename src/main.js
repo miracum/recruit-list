@@ -7,6 +7,7 @@ import router from "./router";
 import App from "./App.vue";
 
 library.add(fas);
+
 Vue.component("vue-fontawesome", FontAwesomeIcon);
 Vue.use(Buefy, {
   defaultIconComponent: "vue-fontawesome",
