@@ -16,16 +16,16 @@
             <b-tag rounded>{{ list.entry.length }}</b-tag>
           </span>
         </template>
-        <b-message type="is-info" aria-close-label="Informationen schließen">
-          <h3 class="title is-6">{{ getStudyFromList(list).title }}</h3>
-          <p>{{ getStudyFromList(list).description }}</p>
+
+        <header class="study-description-header">
+          <h3 class="title is-4">{{ getStudyFromList(list).title }}</h3>
           <ul>
             <li v-for="(artifact, index) in getStudyFromList(list).relatedArtifact" :key="index">
               <a :href="artifact.url">{{artifact.display || artifact.label || artifact.url}}</a>
             </li>
           </ul>
-        </b-message>
-        <h2 class="title is-5">Rekrutierungsvorschläge</h2>
+        </header>
+
         <ScreeningList :fhirClient="fhirClient" :items="list.entry" />
         <p class="has-text-grey">
           Letzte Änderung:
@@ -92,6 +92,7 @@ export default {
                     // resolveReferences: ["entry.0.item"],
                     resolveReferences: ["study", "individual"],
                     flat: true,
+                    pageLimit: 0,
                   }
                 );
                 newEntry.item = await subject;
@@ -133,5 +134,9 @@ export default {
 .patient-recommendations {
   min-height: 100px;
   margin-top: 15px;
+}
+
+.study-description-header {
+  margin-bottom: 1rem;
 }
 </style>

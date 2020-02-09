@@ -1,32 +1,22 @@
 <template>
   <section>
-    <b-table :data="patientData" :loading="isLoading" :mobile-cards="true" sort-icon="menu-up">
+    <div class="field">
+      <b-checkbox v-model="hideSubjectsOnStudy">Bereits rekrutierte Patienten ausblenden</b-checkbox>
+    </div>
+    <b-table
+      :data="filteredSubjects"
+      :loading="isLoading"
+      :mobile-cards="true"
+      sort-icon="menu-up"
+      :striped="true"
+      :hoverable="true"
+    >
       <template slot-scope="props">
-        <b-table-column
-          field="patientId"
-          label="ID"
-          width="40"
-          sortable
-          numeric
-        >{{ props.row.patientId }}</b-table-column>
-
-        <b-table-column
-          field="name.given"
-          label="Vorname"
-          sortable
-        >{{ props.row.name ? props.row.name.given.join(" ") : "?" }}</b-table-column>
-
-        <b-table-column
-          field="name.family"
-          label="Nachname"
-          sortable
-        >{{ props.row.name ? props.row.name.family : "?" }}</b-table-column>
-
-        <b-table-column label="Alter" field="subject.individual.birthDate" sortable>
-          <span>{{ props.row.subject.individual.birthDate ? age(props.row.subject.individual.birthDate) : "?" }}</span>
+        <b-table-column label="Geburtsdatum" field="subject.individual.birthDate" sortable>
+          <span>{{ props.row.subject.individual.birthDate ? new Date(props.row.subject.individual.birthDate).toLocaleString("de-DE").split(",")[0] : "unbekannt" }}</span>
         </b-table-column>
 
-        <b-table-column label="Geschlecht">
+        <b-table-column label="Geschlecht" field="subject.individual.gender" sortable>
           <span>
             {{
             props.row.subject.individual
@@ -38,22 +28,61 @@
           </span>
         </b-table-column>
 
-        <b-table-column label="Status">
-          <b-field :type="typeFromStatus(props.row.subject.status)">
-            <b-select
-              @input="onStatusSelectionChanged($event, props.row)"
-              placeholder="Status ändern"
-              v-model="props.row.subject.status"
-              type="is-danger"
-              class="recruitment-status-select"
+        <b-table-column label="Status" field="subject.status" sortable>
+          <b-dropdown aria-role="list" v-model="props.row.subject.status">
+            <b-button
+              :class="[ 'button', 'recruitment-status-select', getTypeFromStatus(props.row.subject.status) ]"
+              type="button"
+              size="is-small"
+              slot="trigger"
+              icon-right="sort-down"
+            >{{ recruitmentStatusOptions[props.row.subject.status] }}</b-button>
+
+            <b-dropdown-item
+              aria-role="listitem"
+              v-for="option in Object.keys(recruitmentStatusOptions)"
+              :value="option"
+              :key="option"
             >
-              <option
-                v-for="option in recruitmentStatusOptions"
-                :value="option.name"
-                :key="option.name"
-              >{{ option.display }}</option>
-            </b-select>
+              <span class="status-option-container">
+                <b-icon
+                  style
+                  pack="fas"
+                  size="is-small"
+                  icon="circle"
+                  :type="getTypeFromStatus(option)"
+                ></b-icon>
+                <span>{{ recruitmentStatusOptions[option] }}</span>
+              </span>
+            </b-dropdown-item>
+          </b-dropdown>
+        </b-table-column>
+
+        <b-table-column label="Notiz" field="note">
+          <b-field>
+            <b-input type="textarea" v-model="props.row.note"></b-input>
           </b-field>
+        </b-table-column>
+
+        <b-table-column>
+          <div class="buttons">
+            <b-button
+              @click="onSaveRowChanges($event, props.row)"
+              type="is-primary"
+              size="is-small"
+              icon-left="save"
+            >Speichern</b-button>
+            <b-button
+              tag="router-link"
+              :to="{ name: 'researchsubject-history', params: { id: props.row.id } }"
+              type="is-primary"
+              size="is-small"
+              icon-left="history"
+              outlined
+              target="_blank"
+              rel="noopener noreferrer"
+            >Änderungshistorie ansehen</b-button>
+          </div>
         </b-table-column>
       </template>
 
@@ -87,32 +116,14 @@ export default {
   data() {
     return {
       isLoading: false,
-      recruitmentStatusOptions: [
-        {
-          name: "candidate",
-          display: "Rekrutierungsvorschlag",
-        },
-        {
-          name: "eligible",
-          display: "Erfüllt EA-Kriterien",
-        },
-        {
-          name: "ineligible",
-          display: "E/A-Kriterien wurden nicht erfüllt",
-        },
-        {
-          name: "on-study",
-          display: "Wurde eingeschlossen",
-        },
-        {
-          name: "screening",
-          display: "Wird geprüft",
-        },
-        {
-          name: "withdrawn",
-          display: "Nicht in der Lage oder nicht gewillt teilzunehmen",
-        },
-      ],
+      hideSubjectsOnStudy: false,
+      recruitmentStatusOptions: {
+        candidate: "Rekrutierungsvorschlag",
+        screening: "Wird geprüft",
+        ineligible: "Erfüllt E/A-Kriterien nicht",
+        "on-study": "Wurde eingeschlossen",
+        withdrawn: "Nicht gewillt teilzunehmen",
+      },
     };
   },
   computed: {
@@ -134,27 +145,39 @@ export default {
               "ResearchSubject.individual.name.first()"
             )[0],
             subject,
+            note: fhirpath.evaluate(
+              subject,
+              "ResearchSubject.extension.where(url=%noteExtensionUrl).valueString",
+              {
+                noteExtensionUrl: Constants.URL_NOTE_EXTENSION,
+              }
+            )[0],
           };
         });
     },
+    filteredSubjects() {
+      return this.hideSubjectsOnStudy
+        ? this.patientData.filter(
+            (entry) => entry.subject.status !== "on-study"
+          )
+        : this.patientData;
+    },
   },
   methods: {
-    age(birthDate) {
-      const cur = new Date();
-      const diff = cur - new Date(birthDate);
-      return Math.floor(diff / 31557600000); // Divide by 1000*60*60*24*365.25
-    },
-    typeFromStatus(status) {
+    getTypeFromStatus(status) {
       const lookup = {
         candidate: "is-info",
         eligible: "is-success",
         ineligible: "is-danger",
+        withdrawn: "is-dark",
+        "on-study": "is-success",
+        screening: "is-warning",
         default: "",
       };
 
       return lookup[status] || lookup.default;
     },
-    async onStatusSelectionChanged(event, row) {
+    async onSaveRowChanges(event, row) {
       const updateResource = {
         id: row.subject.id,
         resourceType: "ResearchSubject",
@@ -165,6 +188,12 @@ export default {
         individual: {
           reference: `Patient/${row.subject.individual.id}`,
         },
+        extension: [
+          {
+            url: Constants.URL_NOTE_EXTENSION,
+            valueString: row.note,
+          },
+        ],
       };
 
       try {
@@ -185,20 +214,13 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
+.status-option-container > .icon {
+  vertical-align: middle;
+  margin-right: 1rem;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+
+.status-option-container > span {
+  vertical-align: middle;
 }
 </style>
