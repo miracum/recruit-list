@@ -1,4 +1,4 @@
-FROM node:13.7-alpine as base
+FROM node:13.8-alpine as base
 # hadolint ignore=DL3018
 RUN apk --no-cache add curl
 WORKDIR /app
