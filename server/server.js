@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require("path");
 const logger = require("morgan");
-const proxy = require("http-proxy-middleware");
+const { createProxyMiddleware } = require("http-proxy-middleware");
 const debug = require("debug")("server:server");
 const http = require("http");
 const bearerToken = require("express-bearer-token");
@@ -74,7 +74,7 @@ const proxyRequestFilter = (_pathname, req) => {
 
 app.use(
   "^/fhir",
-  proxy(proxyRequestFilter, {
+  createProxyMiddleware(proxyRequestFilter, {
     target: FHIR_URL,
     changeOrigin: true,
     pathRewrite: {
