@@ -20,16 +20,22 @@ COPY package*.json ./
 # tradeoff between image size and build time.
 ENV NODE_ENV=production
 RUN npm ci --no-optional
+USER node
 
+ARG VERSION=0.0.0
+ARG GIT_REF=""
+ARG BUILD_TIME=""
 ENV PORT=8080
 EXPOSE 8080
 HEALTHCHECK CMD curl -f http://localhost:8080/health || exit 1
 ENTRYPOINT [ "npm" ]
 CMD ["run", "server:start"]
 
-LABEL maintainer="miracum.org" \
-    org.label-schema.schema-version="1.0" \
-    org.label-schema.vendor="MIRACUM" \
-    org.label-schema.name="recruit-list" \
-    org.label-schema.description="Web-based screening list for the MIRACUM patient recruitment system." \
-    org.label-schema.vcs-url="https://gitlab.miracum.org/miracum/uc1/recruit/list"
+LABEL org.opencontainers.image.created=${BUILD_TIME} \
+    org.opencontainers.image.authors="miracum.org" \
+    org.opencontainers.image.source="https://gitlab.miracum.org/miracum/uc1/recruit/list" \
+    org.opencontainers.image.version=${VERSION} \
+    org.opencontainers.image.revision=${GIT_REF} \
+    org.opencontainers.image.vendor="miracum.org" \
+    org.opencontainers.image.title="uc1-recruit-list" \
+    org.opencontainers.image.description="Web-based screening list for the MIRACUM patient recruitment system."
