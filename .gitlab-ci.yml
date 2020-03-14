@@ -37,7 +37,6 @@ stages:
   - build
   - test
   - release
-  - deploy
 
 check file tidiness:
   extends: .job_defaults
@@ -122,28 +121,3 @@ git release:
     - npx semantic-release
   only:
     - master
-
-staging:
-  image:
-    name: docker/compose:1.25.4
-    entrypoint: [""]
-  stage: deploy
-  extends: .docker_registry
-  script:
-    - export IMAGE_TAG=v$(cat .VERSION)
-    - docker-compose -p $CI_PROJECT_NAME
-      -f deploy/docker-compose.staging.yml
-      pull
-    - docker-compose -p $CI_PROJECT_NAME
-      -f deploy/docker-compose.staging.yml
-      up -d --remove-orphans
-  environment:
-    name: staging
-    url: https://lists.recruit.miracum.org/
-  only:
-    - master
-  tags:
-    - ume
-    - uc1
-    - recruit
-    - staging
