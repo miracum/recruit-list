@@ -23,7 +23,7 @@ services:
     image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:v6.5.1
 
   loader:
-    image: curlimages/curl:7.69.0
+    image: curlimages/curl:7.69.1
     command: -X POST
       -H "Content-Type:application/json"
       --retry-connrefuse
