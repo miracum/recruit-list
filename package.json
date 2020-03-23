@@ -21,7 +21,7 @@
     "debug": "4.1.1",
     "express": "4.17.1",
     "express-bearer-token": "2.4.0",
-    "express-prom-bundle": "5.1.5",
+    "express-prom-bundle": "6.0.0",
     "fhirclient": "2.3.1",
     "fhirpath": "1.0.2",
     "http-proxy-middleware": "1.0.3",
