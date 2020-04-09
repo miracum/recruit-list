@@ -163,8 +163,10 @@
       }
     },
     {
+      "fullUrl": "List/0",
       "resource": {
         "resourceType": "List",
+        "status": "current",
         "identifier": [
           {
             "system": "http://miracum.org/fhir/screening-list-cohort-identifier",
@@ -208,8 +210,10 @@
       }
     },
     {
+      "fullUrl":"List/1",
       "resource": {
         "resourceType": "List",
+        "status": "current",
         "identifier": [
           {
             "system": "http://miracum.org/fhir/screening-list-cohort-identifier",
