@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   fhir:
-    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:v6.5.1
+    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:v7.2.0
     ports:
       - "8082:8080"
     environment:
@@ -12,8 +12,9 @@ services:
 
   loader:
     image: curlimages/curl:7.69.1
-    command: -X POST
-      -H "Content-Type:application/json"
+    command: >
+      -X POST
+      -H "Content-Type: application/json"
       --retry-connrefuse
       --connect-timeout 10
       --max-time 60
@@ -24,4 +25,4 @@ services:
     depends_on:
       - fhir
     volumes:
-      - ./lists.fhir.sample.json:/lists.fhir.sample.json
+      - ./lists.fhir.sample.json:/lists.fhir.sample.json:ro
