@@ -1,9 +1,5 @@
-FROM node:13.12-alpine as base
-# hadolint ignore=DL3018
-RUN apk --no-cache add curl
+FROM node:13.12 as build
 WORKDIR /app
-
-FROM base as build
 COPY package*.json ./
 RUN npm ci --no-optional
 COPY . ./
@@ -11,7 +7,10 @@ ARG VERSION=0.0.0
 ENV VUE_APP_VERSION=${VERSION}
 RUN npm run build
 
-FROM base as final
+FROM node:13.12-alpine as final
+WORKDIR /app
+# hadolint ignore=DL3018
+RUN apk --no-cache add curl
 COPY --from=build /app/dist dist
 COPY --from=build /app/server server
 COPY package*.json ./
