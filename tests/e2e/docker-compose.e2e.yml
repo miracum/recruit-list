@@ -20,12 +20,13 @@ services:
       - ${E2E_PATH}:/e2e
 
   fhir:
-    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:v6.5.1
+    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:v7.2.0
 
   loader:
     image: curlimages/curl:7.69.1
-    command: -X POST
-      -H "Content-Type:application/json"
+    command: >
+      -X POST
+      -H "Content-Type: application/json"
       --retry-connrefuse
       --retry 30
       --retry-delay 10

@@ -68,7 +68,7 @@ export default {
     try {
       this.fhirClient = FHIR.client(fhirUrl);
       const screeningLists = await this.fhirClient.request(
-        `List?code=${Constants.SYSTEM_SCREENING_LIST}|screening-recommendations`,
+        `List/?code=${Constants.SYSTEM_SCREENING_LIST}|screening-recommendations`,
         {
           // resolveReferences: ["entry.0.item"],
           resolveReferences: ["extension.0.valueReference", ""],

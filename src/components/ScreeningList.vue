@@ -12,8 +12,8 @@
       :hoverable="true"
     >
       <template slot-scope="props">
-        <b-table-column label="Geburtsdatum" field="subject.individual.birthDate" sortable>
-          <span>{{ props.row.subject.individual.birthDate ? new Date(props.row.subject.individual.birthDate).toLocaleString("de-DE").split(",")[0] : "unbekannt" }}</span>
+        <b-table-column label="Geburtsjahr" field="subject.individual.birthDate" sortable>
+          <span>{{ props.row.subject.individual.birthDate ? new Date(props.row.subject.individual.birthDate).getFullYear() : "unbekannt" }}</span>
         </b-table-column>
 
         <b-table-column label="Geschlecht" field="subject.individual.gender" sortable>
@@ -23,7 +23,7 @@
             ? props.row.subject.individual.gender === "male"
             ? "männlich"
             : "weiblich"
-            : "?"
+            : "unbekannt"
             }}
           </span>
         </b-table-column>
@@ -68,6 +68,7 @@
           <div class="buttons">
             <b-button
               @click="onSaveRowChanges($event, props.row)"
+              class="save-status"
               type="is-primary"
               size="is-small"
               icon-left="save"
@@ -133,13 +134,6 @@ export default {
         .map((subject) => {
           return {
             id: subject.id,
-            patientId: fhirpath.evaluate(
-              subject,
-              "ResearchSubject.individual.identifier.where(system=%subjectIdSystem).value",
-              {
-                subjectIdSystem: Constants.SYSTEM_SUBJECT_IDENTIFIER,
-              }
-            )[0],
             name: fhirpath.evaluate(
               subject,
               "ResearchSubject.individual.name.first()"
@@ -178,26 +172,34 @@ export default {
       return lookup[status] || lookup.default;
     },
     async onSaveRowChanges(event, row) {
-      const updateResource = {
-        id: row.subject.id,
-        resourceType: "ResearchSubject",
-        status: row.subject.status,
-        study: {
-          reference: `ResearchStudy/${row.subject.study.id}`,
+      const patch = [
+        {
+          op: "replace",
+          path: "/status",
+          value: row.subject.status,
         },
-        individual: {
-          reference: `Patient/${row.subject.individual.id}`,
-        },
-        extension: [
-          {
-            url: Constants.URL_NOTE_EXTENSION,
-            valueString: row.note,
-          },
-        ],
-      };
+      ];
+
+      if (row.note) {
+        patch.push({
+          op: "add",
+          path: "/extension",
+          value: [
+            {
+              url: Constants.URL_NOTE_EXTENSION,
+              valueString: row.note,
+            },
+          ],
+        });
+      }
 
       try {
-        await this.fhirClient.update(updateResource);
+        await this.fhirClient.request({
+          url: `ResearchSubject/${row.subject.id}`,
+          method: "PATCH",
+          body: JSON.stringify(patch),
+          headers: { "Content-Type": "application/json-patch+json" },
+        });
         this.$buefy.toast.open({
           message: "Rekrutierungsstatus aktualisiert!",
           type: "is-success",

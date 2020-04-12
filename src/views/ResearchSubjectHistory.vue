@@ -29,6 +29,10 @@ export default {
   data() {
     return {
       history: {},
+      noData: false,
+      errorMessage: "",
+      isLoading: false,
+      failedToLoad: false,
     };
   },
   async mounted() {
@@ -45,40 +49,14 @@ export default {
         {
           flat: true,
           pageLimit: 0,
-          resolveReferences: ["entry.ResearchSubject.individual"],
+          resolveReferences: ["individual"],
         }
       );
 
       this.history = subjectHistory;
 
-      if (subjectHistory.length !== 0) {
-        //     // resolveReferences didn't work on item.reference in the screening list
-        //     // it did work when explicitely specifying the index: "entry.0.item"
-        //     // so we need to manually resove the patient references...
-        //     const res = screeningLists.map(async (list) => {
-        //       const newList = list;
-        //       if (newList.entry) {
-        //         newList.entry = await Promise.all(
-        //           list.entry.map(async (entry) => {
-        //             const newEntry = entry;
-        //             const subject = this.fhirClient.request(
-        //               newEntry.item.reference,
-        //               {
-        //                 // resolveReferences: ["entry.0.item"],
-        //                 resolveReferences: ["study", "individual"],
-        //                 flat: true,
-        //               }
-        //             );
-        //             newEntry.item = await subject;
-        //             return newEntry;
-        //           })
-        //         );
-        //       }
-        //       return newList;
-        //     });
-        //     this.screeningLists = await Promise.all(res);
-      } else {
-        this.noLists = true;
+      if (subjectHistory.length === 0) {
+        this.noData = true;
       }
     } catch (exc) {
       this.errorMessage = exc;
