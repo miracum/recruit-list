@@ -40,7 +40,7 @@ describe("ScreeningList.vue", () => {
     const genderColumn = wrapper.find("td[data-label='Geschlecht']");
     expect(genderColumn.text()).toMatch("männlich");
 
-    const birthDateColumn = wrapper.find("td[data-label='Geburtsdatum']");
-    expect(birthDateColumn.text()).toMatch("1.1.2000");
+    const birthDateColumn = wrapper.find("td[data-label='Geburtsjahr']");
+    expect(birthDateColumn.text()).toMatch("2000");
   });
 });
