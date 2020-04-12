@@ -186,7 +186,7 @@
         "code": {
           "coding": [
             {
-              "system": "http://miracum.org/fhir/CodeSystem/screening-list",
+              "system": "https://fhir.miracum.org/uc1/CodeSystem/ScreeningList",
               "code": "screening-recommendations"
             }
           ]
@@ -233,7 +233,7 @@
         "code": {
           "coding": [
             {
-              "system": "http://miracum.org/fhir/CodeSystem/screening-list",
+              "system": "https://fhir.miracum.org/uc1/CodeSystem/ScreeningList",
               "code": "screening-recommendations"
             }
           ]
@@ -274,7 +274,7 @@
         ],
         "extension": [
           {
-            "url": "http://miracum.org/fhir/StructureDefinition/Acronym",
+            "url": "https://fhir.miracum.org/uc1/StructureDefinition/StudyAcronym",
             "valueString": "PROSa"
           }
         ],
@@ -307,7 +307,7 @@
         ],
         "extension": [
           {
-            "url": "http://miracum.org/fhir/StructureDefinition/Acronym",
+            "url": "https://fhir.miracum.org/uc1/StructureDefinition/StudyAcronym",
             "valueString": "AMICA"
           }
         ],
