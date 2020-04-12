@@ -68,6 +68,7 @@
           <div class="buttons">
             <b-button
               @click="onSaveRowChanges($event, props.row)"
+              class="save-status"
               type="is-primary"
               size="is-small"
               icon-left="save"
