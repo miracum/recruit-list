@@ -7,6 +7,7 @@ describe("Recommendations ", () => {
     beforeEach(() => {
       cy.server();
       cy.route("GET", listRequestUrl).as("getList");
+      cy.route("PATCH", "**/ResearchSubject/**").as("patchSubject");
       cy.visit("/recommendations/11", {
         onBeforeLoad: (win) => {
           // eslint-disable-next-line no-param-reassign
@@ -30,6 +31,11 @@ describe("Recommendations ", () => {
         .get(":nth-child(1) > :nth-child(5) > .buttons > .save-status")
         .click();
 
+      cy.wait("@patchSubject", { timeout: 30000 });
+      // hmm, this is not a great workaround, but it seems it takes
+      // some thime for the FHIR server to respond with the updated resource
+      // maybe some sort of caching issue.
+      cy.wait(5000);
       cy.reload();
 
       cy.get(
