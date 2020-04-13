@@ -83,7 +83,7 @@ unit:
 
 e2e:
   image:
-    name: docker/compose:1.25.4
+    name: docker/compose:1.25.5
     entrypoint: [""]
   stage: test
   extends: .job_defaults
