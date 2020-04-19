@@ -175,7 +175,7 @@
         ],
         "extension": [
           {
-            "url": "http://miracum.org/fhir/screening-list-study-reference",
+            "url": "https://fhir.miracum.org/uc1/StructureDefinition/belongsToStudy",
             "valueReference": {
               "reference": "ResearchStudy/0",
               "display": "PROSa"
@@ -210,7 +210,7 @@
       }
     },
     {
-      "fullUrl":"List/1",
+      "fullUrl": "List/1",
       "resource": {
         "resourceType": "List",
         "status": "current",
@@ -222,7 +222,7 @@
         ],
         "extension": [
           {
-            "url": "http://miracum.org/fhir/screening-list-study-reference",
+            "url": "https://fhir.miracum.org/uc1/StructureDefinition/belongsToStudy",
             "valueReference": {
               "reference": "ResearchStudy/1",
               "display": "AMICA"
