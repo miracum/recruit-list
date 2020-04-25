@@ -13,7 +13,7 @@
         <template slot="header">
           <span>
             {{ getStudyAcronymFromList(list) }}
-            <b-tag rounded>{{ list.entry.length }}</b-tag>
+            <b-tag v-if="list.entry" rounded>{{ list.entry.length }}</b-tag>
           </span>
         </template>
 
@@ -114,16 +114,19 @@ export default {
     }
   },
   methods: {
-    getStudyAcronymFromList: (list) => {
-      return fhirpath.evaluate(
-        list.extension[0].valueReference,
+    getStudyAcronymFromList(list) {
+      const study = this.getStudyFromList(list);
+      const acronym = fhirpath.evaluate(
+        study,
         "ResearchStudy.extension.where(url=%acronymSystem).valueString",
         {
           acronymSystem: Constants.SYSTEM_STUDY_ACRONYM,
         }
       )[0];
+
+      return acronym || study.title || study.id;
     },
-    getStudyFromList: (list) => {
+    getStudyFromList(list) {
       return list.extension[0].valueReference;
     },
   },

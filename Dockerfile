@@ -1,4 +1,4 @@
-FROM node:13.13 as build
+FROM node:14.0 as build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --no-optional
@@ -7,7 +7,7 @@ ARG VERSION=0.0.0
 ENV VUE_APP_VERSION=${VERSION}
 RUN npm run build
 
-FROM node:13.13-alpine as final
+FROM node:14.0-alpine as final
 WORKDIR /app
 # hadolint ignore=DL3018
 RUN apk --no-cache add curl
