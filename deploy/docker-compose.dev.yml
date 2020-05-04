@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   fhir:
-    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:7.2.2
+    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:v7.2.3
     ports:
       - "8082:8080"
     environment:
@@ -11,7 +11,7 @@ services:
       subscription.websocket.enabled: "false"
 
   loader:
-    image: curlimages/curl:7.69.1
+    image: curlimages/curl:7.70.0
     command: >
       -X POST
       -H "Content-Type: application/json"
