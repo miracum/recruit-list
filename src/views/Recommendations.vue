@@ -10,11 +10,10 @@
       <b-message v-else-if="noList" type="is-warning">Keine Rekrutierungsvorschläge vorhanden.</b-message>
       <template v-else>
         <header class="study-description-header">
-          <h1 class="title">{{ getStudyAcronymFromList(screeningList) }}</h1>
-          <h3 class="subtitle">{{ getStudyFromList(screeningList).title }}</h3>
+          <h1 class="title is-3">{{ getStudyAcronymFromList(screeningList) }}</h1>
+          <h3 class="subtitle is-5">{{ getStudyFromList(screeningList).title }}</h3>
         </header>
-
-        <ScreeningList :fhirClient="fhirClient" :items="screeningList.entry" />
+        <ScreeningList :items="screeningList.entry" />
         <p class="has-text-grey">
           Letzte Änderung:
           {{ new Date(screeningList.meta.lastUpdated).toLocaleString("de-DE") }}
@@ -25,7 +24,7 @@
 </template>
 
 <script>
-import FHIR from "fhirclient";
+import Api from "@/api";
 import fhirpath from "fhirpath";
 import ScreeningList from "@/components/ScreeningList.vue";
 import Constants from "@/const";
@@ -35,6 +34,9 @@ export default {
   components: {
     ScreeningList,
   },
+  props: {
+    listId: String,
+  },
   data() {
     return {
       screeningList: {},
@@ -42,51 +44,11 @@ export default {
       isLoading: true,
       noList: false,
       errorMessage: "",
-      fhirClient: {},
     };
   },
   async mounted() {
-    let fhirUrl = process.env.VUE_APP_FHIR_URL;
-    if (!fhirUrl) {
-      // this is an awkward workaround for FHIR.client not accepting relative paths as valid URLs
-      fhirUrl = `${window.location.protocol}//${window.location.host}/fhir`;
-    }
-
     try {
-      this.fhirClient = FHIR.client(fhirUrl);
-      const allResources = await this.fhirClient.request(
-        `List/?_id=${this.$route.params.id}&_include=List:item`,
-        {
-          resolveReferences: [
-            "extension.0.valueReference",
-            "individual",
-            "study",
-          ],
-          flat: true,
-        }
-      );
-
-      if (allResources.length === 0) {
-        this.noList = true;
-        return;
-      }
-
-      const list = fhirpath.evaluate(allResources, "List")[0];
-
-      // a manual "resolveReferences" implementation since fhir.js doesn't support
-      // reference resolution on arrays, ie. the List.entry field.
-      // see https://github.com/smart-on-fhir/client-js/issues/73
-      list.entry = list.entry.map((entry) => {
-        // let newEntry = entry;
-        const r = fhirpath.evaluate(
-          allResources,
-          "ResearchSubject.where(id=%subjectId)",
-          {
-            subjectId: entry.item.reference.split("/")[1],
-          }
-        )[0];
-        return { item: r };
-      });
+      const list = await Api.fetchListById(this.listId);
 
       this.screeningList = Object.freeze(list);
     } catch (exc) {
@@ -114,12 +76,7 @@ export default {
 </script>
 
 <style scoped>
-.patient-recommendations {
-  min-height: 100px;
-  margin-top: 15px;
-}
-
 .study-description-header {
-  margin: 1.25rem 0;
+  margin-bottom: 1.25rem;
 }
 </style>

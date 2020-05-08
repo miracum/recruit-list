@@ -12,6 +12,10 @@
       :hoverable="true"
     >
       <template slot-scope="props">
+        <b-table-column label="#" field="subject.individual.id" sortable>
+          <span>{{ props.row.subject.individual.id }}</span>
+        </b-table-column>
+
         <b-table-column label="Geburtsjahr" field="subject.individual.birthDate" sortable>
           <span>{{ props.row.subject.individual.birthDate ? new Date(props.row.subject.individual.birthDate).getFullYear() : "unbekannt" }}</span>
         </b-table-column>
@@ -20,9 +24,9 @@
           <span>
             {{
             props.row.subject.individual
-            ? props.row.subject.individual.gender === "male"
+            ? (props.row.subject.individual.gender === "male"
             ? "männlich"
-            : "weiblich"
+            : "weiblich")
             : "unbekannt"
             }}
           </span>
@@ -64,7 +68,7 @@
           </b-field>
         </b-table-column>
 
-        <b-table-column>
+        <b-table-column label="Aktionen">
           <div class="buttons">
             <b-button
               @click="onSaveRowChanges($event, props.row)"
@@ -75,14 +79,24 @@
             >Speichern</b-button>
             <b-button
               tag="router-link"
-              :to="{ name: 'researchsubject-history', params: { id: props.row.id } }"
+              :to="{ name: 'researchsubject-history', params: { subjectId: props.row.id } }"
               type="is-primary"
               size="is-small"
               icon-left="history"
               outlined
               target="_blank"
               rel="noopener noreferrer"
-            >Änderungshistorie ansehen</b-button>
+            >Änderungshistorie öffnen</b-button>
+            <b-button
+              tag="router-link"
+              :to="{ name: 'patient-record', params: { patientId: props.row.subject.individual.id } }"
+              type="is-primary"
+              size="is-small"
+              icon-left="notes-medical"
+              outlined
+              target="_blank"
+              rel="noopener noreferrer"
+            >Patientenakte öffnen</b-button>
           </div>
         </b-table-column>
       </template>
@@ -104,6 +118,7 @@
 <script>
 import fhirpath from "fhirpath";
 import Constants from "@/const";
+import Api from "@/api";
 
 export default {
   name: "ScreeningList",
@@ -112,7 +127,6 @@ export default {
       default: () => [],
       type: Array,
     },
-    fhirClient: {},
   },
   data() {
     return {
@@ -125,7 +139,11 @@ export default {
         "on-study": "Wurde eingeschlossen",
         withdrawn: "Nicht gewillt teilzunehmen",
       },
+      fhirClient: {},
     };
+  },
+  mounted() {
+    this.fhirClient = Api.getFhirClient();
   },
   computed: {
     patientData() {

@@ -1,62 +1,73 @@
 <template>
   <div class="researchsubject-history">
-    <div class="timeline">
-      <div v-for="(entry, index) in history" :key="index">
-        <div class="history-item">
-          <span class="dot has-background-primary"></span>
-          <p
-            class="history-item-date"
-          >{{ new Date(entry.meta.lastUpdated).toLocaleString("de-DE") }}</p>
-          <p>
-            Status:
-            <strong>{{ translateSubjectStatus(entry.status) }}</strong>
-          </p>
-          <p>Notiz: {{ getHistoryNote(entry) }}</p>
+    <b-loading :active="isLoading" />
+    <template v-if="!isLoading">
+      <b-message v-if="failedToLoad" type="is-danger">
+        Historie konnte nicht geladen werden:
+        <br />
+        <pre>{{ errorMessage }}</pre>
+      </b-message>
+      <template v-else>
+        <header class="has-text-centered">
+          <h1 class="title is-3">Patient {{ subject.id }}</h1>
+          <h2
+            class="subtitle is-5"
+          >geboren {{ new Date(subject.birthDate).getFullYear() }}, {{ subject.gender === "male" ? "männlich" : "weiblich"}}</h2>
+        </header>
+        <div class="timeline">
+          <div v-for="(entry, index) in history" :key="index">
+            <div class="card history-item">
+              <span class="dot has-background-primary"></span>
+              <div class="card-content">
+                <p
+                  class="history-item-date"
+                >{{ new Date(entry.meta.lastUpdated).toLocaleString("de-DE") }}</p>
+                <p>
+                  Status:
+                  <strong>{{ translateSubjectStatus(entry.status) }}</strong>
+                </p>
+                <template v-if="getHistoryNote(entry)">
+                  <p>Notiz:</p>
+                  <pre>{{ getHistoryNote(entry) }}</pre>
+                </template>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </template>
+    </template>
   </div>
 </template>
 
 <script>
-import FHIR from "fhirclient";
 import fhirpath from "fhirpath";
 import Constants from "@/const";
+import Api from "@/api";
 
 export default {
   name: "ResearchSubjectHistory",
   components: {},
+  props: {
+    subjectId: String,
+  },
   data() {
     return {
       history: {},
+      subject: {},
       noData: false,
       errorMessage: "",
-      isLoading: false,
+      isLoading: true,
       failedToLoad: false,
     };
   },
   async mounted() {
-    let fhirUrl = process.env.VUE_APP_FHIR_URL;
-    if (!fhirUrl) {
-      // this is an awkward workaround for FHIR.client not accepting relative paths as valid URLs
-      fhirUrl = `${window.location.protocol}//${window.location.host}/fhir`;
-    }
-
     try {
-      this.fhirClient = FHIR.client(fhirUrl);
-      const subjectHistory = await this.fhirClient.request(
-        `ResearchSubject/${this.$route.params.id}/_history`,
-        {
-          flat: true,
-          pageLimit: 0,
-          resolveReferences: ["individual"],
-        }
-      );
+      this.history = await Api.fetchSubjectHistory(this.subjectId);
 
-      this.history = subjectHistory;
-
-      if (subjectHistory.length === 0) {
+      if (this.history.length === 0) {
         this.noData = true;
+      } else {
+        this.subject = this.history[0].individual;
       }
     } catch (exc) {
       this.errorMessage = exc;
@@ -85,17 +96,13 @@ export default {
 <style scoped>
 .timeline {
   position: relative;
-  border-left: 1px solid black;
+  border-left: 1px solid #1b2259;
 }
 
 .timeline .history-item {
   position: relative;
   left: 20px;
-  box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.2);
-  border-radius: 5px;
-  padding: 10px;
   margin: 10px 0;
-  background-color: #ffffff;
 }
 
 .timeline .history-item .dot {

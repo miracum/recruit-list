@@ -11,28 +11,30 @@ services:
   e2e:
     image: cypress/included:3.8.3
     working_dir: /e2e
-    depends_on:
-      - list
     environment:
       - CYPRESS_baseUrl=http://list:8080/
       - CYPRESS_browser=chrome
+    depends_on:
+      - list
     volumes:
       - ${E2E_PATH}:/e2e
 
   fhir:
     image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:v7.2.3
+    environment:
+      subscription.resthook.enabled: "false"
+      subscription.websocket.enabled: "false"
+      validation.requests.enabled: "false"
 
   loader:
     image: curlimages/curl:7.70.0
     command: >
-      -X POST
-      -H "Content-Type: application/json"
-      --retry-connrefuse
-      --retry 30
-      --retry-delay 10
-      --data "@/fhirbundle.json"
-      http://fhir:8080/fhir
+      ash -c "ls -lisa /sample-data &&
+              curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/sample-data/sample-record-1.json' http://fhir:8080/fhir &&
+              curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/sample-data/sample-record-2.json' http://fhir:8080/fhir &&
+              curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/sample-data/sample-record-3.json' http://fhir:8080/fhir &&
+              curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/sample-data/sample-lists.json' http://fhir:8080/fhir"
+    volumes:
+      - ${E2E_PATH}/deploy/data:/sample-data:ro
     depends_on:
       - fhir
-    volumes:
-      - ${E2E_PATH}/deploy/lists.fhir.sample.json:/fhirbundle.json:ro

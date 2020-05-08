@@ -15,7 +15,7 @@
       </nav>
     </header>
     <main>
-      <section class="container">
+      <section class="container content">
         <router-view />
       </section>
     </main>
@@ -29,7 +29,7 @@
 
 <script>
 export default {
-  name: "PatientRecommendations",
+  name: "App",
   computed: {
     version: () => process.env.VUE_APP_VERSION,
   },
@@ -109,5 +109,6 @@ $link-focus-border: $primary;
 main {
   flex: 1 0 auto;
   width: 100%;
+  margin-top: 15px;
 }
 </style>

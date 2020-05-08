@@ -1,8 +1,10 @@
 import Vue from "vue";
 import Router from "vue-router";
-import PatientRecommendations from "./views/PatientRecommendations.vue";
-import Recommendations from "./views/Recommendations.vue";
-import ResearchSubjectHistory from "./views/ResearchSubjectHistory.vue";
+
+const ScreeningListOverview = () => import("./views/ScreeningListOverview.vue");
+const Recommendations = () => import("./views/Recommendations.vue");
+const ResearchSubjectHistory = () => import("./views/ResearchSubjectHistory.vue");
+const PatientRecord = () => import("./views/PatientRecord.vue");
 
 Vue.use(Router);
 
@@ -12,18 +14,26 @@ export default new Router({
   routes: [
     {
       path: "/",
-      name: "patient-recommendations",
-      component: PatientRecommendations,
+      name: "overview",
+      component: ScreeningListOverview,
     },
     {
-      path: "/recommendations/:id",
+      path: "/recommendations/:listId",
       name: "patient-recommendations-by-id",
       component: Recommendations,
+      props: true,
     },
     {
-      path: "/subjects/:id/history",
+      path: "/subjects/:subjectId/history",
       name: "researchsubject-history",
       component: ResearchSubjectHistory,
+      props: true,
+    },
+    {
+      path: "/patients/:patientId/record",
+      name: "patient-record",
+      component: PatientRecord,
+      props: true,
     },
   ],
 });
