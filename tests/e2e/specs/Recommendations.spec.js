@@ -1,6 +1,6 @@
 // https://docs.cypress.io/api/introduction/api.html
 
-const listRequestUrl = "**/List/?_id=11**";
+const listRequestUrl = "**/List/?_id=788**";
 
 describe("Recommendations ", () => {
   context("after loading recommendations", () => {
@@ -8,7 +8,7 @@ describe("Recommendations ", () => {
       cy.server();
       cy.route("GET", listRequestUrl).as("getList");
       cy.route("PATCH", "**/ResearchSubject/**").as("patchSubject");
-      cy.visit("/recommendations/11", {
+      cy.visit("/recommendations/788", {
         onBeforeLoad: (win) => {
           // eslint-disable-next-line no-param-reassign
           win.fetch = null;

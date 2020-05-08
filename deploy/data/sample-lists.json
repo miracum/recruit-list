@@ -24,7 +24,7 @@
       "request": {
         "method": "POST",
         "url": "Patient",
-        "ifNoneExist": "identifier=http://ohdsi.org/omop/fhir/subject-identifier|1"
+        "ifNoneExist": "identifier=https://github.com/synthetichealth/synthea|bf3d74b1-5abf-4af9-89a3-69ee772bd88f"
       }
     },
     {
@@ -49,7 +49,7 @@
       "request": {
         "method": "POST",
         "url": "Patient",
-        "ifNoneExist": "identifier=http://ohdsi.org/omop/fhir/subject-identifier|2"
+        "ifNoneExist": "identifier=https://github.com/synthetichealth/synthea|be1a04bd-2ecc-4996-a646-bc7ed0b0c4ea"
       }
     },
     {
@@ -74,7 +74,7 @@
       "request": {
         "method": "POST",
         "url": "Patient",
-        "ifNoneExist": "identifier=http://ohdsi.org/omop/fhir/subject-identifier|3"
+        "ifNoneExist": "identifier=https://github.com/synthetichealth/synthea|4399ee58-809f-4ad7-a8ab-309bc4cea8f3"
       }
     },
     {
