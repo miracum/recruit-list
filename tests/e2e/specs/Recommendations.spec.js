@@ -21,14 +21,14 @@ describe("Recommendations ", () => {
       cy.contains("PROSa");
     });
 
-    /* it("can update and save recruitment status", () => {
+    it("can update and save recruitment status", () => {
       cy.get(":nth-child(1) > [data-label='Status'] > .dropdown > .dropdown-trigger > .button")
         .click()
         .get(
           ":nth-child(1) > [data-label='Status'] > .dropdown > .dropdown-menu > .dropdown-content > :nth-child(4)"
         )
         .click()
-        .get(":nth-child(1) > :nth-child(5) > .buttons > .save-status")
+        .get(":nth-child(1) > [data-label='Aktionen'] > .buttons > .save-status")
         .click();
 
       cy.wait("@patchSubject", { timeout: 30000 });
@@ -41,6 +41,6 @@ describe("Recommendations ", () => {
       cy.get(
         ":nth-child(1) > [data-label='Status'] > .dropdown > .dropdown-trigger > .button"
       ).contains("Wurde eingeschlossen");
-    }); */
+    });
   });
 });

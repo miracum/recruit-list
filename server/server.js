@@ -69,7 +69,7 @@ app.get("/health", async (_req, res) => {
 });
 
 const proxyRequestFilter = (_pathname, req) => {
-  return req.method === "GET" || req.method === "PUT";
+  return req.method === "GET" || req.method === "PATCH";
 };
 
 app.use(
