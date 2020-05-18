@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   fhir:
-    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:v7.2.3
+    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:7.2.5
     ports:
       - "8082:8080"
     environment:
