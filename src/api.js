@@ -47,16 +47,18 @@ const actions = {
 
     const list = fhirpath.evaluate(allResources, "List")[0];
 
-    // a manual "resolveReferences" implementation since fhir.js doesn't support
-    // reference resolution on arrays, ie. the List.entry field.
-    // see https://github.com/smart-on-fhir/client-js/issues/73
-    list.entry = list.entry.map((entry) => {
-      // let newEntry = entry;
-      const r = fhirpath.evaluate(allResources, "ResearchSubject.where(id=%subjectId)", {
-        subjectId: entry.item.reference.split("/")[1],
-      })[0];
-      return { item: r };
-    });
+    if (list.entry) {
+      // a manual "resolveReferences" implementation since fhir.js doesn't support
+      // reference resolution on arrays, ie. the List.entry field.
+      // see https://github.com/smart-on-fhir/client-js/issues/73
+      list.entry = list.entry.map((entry) => {
+        // let newEntry = entry;
+        const r = fhirpath.evaluate(allResources, "ResearchSubject.where(id=%subjectId)", {
+          subjectId: entry.item.reference.split("/")[1],
+        })[0];
+        return { item: r };
+      });
+    }
 
     return list;
   },
