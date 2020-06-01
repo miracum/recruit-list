@@ -14,7 +14,11 @@
           <div class="card-content">
             <div class="media">
               <div class="media-left">
-                <b-tag type="is-primary" size="is-large" rounded>{{ list.entry.length }}</b-tag>
+                <b-tag
+                  type="is-primary"
+                  size="is-large"
+                  rounded
+                >{{ list.entry ? list.entry.length : 0 }}</b-tag>
               </div>
               <div class="media-content">
                 <p class="title is-4">{{ getStudyAcronymFromList(list) }}</p>
