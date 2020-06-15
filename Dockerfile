@@ -2,34 +2,29 @@ FROM node:14.4 as build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --no-optional
-COPY . ./
+COPY . .
 ARG VERSION=0.0.0
-ENV VUE_APP_VERSION=${VERSION}
-RUN npm run build
+ENV VUE_APP_VERSION=${VERSION} \
+    NODE_ENV=production
+RUN npm run build && \
+    npm prune --production
 
-FROM node:14.4-alpine as final
-WORKDIR /app
-# hadolint ignore=DL3018
-RUN apk --no-cache add curl
-COPY --from=build /app/dist dist
-COPY --from=build /app/server server
-COPY package*.json ./
-# install again in production mode to avoid copying
-# devDependencies to the final image. This is a
-# tradeoff between image size and build time.
+FROM node:14.4-alpine
 ENV NODE_ENV=production
-RUN npm ci --no-optional
-USER node
+WORKDIR /app
+COPY package*.json ./
+COPY --from=build /app/server server
+COPY --from=build /app/dist dist
+COPY --from=build /app/node_modules node_modules
 
-ARG VERSION=0.0.0
+USER node
+EXPOSE 8080
+HEALTHCHECK CMD wget --quiet --tries=1 --spider http://localhost:8080/health || exit 1
+ENTRYPOINT [ "npm", "run", "server:start"]
+
+ARG VERSION="0.0.0"
 ARG GIT_REF=""
 ARG BUILD_TIME=""
-ENV PORT=8080
-EXPOSE 8080
-HEALTHCHECK CMD curl -f http://localhost:8080/health || exit 1
-ENTRYPOINT [ "npm" ]
-CMD ["run", "server:start"]
-
 LABEL org.opencontainers.image.created=${BUILD_TIME} \
     org.opencontainers.image.authors="miracum.org" \
     org.opencontainers.image.source="https://gitlab.miracum.org/miracum/uc1/recruit/list" \
