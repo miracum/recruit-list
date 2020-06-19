@@ -59,9 +59,10 @@ export default {
     }
   },
   methods: {
-    getStudyAcronymFromList: (list) => {
+    getStudyAcronymFromList(list) {
+      const study = this.getStudyFromList(list);
       return fhirpath.evaluate(
-        list.extension[0].valueReference,
+        study,
         "ResearchStudy.extension.where(url=%acronymSystem).valueString",
         {
           acronymSystem: Constants.SYSTEM_STUDY_ACRONYM,
