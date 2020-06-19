@@ -32,6 +32,24 @@
           </span>
         </b-table-column>
 
+        <b-table-column label="Letzter Aufenthalt">
+          <template v-if="props.row.encounter">
+            <span class="is-size-7 has-text-weight-semibold">
+              {{ new Date(props.row.encounter.period.start).toLocaleDateString() }} -
+              {{ new Date(props.row.encounter.period.end).toLocaleDateString() }}:
+            </span>
+          </template>
+          <br />
+          <address v-if="props.row.location">
+            <span class="has-text-weight-semibold">{{ props.row.location.name }}</span>
+            <br />
+            <span v-for="(telecom, index) in props.row.location.telecom" :key="index">
+              {{telecom.value}}
+              <br />
+            </span>
+          </address>
+        </b-table-column>
+
         <b-table-column label="Status" field="subject.status" sortable>
           <b-dropdown aria-role="list" v-model="props.row.subject.status">
             <b-button
@@ -79,16 +97,6 @@
             >Speichern</b-button>
             <b-button
               tag="router-link"
-              :to="{ name: 'researchsubject-history', params: { subjectId: props.row.id } }"
-              type="is-primary"
-              size="is-small"
-              icon-left="history"
-              outlined
-              target="_blank"
-              rel="noopener noreferrer"
-            >Änderungshistorie öffnen</b-button>
-            <b-button
-              tag="router-link"
               :to="{ name: 'patient-record', params: { patientId: props.row.subject.individual.id } }"
               type="is-primary"
               size="is-small"
@@ -96,7 +104,17 @@
               outlined
               target="_blank"
               rel="noopener noreferrer"
-            >Patientenakte öffnen</b-button>
+            >Patientenakte</b-button>
+            <b-button
+              tag="router-link"
+              :to="{ name: 'researchsubject-history', params: { subjectId: props.row.id } }"
+              type="is-primary"
+              size="is-small"
+              icon-left="history"
+              outlined
+              target="_blank"
+              rel="noopener noreferrer"
+            >Änderungshistorie</b-button>
           </div>
         </b-table-column>
       </template>
@@ -131,31 +149,52 @@ export default {
   data() {
     return {
       isLoading: false,
+      failedToLoad: false,
+      errorMessage: "",
       hideSubjectsOnStudy: false,
       recruitmentStatusOptions: {
         candidate: "Rekrutierungsvorschlag",
         screening: "Wird geprüft",
         ineligible: "Erfüllt E/A-Kriterien nicht",
         "on-study": "Wurde eingeschlossen",
-        withdrawn: "Nicht gewillt teilzunehmen",
+        withdrawn: "Studienteilnahme abgelehnt",
       },
       fhirClient: {},
+      encounterWithLocationLookup: new Map(),
     };
   },
-  mounted() {
-    this.fhirClient = Api.getFhirClient();
+  async mounted() {
+    this.isLoading = true;
+
+    try {
+      this.fhirClient = Api.getFhirClient();
+      const allSubjects = this.items.map((e) => e.item);
+
+      const locationPromise = allSubjects.map(async (subject) => [
+        subject.individual.id,
+        await Api.fetchLatestEncounterWithLocation(subject.individual.id),
+      ]);
+
+      this.encounterWithLocationLookup = new Map(
+        await Promise.all(locationPromise)
+      );
+    } catch (exc) {
+      this.$log.error(exc);
+      this.failedToLoad = true;
+    } finally {
+      this.isLoading = false;
+    }
   },
   computed: {
-    patientData() {
+    patientViewModel() {
       return this.items
         .map((entry) => entry.item)
         .map((subject) => {
+          const latestEncounterAndLocation = this.encounterWithLocationLookup.get(
+            subject.individual.id
+          );
           return {
             id: subject.id,
-            name: fhirpath.evaluate(
-              subject,
-              "ResearchSubject.individual.name.first()"
-            )[0],
             subject,
             note: fhirpath.evaluate(
               subject,
@@ -164,15 +203,20 @@ export default {
                 noteExtensionUrl: Constants.URL_NOTE_EXTENSION,
               }
             )[0],
+            location:
+              latestEncounterAndLocation && latestEncounterAndLocation.location,
+            encounter:
+              latestEncounterAndLocation &&
+              latestEncounterAndLocation.encounter,
           };
         });
     },
     filteredSubjects() {
       return this.hideSubjectsOnStudy
-        ? this.patientData.filter(
+        ? this.patientViewModel.filter(
             (entry) => entry.subject.status !== "on-study"
           )
-        : this.patientData;
+        : this.patientViewModel;
     },
   },
   methods: {

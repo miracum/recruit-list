@@ -11,9 +11,9 @@
     "server:start": "node server/server.js"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "1.2.28",
-    "@fortawesome/free-solid-svg-icons": "5.13.0",
-    "@fortawesome/vue-fontawesome": "0.1.9",
+    "@fortawesome/fontawesome-svg-core": "1.2.29",
+    "@fortawesome/free-solid-svg-icons": "5.13.1",
+    "@fortawesome/vue-fontawesome": "0.1.10",
     "axios": "0.19.2",
     "buefy": "0.8.20",
     "connect-history-api-fallback": "1.6.0",
@@ -29,7 +29,8 @@
     "path": "0.12.7",
     "prom-client": "12.0.0",
     "vue": "2.6.11",
-    "vue-router": "3.3.4"
+    "vue-router": "3.3.4",
+    "vuejs-logger": "1.5.4"
   },
   "devDependencies": {
     "@commitlint/cli": "8.3.5",
