@@ -1,10 +1,12 @@
-# FHIR-based Clinical Trials Registry
+# list
 
-## Project setup
+> The FHIR-based Screening List Module
+
+## Development Setup
 
 ```sh
 npm install
-# starts a FHIR-server preloaded with sample studies @ localhost:8089
+# starts a FHIR-server preloaded with sample studies @ http://localhost:8082/
 docker-compose -f deploy/docker-compose.dev.yml up
 ```
 
