@@ -20,7 +20,7 @@ services:
       - ${E2E_PATH}:/e2e
 
   fhir:
-    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:7.2.5
+    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:8.1.1
     environment:
       subscription.resthook.enabled: "false"
       subscription.websocket.enabled: "false"
@@ -29,12 +29,11 @@ services:
   loader:
     image: curlimages/curl:7.70.0
     command: >
-      ash -c "ls -lisa /sample-data &&
-              curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/sample-data/sample-record-1.json' http://fhir:8080/fhir &&
-              curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/sample-data/sample-record-2.json' http://fhir:8080/fhir &&
-              curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/sample-data/sample-record-3.json' http://fhir:8080/fhir &&
-              curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/sample-data/sample-lists.json' http://fhir:8080/fhir"
+      sh -c "curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/data/sample-record-1.json' http://fhir:8080/fhir &&
+             curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/data/sample-record-2.json' http://fhir:8080/fhir &&
+             curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/data/sample-record-3.json' http://fhir:8080/fhir &&
+             curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/data/sample-lists.json' http://fhir:8080/fhir"
     volumes:
-      - ${E2E_PATH}/deploy/data:/sample-data:ro
+      - ${E2E_PATH}/deploy/data:/data:ro
     depends_on:
       - fhir
