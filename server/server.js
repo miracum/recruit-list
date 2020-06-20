@@ -3,11 +3,11 @@ const path = require("path");
 const logger = require("morgan");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const debug = require("debug")("server:server");
-const http = require("http");
 const bearerToken = require("express-bearer-token");
 const promBundle = require("express-prom-bundle");
 const history = require("connect-history-api-fallback");
 const axios = require("axios");
+const http = require("http");
 
 const FHIR_URL = process.env.FHIR_URL || "http://localhost:8082/fhir";
 
@@ -76,14 +76,19 @@ app.use(
   "^/fhir",
   createProxyMiddleware(proxyRequestFilter, {
     target: FHIR_URL,
-    changeOrigin: true,
+    changeOrigin: false,
     pathRewrite: {
       "^/fhir": "/",
     },
-    //   headers: {
-    //     Authorization:
-    //       process.env.API_BEARER_TOKEN,
-    //   },
+    secure: false,
+    onProxyReq(proxyReq) {
+      // the ApacheProxyAddressStrategy used by HAPI FHIR
+      // constructs the server URL from both the X-Forwarded-Host and X-Forwarded-Port
+      // since the X-Forwarded-Host created by HPM already contains the port (eg. localhost:8443)
+      // the resulting FHIR server URL would end with the port number twice (eg. https://localhost:8443:8443)
+      proxyReq.removeHeader("X-Forwarded-Port");
+    },
+    xfwd: true,
   })
 );
 
