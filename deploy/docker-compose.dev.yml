@@ -9,7 +9,7 @@ services:
       server.address: "http://localhost:8082/fhir"
       subscription.resthook.enabled: "true"
       subscription.websocket.enabled: "false"
-      validation.requests.enabled: "false"
+      validation.requests.enabled: "true"
 
   loader:
     image: curlimages/curl:7.70.0

@@ -6,11 +6,6 @@
       "fullUrl": "Encounter/0",
       "resource": {
         "resourceType": "Encounter",
-        "meta": {
-          "profile": [
-            "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/Encounter/Versorgungsfall"
-          ]
-        },
         "status": "finished",
         "class": {
           "code": "stationaer",
@@ -43,7 +38,7 @@
             "status": "completed",
             "period": {
               "start": "2020-03-13T11:00:00+01:00",
-              "end": "2020-02-13T12:00:00+01:00"
+              "end": "2020-05-11T12:00:00+01:00"
             }
           }
         ],
@@ -61,11 +56,6 @@
       "fullUrl": "Encounter/1",
       "resource": {
         "resourceType": "Encounter",
-        "meta": {
-          "profile": [
-            "https://www.medizininformatik-initiative.de/fhir/core/StructureDefinition/Encounter/Abteilungsfall"
-          ]
-        },
         "status": "finished",
         "class": {
           "code": "ub",
@@ -98,8 +88,8 @@
             },
             "status": "completed",
             "period": {
-              "start": "2020-03-13T10:00:00+01:00",
-              "end": "2020-02-13T11:00:00+01:00"
+              "start": "2020-04-13T10:00:00+01:00",
+              "end": "2020-06-13T11:00:00+01:00"
             }
           },
           {
@@ -108,8 +98,8 @@
             },
             "status": "completed",
             "period": {
-              "start": "2020-03-13T11:00:00+01:00",
-              "end": "2020-02-13T12:00:00+01:00"
+              "start": "2020-02-13T11:00:00+01:00",
+              "end": "2020-04-13T12:00:00+01:00"
             }
           }
         ],
