@@ -8,8 +8,11 @@ const promBundle = require("express-prom-bundle");
 const history = require("connect-history-api-fallback");
 const axios = require("axios");
 const http = require("http");
+const health = require("@cloudnative/health-connect");
 
 const FHIR_URL = process.env.FHIR_URL || "http://localhost:8082/fhir";
+
+const healthcheck = new health.HealthChecker();
 
 const metricsMiddleware = promBundle({
   includeMethod: true,
@@ -29,6 +32,21 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(metricsMiddleware);
 
+const livePromise = () =>
+  new Promise((resolve) => {
+    resolve();
+  });
+const liveCheck = new health.LivenessCheck("is alive", livePromise);
+healthcheck.registerLivenessCheck(liveCheck);
+
+const readyPromise = () => axios.get(`${FHIR_URL}/metadata`);
+const readyCheck = new health.ReadinessCheck("can connect to fhir server", readyPromise);
+healthcheck.registerReadinessCheck(readyCheck);
+
+app.use("/live", health.LivenessEndpoint(healthcheck));
+app.use("/ready", health.ReadinessEndpoint(healthcheck));
+app.use("/health", health.HealthEndpoint(healthcheck));
+
 app.use((req, res, next) => {
   if (req.path.endsWith("/metrics")) {
     const expectedToken = process.env.METRICS_BEARER_TOKEN;
@@ -43,29 +61,6 @@ app.use((req, res, next) => {
     }
   }
   return next();
-});
-
-app.get("/health", async (_req, res) => {
-  try {
-    const response = await axios.get(`${FHIR_URL}/metadata`);
-    if (response.status !== 200) {
-      debug(`calling FHIR API returned non-OK status code: ${response.status}`);
-      return res.status(503).json({
-        status: "unhealthy",
-        description: `calling FHIR API returned non-OK status code: ${response.status}`,
-      });
-    }
-    return res.json({
-      status: "healthy",
-      description: "application is healthy",
-    });
-  } catch (error) {
-    debug(`Healthcheck caused error: ${error}`);
-    return res.status(503).json({
-      status: "unhealthy",
-      description: `failed to call api: ${error.code}`,
-    });
-  }
 });
 
 const proxyRequestFilter = (_pathname, req) => {

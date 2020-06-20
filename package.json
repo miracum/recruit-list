@@ -12,6 +12,7 @@
     "server:debug": "node --nolazy --inspect-brk=9229 server/server.js"
   },
   "dependencies": {
+    "@cloudnative/health-connect": "2.1.0",
     "@fortawesome/fontawesome-svg-core": "1.2.29",
     "@fortawesome/free-solid-svg-icons": "5.13.1",
     "@fortawesome/vue-fontawesome": "0.1.10",
@@ -59,7 +60,7 @@
     }
   },
   "optionalDependencies": {
-    "@vue/cli-plugin-e2e-cypress": "~4.4.0"
+    "@vue/cli-plugin-e2e-cypress": "4.4.0"
   },
   "commitlint": {
     "extends": [
