@@ -82,6 +82,18 @@ app.use(
       // since the X-Forwarded-Host created by HPM already contains the port (eg. localhost:8443)
       // the resulting FHIR server URL would end with the port number twice (eg. https://localhost:8443:8443)
       proxyReq.removeHeader("X-Forwarded-Port");
+
+      const proto = proxyReq.getHeader("X-Forwarded-Proto");
+
+      if (proto) {
+        if (proto.includes("https")) {
+          proxyReq.setHeader("X-Forwarded-Proto", "https");
+        } else {
+          proxyReq.setHeader("X-Forwarded-Proto", "http");
+        }
+      }
+
+      console.log(proxyReq.getHeaders());
     },
     xfwd: true,
   })
