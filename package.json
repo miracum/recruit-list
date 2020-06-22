@@ -35,8 +35,8 @@
     "vuejs-logger": "1.5.4"
   },
   "devDependencies": {
-    "@commitlint/cli": "8.3.5",
-    "@commitlint/config-conventional": "8.3.4",
+    "@commitlint/cli": "9.0.1",
+    "@commitlint/config-conventional": "9.0.1",
     "@vue/cli-plugin-babel": "4.4.4",
     "@vue/cli-plugin-eslint": "4.4.4",
     "@vue/cli-plugin-router": "4.4.4",
