@@ -131,11 +131,8 @@ const actions = {
               `Found Encounter referencing a location with status ${locationEntry.status}`
             );
 
-            // we only return locations that have a telecom set
-            if (location.telecom) {
-              Vue.$log.debug("Found encounter with telecom set");
-              return { encounter, location };
-            }
+            Vue.$log.debug("Found encounter with telecom set");
+            return { encounter, location };
           }
         }
       }
