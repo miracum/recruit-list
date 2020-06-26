@@ -92,8 +92,6 @@ app.use(
           proxyReq.setHeader("X-Forwarded-Proto", "http");
         }
       }
-
-      console.log(proxyReq.getHeaders());
     },
     xfwd: true,
   })
