@@ -26,7 +26,7 @@
     "express-prom-bundle": "6.0.0",
     "fhirclient": "2.3.1",
     "fhirpath": "2.3.0",
-    "http-proxy-middleware": "1.0.4",
+    "http-proxy-middleware": "1.0.5",
     "morgan": "1.10.0",
     "path": "0.12.7",
     "prom-client": "12.0.0",
@@ -35,8 +35,8 @@
     "vuejs-logger": "1.5.4"
   },
   "devDependencies": {
-    "@commitlint/cli": "9.0.1",
-    "@commitlint/config-conventional": "9.0.1",
+    "@commitlint/cli": "9.1.1",
+    "@commitlint/config-conventional": "9.1.1",
     "@vue/cli-plugin-babel": "4.4.6",
     "@vue/cli-plugin-eslint": "4.4.6",
     "@vue/cli-plugin-router": "4.4.6",
@@ -50,7 +50,7 @@
     "eslint-plugin-vue": "6.2.2",
     "husky": "4.2.5",
     "node-sass": "4.14.1",
-    "sass-loader": "9.0.1",
+    "sass-loader": "9.0.2",
     "vue-template-compiler": "2.6.11"
   },
   "husky": {
