@@ -17,7 +17,7 @@ COPY --from=build /app/server server
 COPY --from=build /app/dist dist
 COPY --from=build /app/node_modules node_modules
 
-USER node
+USER 11111
 EXPOSE 8080
 HEALTHCHECK CMD wget --quiet --tries=1 --spider http://localhost:8080/health || exit 1
 ENTRYPOINT [ "npm", "run", "server:start"]
