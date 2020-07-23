@@ -23,7 +23,7 @@
     "debug": "4.1.1",
     "express": "4.17.1",
     "express-bearer-token": "2.4.0",
-    "express-prom-bundle": "6.0.0",
+    "express-prom-bundle": "6.1.0",
     "fhirclient": "2.3.1",
     "fhirpath": "2.3.0",
     "http-proxy-middleware": "1.0.5",
@@ -35,8 +35,8 @@
     "vuejs-logger": "1.5.4"
   },
   "devDependencies": {
-    "@commitlint/cli": "9.1.1",
-    "@commitlint/config-conventional": "9.1.1",
+    "@commitlint/cli": "9.1.2",
+    "@commitlint/config-conventional": "9.1.2",
     "@vue/cli-plugin-babel": "4.4.6",
     "@vue/cli-plugin-eslint": "4.4.6",
     "@vue/cli-plugin-router": "4.4.6",
