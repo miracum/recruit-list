@@ -12,6 +12,9 @@
         <header class="study-description-header">
           <h1 class="title is-3">{{ getStudyAcronymFromList(screeningList) }}</h1>
           <h3 class="subtitle is-5">{{ getStudyFromList(screeningList).title }}</h3>
+          <b-message v-if="screeningList.note" has-icon type="is-warning">
+            <p v-for="(note, index) in screeningList.note" :key="index">{{ note.text }}</p>
+          </b-message>
         </header>
         <ScreeningList :items="screeningList.entry" />
         <p class="has-text-grey">

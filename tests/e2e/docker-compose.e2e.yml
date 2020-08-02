@@ -20,7 +20,7 @@ services:
       - ${E2E_PATH}:/e2e
 
   fhir:
-    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:8.1.1
+    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:v8.1.2
     environment:
       subscription.resthook.enabled: "false"
       subscription.websocket.enabled: "false"
