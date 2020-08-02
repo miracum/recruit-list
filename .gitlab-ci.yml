@@ -25,8 +25,16 @@ e2e:
   extends: .job_defaults
   before_script:
     - export IMAGE_TAG=$CI_COMMIT_SHORT_SHA
+    - export E2E_PATH=/cache/uc1/recruit/$CI_PROJECT_NAME/$CI_JOB_ID
+    - mkdir -p $E2E_PATH
+    - cp -r tests/ $E2E_PATH
+    - cp cypress.json $E2E_PATH
+    - cp -r deploy/ $E2E_PATH
+    - export IMAGE_TAG=$CI_COMMIT_SHORT_SHA
+
   script:
     - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml run loader
     - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml run e2e
   after_script:
     - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml down --remove-orphans
+    - rm -rf /cache/uc1/recruit/$CI_PROJECT_NAME/$CI_JOB_ID
