@@ -357,6 +357,11 @@
             }
           ]
         },
+        "note": [
+          {
+            "text": "Es wurden mehr passende Patienten gefunden als auf dieser Liste dargestellt werden können (insgesamt 3100). Nur die ersten 100 Vorschläge werden angezeigt."
+          }
+        ],
         "entry": [
           {
             "item": {
