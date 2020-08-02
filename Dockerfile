@@ -20,7 +20,8 @@ FROM build AS release
 RUN npm prune --production
 
 FROM base
-ENV NODE_ENV=production
+ENV NODE_ENV=production \
+    NO_UPDATE_NOTIFIER=true
 COPY package*.json ./
 COPY --from=release /app/server server
 COPY --from=release /app/dist dist
