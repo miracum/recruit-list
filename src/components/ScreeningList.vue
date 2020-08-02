@@ -13,7 +13,7 @@
     >
       <template slot-scope="props">
         <b-table-column label="#" field="subject.individual.id" sortable>
-          <span>{{ props.row.subject.individual.id }}</span>
+          <span>{{ props.row.mrNumber || props.row.subject.individual.id }}</span>
         </b-table-column>
 
         <b-table-column label="Geburtsjahr" field="subject.individual.birthDate" sortable>
@@ -181,6 +181,7 @@ export default {
     } catch (exc) {
       this.$log.error(exc);
       this.failedToLoad = true;
+      this.errorMessage = exc.message;
     } finally {
       this.isLoading = false;
     }
@@ -193,8 +194,18 @@ export default {
           const latestEncounterAndLocation = this.encounterWithLocationLookup.get(
             subject.individual.id
           );
+
+          const mrNumber = fhirpath.evaluate(
+            subject.individual,
+            "Patient.identifier.where(type.coding.system=%identifierType and type.coding.code='MR').value",
+            {
+              identifierType: Constants.SYSTEM_IDENTIFIER_TYPE,
+            }
+          )[0];
+
           return {
             id: subject.id,
+            mrNumber,
             subject,
             note: fhirpath.evaluate(
               subject,
@@ -267,6 +278,7 @@ export default {
           type: "is-success",
         });
       } catch (exc) {
+        this.$log.error(exc);
         this.$buefy.toast.open({
           message: `Fehler beim setzen des Rekrutierungsstatus: ${exc.message}.`,
           type: "is-danger",
