@@ -1,4 +1,4 @@
-FROM node:14.5 as build
+FROM node:14.7-alpine as build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --no-optional
@@ -6,16 +6,21 @@ COPY . .
 ARG VERSION=0.0.0
 ENV VUE_APP_VERSION=${VERSION} \
     NODE_ENV=production
-RUN npm run build && \
-    npm prune --production
+RUN npm run build
 
-FROM node:14.5-alpine
+FROM build AS test
+RUN npm run test:unit
+
+FROM build AS release
+RUN npm prune --production
+
+FROM node:14.7-alpine
 ENV NODE_ENV=production
 WORKDIR /app
 COPY package*.json ./
-COPY --from=build /app/server server
-COPY --from=build /app/dist dist
-COPY --from=build /app/node_modules node_modules
+COPY --from=release /app/server server
+COPY --from=release /app/dist dist
+COPY --from=release /app/node_modules node_modules
 
 USER 11111
 EXPOSE 8080
@@ -25,7 +30,8 @@ ENTRYPOINT [ "npm", "run", "server:start"]
 ARG VERSION="0.0.0"
 ARG GIT_REF=""
 ARG BUILD_TIME=""
-LABEL org.opencontainers.image.created=${BUILD_TIME} \
+LABEL maintaner="miracum.org" \
+    org.opencontainers.image.created=${BUILD_TIME} \
     org.opencontainers.image.authors="miracum.org" \
     org.opencontainers.image.source="https://gitlab.miracum.org/miracum/uc1/recruit/list" \
     org.opencontainers.image.version=${VERSION} \
