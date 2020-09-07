@@ -1,13 +1,11 @@
 <template>
   <div class="procedure-list">
     <b-table :data="items" :striped="true" sort-icon="menu-up">
-      <template slot-scope="props">
-        <b-table-column label="Prozedur">{{ props.row.code.text }}</b-table-column>
-        <b-table-column label="Status">{{ props.row.status }}</b-table-column>
-        <b-table-column field="performed" label="Durchgeführt" sortable centered>
-          <b-tag type="is-primary">{{ getPerformed(props.row) }}</b-tag>
-        </b-table-column>
-      </template>
+      <b-table-column v-slot="props" label="Prozedur">{{ props.row.code.text }}</b-table-column>
+      <b-table-column v-slot="props" label="Status">{{ props.row.status }}</b-table-column>
+      <b-table-column v-slot="props" field="performed" label="Durchgeführt" sortable centered>
+        <b-tag type="is-primary">{{ getPerformed(props.row) }}</b-tag>
+      </b-table-column>
       <template slot="empty">
         <section class="section">
           <div class="content has-text-grey has-text-centered">

@@ -1,13 +1,11 @@
 <template>
   <div class="condition-list">
     <b-table :data="items" :striped="true" sort-icon="menu-up">
-      <template slot-scope="props">
-        <b-table-column label="Parameter">{{ props.row.code.text }}</b-table-column>
-        <b-table-column label="Wert">{{ getObservationValue(props.row) }}</b-table-column>
-        <b-table-column label="Gültigkeit" centered>
-          <b-tag type="is-primary">{{ getEffective(props.row) }}</b-tag>
-        </b-table-column>
-      </template>
+      <b-table-column v-slot="props" label="Parameter">{{ props.row.code.text }}</b-table-column>
+      <b-table-column v-slot="props" label="Wert">{{ getObservationValue(props.row) }}</b-table-column>
+      <b-table-column v-slot="props" label="Gültigkeit" centered>
+        <b-tag type="is-primary">{{ getEffective(props.row) }}</b-tag>
+      </b-table-column>
       <template slot="empty">
         <section class="section">
           <div class="content has-text-grey has-text-centered">
