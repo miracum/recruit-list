@@ -12,7 +12,7 @@
       <div v-for="(list, index) in screeningLists" :key="index" class="card">
         <router-link :to="{ name: 'patient-recommendations-by-id', params: { listId: list.id }}">
           <div class="card-content">
-            <div class="media is-vertical-center">
+            <div class="media">
               <div class="media-left">
                 <b-tag
                   type="is-primary"
@@ -21,7 +21,7 @@
                 >{{ list.entry ? list.entry.length : 0 }}</b-tag>
               </div>
               <div class="media-right">
-                <h4 class="title is-4 mb-0">{{ getStudyDisplay(list) }}</h4>
+                <h4 class="title is-4 mb-0">{{ getStudyDisplayFromList(list) }}</h4>
               </div>
             </div>
           </div>
@@ -64,7 +64,7 @@ export default {
     }
   },
   methods: {
-    getStudyDisplay(list) {
+    getStudyDisplayFromList(list) {
       const study = fhirpath.evaluate(
         list,
         "List.extension.where(url=%url).valueReference",
@@ -95,10 +95,5 @@ export default {
 
 .study-description-header {
   margin-bottom: 1rem;
-}
-
-.is-vertical-center {
-  display: flex;
-  align-items: center;
 }
 </style>
