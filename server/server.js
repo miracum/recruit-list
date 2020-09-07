@@ -1,7 +1,5 @@
-const express = require("express");
 const path = require("path");
 const logger = require("morgan");
-const { createProxyMiddleware } = require("http-proxy-middleware");
 const debug = require("debug")("server:server");
 const bearerToken = require("express-bearer-token");
 const promBundle = require("express-prom-bundle");
@@ -9,8 +7,33 @@ const history = require("connect-history-api-fallback");
 const axios = require("axios");
 const http = require("http");
 const health = require("@cloudnative/health-connect");
+const { createProxyMiddleware } = require("http-proxy-middleware");
+const { NodeTracerProvider } = require("@opentelemetry/node");
+const { BatchSpanProcessor } = require("@opentelemetry/tracing");
+const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
+const { JaegerHttpTracePropagator } = require("@opentelemetry/propagator-jaeger");
 
-const FHIR_URL = process.env.FHIR_URL || "http://localhost:8082/fhir";
+// Use Jaeger propagator
+const provider = new NodeTracerProvider({
+  plugins: {
+    express: {
+      enabled: true,
+      path: "@opentelemetry/plugin-express",
+    },
+    http: {
+      path: "@opentelemetry/plugin-http",
+      ignoreIncomingPaths: ["/live", "/health", "/ready", "/js", "/css", "/img"],
+    },
+  },
+  propagator: new JaegerHttpTracePropagator(),
+});
+const exporter = new JaegerExporter({
+  serviceName: "screeninglist",
+});
+provider.addSpanProcessor(new BatchSpanProcessor(exporter));
+provider.register();
+
+const express = require("express");
 
 const healthcheck = new health.HealthChecker();
 
@@ -38,6 +61,8 @@ const livePromise = () =>
   });
 const liveCheck = new health.LivenessCheck("is alive", livePromise);
 healthcheck.registerLivenessCheck(liveCheck);
+
+const FHIR_URL = process.env.FHIR_URL || "http://localhost:8082/fhir";
 
 const readyPromise = () => axios.get(`${FHIR_URL}/metadata`);
 const readyCheck = new health.ReadinessCheck("can connect to fhir server", readyPromise);
@@ -93,6 +118,7 @@ app.use(
         }
       }
     },
+    onProxyRes(_proxyRes, _req, _res) {},
     xfwd: true,
   })
 );
