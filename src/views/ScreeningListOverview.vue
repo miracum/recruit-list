@@ -20,9 +20,8 @@
                   rounded
                 >{{ list.entry ? list.entry.length : 0 }}</b-tag>
               </div>
-              <div class="media-content">
-                <p class="title is-4">{{ getStudyAcronymFromList(list) }}</p>
-                <p class="subtitle is-6">{{ getStudyFromList(list).title }}</p>
+              <div class="media-right">
+                <h4 class="title is-4 mb-0">{{ getStudyDisplayFromList(list) }}</h4>
               </div>
             </div>
           </div>
@@ -65,8 +64,15 @@ export default {
     }
   },
   methods: {
-    getStudyAcronymFromList(list) {
-      const study = this.getStudyFromList(list);
+    getStudyDisplayFromList(list) {
+      const study = fhirpath.evaluate(
+        list,
+        "List.extension.where(url=%url).valueReference",
+        {
+          url: Constants.URL_LIST_BELONGS_TO_STUDY_EXTENSION,
+        }
+      )[0];
+
       const acronym = fhirpath.evaluate(
         study,
         "ResearchStudy.extension.where(url=%acronymSystem).valueString",
@@ -75,10 +81,7 @@ export default {
         }
       )[0];
 
-      return acronym || study.title || study.id;
-    },
-    getStudyFromList(list) {
-      return list.extension[0].valueReference;
+      return acronym || study.title || study.description;
     },
   },
 };

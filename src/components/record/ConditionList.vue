@@ -1,15 +1,25 @@
 <template>
   <div class="condition-list">
     <b-table :data="items" :striped="true" sort-icon="menu-up">
-      <template slot-scope="props">
-        <b-table-column label="Diagnose">{{ props.row.code.text }}</b-table-column>
-        <b-table-column field="onsetDateTime" label="Krankheitsbeginn" sortable centered>
-          <b-tag type="is-primary">{{ new Date(props.row.onsetDateTime).toLocaleDateString() }}</b-tag>
-        </b-table-column>
-        <b-table-column field="recordedDate" label="Dokumentationszeitpunkt" sortable centered>
-          <b-tag type="is-primary">{{ new Date(props.row.recordedDate).toLocaleDateString() }}</b-tag>
-        </b-table-column>
-      </template>
+      <b-table-column v-slot="props" label="Diagnose">{{ props.row.code.text }}</b-table-column>
+      <b-table-column
+        v-slot="props"
+        field="onsetDateTime"
+        label="Krankheitsbeginn"
+        sortable
+        centered
+      >
+        <b-tag type="is-primary">{{ new Date(props.row.onsetDateTime).toLocaleDateString() }}</b-tag>
+      </b-table-column>
+      <b-table-column
+        v-slot="props"
+        field="recordedDate"
+        label="Dokumentationszeitpunkt"
+        sortable
+        centered
+      >
+        <b-tag type="is-primary">{{ new Date(props.row.recordedDate).toLocaleDateString() }}</b-tag>
+      </b-table-column>
       <template slot="empty">
         <section class="section">
           <div class="content has-text-grey has-text-centered">

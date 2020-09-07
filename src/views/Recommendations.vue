@@ -10,8 +10,7 @@
       <b-message v-else-if="noList" type="is-warning">Keine Rekrutierungsvorschläge vorhanden.</b-message>
       <template v-else>
         <header class="study-description-header">
-          <h1 class="title is-3">{{ getStudyAcronymFromList(screeningList) }}</h1>
-          <h3 class="subtitle is-5">{{ getStudyFromList(screeningList).title }}</h3>
+          <h1 class="title is-3">{{ getStudyDisplayFromList(screeningList) }}</h1>
           <b-message v-if="screeningList.note" has-icon type="is-warning">
             <p v-for="(note, index) in screeningList.note" :key="index">{{ note.text }}</p>
           </b-message>
@@ -62,18 +61,24 @@ export default {
     }
   },
   methods: {
-    getStudyAcronymFromList(list) {
-      const study = this.getStudyFromList(list);
-      return fhirpath.evaluate(
+    getStudyDisplayFromList(list) {
+      const study = fhirpath.evaluate(
+        list,
+        "List.extension.where(url=%url).valueReference",
+        {
+          url: Constants.URL_LIST_BELONGS_TO_STUDY_EXTENSION,
+        }
+      )[0];
+
+      const acronym = fhirpath.evaluate(
         study,
         "ResearchStudy.extension.where(url=%acronymSystem).valueString",
         {
           acronymSystem: Constants.SYSTEM_STUDY_ACRONYM,
         }
       )[0];
-    },
-    getStudyFromList: (list) => {
-      return list.extension[0].valueReference;
+
+      return acronym || study.title || study.description;
     },
   },
 };
