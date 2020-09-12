@@ -86,7 +86,7 @@
         </b-field>
       </b-table-column>
       <b-table-column label="Aktionen" v-slot="props">
-        <ul>
+        <ul class="buttons">
           <li>
             <b-button
               @click="onSaveRowChanges($event, props.row)"

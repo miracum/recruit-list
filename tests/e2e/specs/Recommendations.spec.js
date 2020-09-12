@@ -28,7 +28,7 @@ describe("Recommendations ", () => {
           ":nth-child(1) > [data-label='Status'] > .dropdown > .dropdown-menu > .dropdown-content > :nth-child(4)"
         )
         .click()
-        .get(":nth-child(1) > [data-label='Aktionen'] > .buttons > .save-status")
+        .get(":nth-child(1) > [data-label='Aktionen'] > .buttons > li > .save-status")
         .click();
 
       cy.wait("@patchSubject", { timeout: 30000 });
