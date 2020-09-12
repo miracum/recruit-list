@@ -10,10 +10,7 @@ ENV VUE_APP_VERSION=${VERSION} \
     NODE_ENV=production
 RUN npm run build
 
-FROM base AS test
-COPY package*.json ./
-RUN npm ci --no-optional
-COPY . .
+FROM build AS test
 RUN npm run test:unit
 
 FROM build AS release
