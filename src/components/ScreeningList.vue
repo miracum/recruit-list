@@ -16,22 +16,18 @@
       </b-table-column>
 
       <b-table-column
-        label="Geburtsjahr"
+        label="Demografie"
         field="subject.individual.birthDate"
         v-slot="props"
         sortable
       >
-        <span>{{ props.row.subject.individual.birthDate ? new Date(props.row.subject.individual.birthDate).getFullYear() : "unbekannt" }}</span>
-      </b-table-column>
-
-      <b-table-column label="Geschlecht" field="subject.individual.gender" v-slot="props" sortable>
         <span>
-          {{
+          geb. {{ props.row.subject.individual.birthDate ? new Date(props.row.subject.individual.birthDate).getFullYear() : "unbekannt" }}, {{
           props.row.subject.individual
           ? (props.row.subject.individual.gender === "male"
-          ? "männlich"
-          : "weiblich")
-          : "unbekannt"
+          ? "m"
+          : "w")
+          : "u"
           }}
         </span>
       </b-table-column>
@@ -42,8 +38,8 @@
             {{ new Date(props.row.encounter.period.start).toLocaleDateString() }} -
             {{ new Date(props.row.encounter.period.end).toLocaleDateString() }}:
           </span>
+          <br />
         </template>
-        <br />
         <address v-if="props.row.location">
           <span class="has-text-weight-semibold">{{ props.row.location.name }}</span>
           <br />
@@ -90,35 +86,41 @@
         </b-field>
       </b-table-column>
       <b-table-column label="Aktionen" v-slot="props">
-        <div class="buttons">
-          <b-button
-            @click="onSaveRowChanges($event, props.row)"
-            class="save-status"
-            type="is-primary"
-            size="is-small"
-            icon-left="save"
-          >Speichern</b-button>
-          <b-button
-            tag="router-link"
-            :to="{ name: 'patient-record', params: { patientId: props.row.subject.individual.id } }"
-            type="is-primary"
-            size="is-small"
-            icon-left="notes-medical"
-            outlined
-            target="_blank"
-            rel="noopener noreferrer"
-          >Patientenakte</b-button>
-          <b-button
-            tag="router-link"
-            :to="{ name: 'researchsubject-history', params: { subjectId: props.row.id } }"
-            type="is-primary"
-            size="is-small"
-            icon-left="history"
-            outlined
-            target="_blank"
-            rel="noopener noreferrer"
-          >Änderungshistorie</b-button>
-        </div>
+        <ul class="buttons">
+          <li>
+            <b-button
+              @click="onSaveRowChanges($event, props.row)"
+              class="save-status"
+              type="is-primary"
+              size="is-small"
+              icon-left="save"
+            >Speichern</b-button>
+          </li>
+          <li>
+            <b-button
+              tag="router-link"
+              :to="{ name: 'patient-record', params: { patientId: props.row.subject.individual.id } }"
+              type="is-primary"
+              size="is-small"
+              icon-left="notes-medical"
+              outlined
+              target="_blank"
+              rel="noopener noreferrer"
+            >Patientenakte</b-button>
+          </li>
+          <li>
+            <b-button
+              tag="router-link"
+              :to="{ name: 'researchsubject-history', params: { subjectId: props.row.id } }"
+              type="is-primary"
+              size="is-small"
+              icon-left="history"
+              outlined
+              target="_blank"
+              rel="noopener noreferrer"
+            >Änderungshistorie</b-button>
+          </li>
+        </ul>
       </b-table-column>
 
       <template slot="empty">
@@ -300,5 +302,11 @@ export default {
 
 .status-option-container > span {
   vertical-align: middle;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
 </style>

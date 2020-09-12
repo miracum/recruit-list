@@ -9,7 +9,7 @@
       </b-message>
       <template v-else>
         <header class="has-text-centered">
-          <h1 class="title is-3">Patient {{ subject.id }}</h1>
+          <h1 class="title is-3">Patient {{ mrNumber || subject.id }}</h1>
           <h2
             class="subtitle is-5"
           >geboren {{ new Date(subject.birthDate).getFullYear() }}, {{ subject.gender === "male" ? "männlich" : "weiblich"}}</h2>
@@ -75,6 +75,19 @@ export default {
     } finally {
       this.isLoading = false;
     }
+  },
+  computed: {
+    mrNumber() {
+      const mrNumber = fhirpath.evaluate(
+        this.subject,
+        "Patient.identifier.where(type.coding.system=%identifierType and type.coding.code='MR').value",
+        {
+          identifierType: Constants.SYSTEM_IDENTIFIER_TYPE,
+        }
+      )[0];
+
+      return mrNumber;
+    },
   },
   methods: {
     getHistoryNote(researchSubject) {
