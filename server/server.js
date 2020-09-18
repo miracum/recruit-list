@@ -7,19 +7,28 @@ const history = require("connect-history-api-fallback");
 const axios = require("axios");
 const http = require("http");
 const health = require("@cloudnative/health-connect");
+const helmet = require("helmet");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const { NodeTracerProvider } = require("@opentelemetry/node");
 const { BatchSpanProcessor } = require("@opentelemetry/tracing");
 const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
 const { JaegerHttpTracePropagator } = require("@opentelemetry/propagator-jaeger");
 
-const [keycloakUrl, keycloakClientId, keycloakRealm] = [
+let [authUrl, authClientId, authRealm] = [
   process.env.KEYCLOAK_AUTH_URL,
   process.env.KEYCLOAK_CLIENT_ID,
   process.env.KEYCLOAK_REALM,
 ];
 
-if (!keycloakClientId || !keycloakUrl || !keycloakRealm) {
+if (process.env.NODE_ENV !== "production") {
+  [authUrl, authClientId, authRealm] = [
+    "http://localhost:8083/auth",
+    "uc1-screeninglist",
+    "MIRACUM",
+  ];
+}
+
+if (!authUrl || !authClientId || !authRealm) {
   console.error("Error: Keycloak not configured.");
   process.exit(1);
 }
@@ -63,6 +72,11 @@ const metricsMiddleware = promBundle({
 });
 
 const app = express();
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
 app.use(bearerToken());
 app.use(logger("dev"));
 app.use(express.json());
@@ -138,9 +152,9 @@ app.use(
 
 app.get("/config", (_req, res) =>
   res.json({
-    authClientId: keycloakClientId,
-    authUrl: keycloakUrl,
-    authRealm: keycloakRealm,
+    authClientId,
+    authUrl,
+    authRealm,
   })
 );
 

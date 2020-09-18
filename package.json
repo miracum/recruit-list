@@ -9,11 +9,12 @@
     "test:e2e": "vue-cli-service test:e2e --mode e2e",
     "lint": "vue-cli-service lint",
     "server:debug": "node --nolazy --inspect-brk=9229 server/server.js",
-    "server:start": "node server/server.js"
+    "server:start": "node server/server.js",
+    "server:watch": "nodemon --watch server/server.js"
   },
   "dependencies": {
     "@cloudnative/health-connect": "2.1.0",
-    "@dsb-norge/vue-keycloak-js": "^1.2.0",
+    "@dsb-norge/vue-keycloak-js": "1.2.0",
     "@fortawesome/fontawesome-svg-core": "1.2.30",
     "@fortawesome/free-solid-svg-icons": "5.14.0",
     "@fortawesome/vue-fontawesome": "2.0.0",
@@ -35,6 +36,7 @@
     "express-prom-bundle": "6.1.0",
     "fhirclient": "2.3.5",
     "fhirpath": "2.5.0",
+    "helmet": "4.1.1",
     "http-proxy-middleware": "1.0.5",
     "morgan": "1.10.0",
     "path": "0.12.7",
@@ -54,7 +56,7 @@
     "@vue/eslint-config-airbnb": "5.1.0",
     "@vue/test-utils": "1.1.0",
     "babel-eslint": "10.1.0",
-    "cypress-keycloak": "^1.5.0",
+    "cypress-keycloak": "1.5.0",
     "eslint": "7.9.0",
     "eslint-config-prettier": "6.11.0",
     "eslint-plugin-vue": "6.2.2",
