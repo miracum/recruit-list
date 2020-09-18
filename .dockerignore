@@ -3,6 +3,7 @@
 !tests/unit
 !server
 !public
+public/config
 !package*.json
 !*.js
 !.prettierrc

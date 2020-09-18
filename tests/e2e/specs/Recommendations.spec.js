@@ -1,8 +1,12 @@
 // https://docs.cypress.io/api/introduction/api.html
+import oidcConfig from "../fixtures/keycloak";
 
 const listRequestUrl = "**/List/?_id=**";
 
 describe("Recommendations ", () => {
+  beforeEach(() => {
+    cy.login(oidcConfig);
+  });
   context("after loading recommendations", () => {
     beforeEach(() => {
       cy.server();
@@ -28,7 +32,7 @@ describe("Recommendations ", () => {
           ":nth-child(1) > [data-label='Status'] > .dropdown > .dropdown-menu > .dropdown-content > :nth-child(4)"
         )
         .click()
-        .get(":nth-child(1) > [data-label='Aktionen'] > .buttons > li > .save-status")
+        .get(":nth-child(1) > [data-label='Aktionen'] .save-status")
         .click();
 
       cy.wait("@patchSubject", { timeout: 30000 });

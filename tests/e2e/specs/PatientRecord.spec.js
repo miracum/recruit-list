@@ -1,8 +1,12 @@
 // https://docs.cypress.io/api/introduction/api.html
+import oidcConfig from "../fixtures/keycloak";
 
 const patientRequestUrl = "**/Patient/**";
 
 describe("PatientRecord", () => {
+  beforeEach(() => {
+    cy.login(oidcConfig);
+  });
   context("after loading lists from server", () => {
     beforeEach(() => {
       cy.server();

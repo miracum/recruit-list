@@ -8,13 +8,13 @@ const PatientRecord = () => import("./views/PatientRecord.vue");
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   mode: "history",
   base: process.env.BASE_URL,
   routes: [
     {
       path: "/",
-      name: "overview",
+      name: "recommendations",
       component: ScreeningListOverview,
     },
     {
@@ -37,3 +37,5 @@ export default new Router({
     },
   ],
 });
+
+export default router;

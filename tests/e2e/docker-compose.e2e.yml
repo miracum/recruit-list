@@ -5,19 +5,24 @@ services:
     image: docker.miracum.org/uc1-recruit/list:${IMAGE_TAG}
     environment:
       - FHIR_URL=http://fhir:8080/fhir
+      - KEYCLOAK_CLIENT_ID=uc1-screeninglist
+      - KEYCLOAK_REALM=MIRACUM
+      - KEYCLOAK_AUTH_URL=http://keycloak:8080/auth
     depends_on:
       - fhir
+      - keycloak
 
   e2e:
-    image: cypress/included:3.8.3
+    image: docker.miracum.org/uc1-recruit/list/ci/cypress:3.8.3
     working_dir: /e2e
     environment:
-      - CYPRESS_baseUrl=http://list:8080/
-      - CYPRESS_browser=chrome
+      - CYPRESS_BASE_URL=http://list:8080/
+      - CYPRESS_BROWSER=chrome
+      - CYPRESS_KEYCLOAK=http://keycloak:8080
     depends_on:
       - list
     volumes:
-      - ${E2E_PATH}:/e2e
+      - ${PWD}:/e2e
 
   fhir:
     image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:v8.1.3
@@ -34,6 +39,19 @@ services:
              curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/data/sample-record-3.json' http://fhir:8080/fhir &&
              curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/data/sample-lists.json' http://fhir:8080/fhir"
     volumes:
-      - ${E2E_PATH}/deploy/data:/data:ro
+      - ${PWD}/deploy/data:/data:ro
     depends_on:
       - fhir
+      - keycloak
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:11.0.2
+    command:
+      - -Dkeycloak.migration.action=import
+      - -Dkeycloak.migration.provider=singleFile
+      - -Dkeycloak.migration.file=/tmp/realm.json
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+    volumes:
+      - ${PWD}/deploy/data/aio-export.json:/tmp/realm.json:ro
