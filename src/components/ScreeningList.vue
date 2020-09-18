@@ -86,8 +86,8 @@
         </b-field>
       </b-table-column>
       <b-table-column label="Aktionen" v-slot="props">
-        <ul class="buttons">
-          <li>
+        <div class="columns is-desktop is-1 is-variable">
+          <div class="column">
             <b-button
               @click="onSaveRowChanges($event, props.row)"
               class="save-status"
@@ -95,8 +95,8 @@
               size="is-small"
               icon-left="save"
             >Speichern</b-button>
-          </li>
-          <li>
+          </div>
+          <div class="column">
             <b-button
               tag="router-link"
               :to="{ name: 'patient-record', params: { patientId: props.row.subject.individual.id } }"
@@ -107,8 +107,8 @@
               target="_blank"
               rel="noopener noreferrer"
             >Patientenakte</b-button>
-          </li>
-          <li>
+          </div>
+          <div class="column">
             <b-button
               tag="router-link"
               :to="{ name: 'researchsubject-history', params: { subjectId: props.row.id } }"
@@ -119,8 +119,8 @@
               target="_blank"
               rel="noopener noreferrer"
             >Änderungshistorie</b-button>
-          </li>
-        </ul>
+          </div>
+        </div>
       </b-table-column>
 
       <template slot="empty">
@@ -302,11 +302,5 @@ export default {
 
 .status-option-container > span {
   vertical-align: middle;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
 }
 </style>

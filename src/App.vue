@@ -9,8 +9,20 @@
               <source srcset="@/assets/miracum-logo.png" type="image/png" />
               <img src="@/assets/miracum-logo.png" alt="Logo MIRACUM" />
             </picture>
-            <span class="navbar-item has-text-white">MIRACUM Rekrutierungsvorschläge</span>
+            <span class="navbar-item has-text-primary">Rekrutierungsunterstützung</span>
           </a>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <span class="mr-3">{{ login }}</span>
+            <b-button
+              type="is-primary"
+              outlined
+              @click="$keycloak.logoutFn"
+              v-if="$keycloak.authenticated"
+              size="is-small"
+            >Ausloggen</b-button>
+          </div>
         </div>
       </nav>
     </header>
@@ -20,7 +32,7 @@
       </section>
     </main>
     <footer class="footer">
-      <div class="content has-text-centered">
+      <div class="content has-text-centered is-size-7 has-text-grey-light">
         <p>{{ version }}</p>
       </div>
     </footer>
@@ -32,6 +44,9 @@ export default {
   name: "App",
   computed: {
     version: () => process.env.VUE_APP_VERSION,
+    login: function login() {
+      return this.$keycloak.fullName;
+    },
   },
 };
 </script>

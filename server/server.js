@@ -13,6 +13,17 @@ const { BatchSpanProcessor } = require("@opentelemetry/tracing");
 const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
 const { JaegerHttpTracePropagator } = require("@opentelemetry/propagator-jaeger");
 
+const [keycloakUrl, keycloakClientId, keycloakRealm] = [
+  process.env.KEYCLOAK_AUTH_URL,
+  process.env.KEYCLOAK_CLIENT_ID,
+  process.env.KEYCLOAK_REALM,
+];
+
+if (!keycloakClientId || !keycloakUrl || !keycloakRealm) {
+  console.error("Error: Keycloak not configured.");
+  process.exit(1);
+}
+
 // Use Jaeger propagator
 const provider = new NodeTracerProvider({
   plugins: {
@@ -23,6 +34,8 @@ const provider = new NodeTracerProvider({
     http: {
       path: "@opentelemetry/plugin-http",
       ignoreIncomingPaths: ["/live", "/health", "/ready", "/js", "/css", "/img"],
+      // used by the readiness check
+      ignoreOutgoingUrls: ["/fhir/metadata"],
     },
   },
   propagator: new JaegerHttpTracePropagator(),
@@ -123,6 +136,14 @@ app.use(
   })
 );
 
+app.get("/config", (_req, res) =>
+  res.json({
+    authClientId: keycloakClientId,
+    authUrl: keycloakUrl,
+    authRealm: keycloakRealm,
+  })
+);
+
 app.use(history());
 
 app.use(express.static(path.join(__dirname, "..", "dist")));
@@ -131,53 +152,21 @@ app.get("/", (_req, res) => {
   res.render(path.join(__dirname, "..", "dist/index.html"));
 });
 
-function normalizePort(val) {
-  const port = parseInt(val, 10);
-
-  // eslint-disable-next-line no-restricted-globals
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
-
-  if (port >= 0) {
-    // port number
-    return port;
-  }
-
-  return false;
-}
-
-const port = normalizePort(process.env.PORT || "8080");
-app.set("port", port);
+const port = process.env.PORT || 8080;
 
 function onError(error) {
   if (error.syscall !== "listen") {
     throw error;
   }
-
-  const bind = typeof port === "string" ? `Pipe ${port}` : `Port ${port}`;
-
-  switch (error.code) {
-    case "EACCES":
-      console.error(`${bind} requires elevated privileges`);
-      process.exit(1);
-      break;
-    case "EADDRINUSE":
-      console.error(`${bind} is already in use`);
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
+  console.error(`${error}`);
+  process.exit(1);
 }
 
 const server = http.createServer(app);
 
 function onListening() {
   const addr = server.address();
-  const bind = typeof addr === "string" ? `pipe ${addr}` : `port ${addr.port}`;
-  debug(`Listening on ${bind}`);
+  debug(`Listening on ${addr}`);
 }
 
 server.listen(port);

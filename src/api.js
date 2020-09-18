@@ -10,7 +10,13 @@ function createFhirClient() {
     fhirUrl = `${window.location.protocol}//${window.location.host}/fhir`;
   }
 
-  return FHIR.client({ serverUrl: fhirUrl });
+  Vue.$log.debug("Keycloak:", Vue.$keycloak);
+
+  return FHIR.client({
+    serverUrl: fhirUrl,
+    clientSecret: Vue.$keycloak?.token,
+    clientId: Vue.$keycloak?.userName,
+  });
 }
 
 const actions = {
