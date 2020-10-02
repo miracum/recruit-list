@@ -41,10 +41,11 @@ const provider = new NodeTracerProvider({
       path: "@opentelemetry/plugin-express",
     },
     http: {
+      enabled: true,
       path: "@opentelemetry/plugin-http",
-      ignoreIncomingPaths: ["/live", "/health", "/ready", "/js", "/css", "/img"],
+      ignoreIncomingPaths: [/\/live/, /\/health/, /\/ready/, /\/js/, /\/css/, /\/img/, /\/metrics/],
       // used by the readiness check
-      ignoreOutgoingUrls: ["/fhir/metadata"],
+      ignoreOutgoingUrls: [/\/fhir\/metadata/],
     },
   },
   propagator: new JaegerHttpTracePropagator(),
@@ -155,6 +156,9 @@ app.get("/config", (_req, res) =>
     authClientId,
     authUrl,
     authRealm,
+    realm: authRealm,
+    url: authUrl,
+    clientId: authClientId,
   })
 );
 
