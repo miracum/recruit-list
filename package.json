@@ -59,7 +59,7 @@
     "cypress-keycloak": "1.5.0",
     "eslint": "7.10.0",
     "eslint-config-prettier": "6.12.0",
-    "eslint-plugin-vue": "6.2.2",
+    "eslint-plugin-vue": "7.0.1",
     "husky": "4.3.0",
     "node-sass": "4.14.1",
     "sass-loader": "10.0.2",
