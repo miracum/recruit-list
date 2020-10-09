@@ -43,7 +43,7 @@ const provider = new NodeTracerProvider({
     http: {
       enabled: true,
       path: "@opentelemetry/plugin-http",
-      ignoreIncomingPaths: [/\/live/, /\/health/, /\/ready/, /\/js/, /\/css/, /\/img/, /\/metrics/],
+      ignoreIncomingPaths: [/^\/(live|ready|health|css|js|img|metrics|favicon|site.webmanifest)/],
       // used by the readiness check
       ignoreOutgoingUrls: [/\/fhir\/metadata/],
     },
@@ -51,7 +51,7 @@ const provider = new NodeTracerProvider({
   propagator: new JaegerHttpTracePropagator(),
 });
 const exporter = new JaegerExporter({
-  serviceName: "screeninglist",
+  serviceName: process.env.JAEGER_SERVICE_NAME || process.env.OTEL_SERVICE_NAME || "screeninglist",
 });
 provider.addSpanProcessor(new BatchSpanProcessor(exporter));
 provider.register();
