@@ -2,5 +2,6 @@
   "authClientId": "uc1-screeninglist",
   "authUrl": "http://localhost:8083/auth",
   "authRealm": "MIRACUM",
-  "logoutRedirectUri": "/"
+  "logoutRedirectUri": "/",
+  "isKeycloakDisabled": false
 }

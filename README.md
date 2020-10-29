@@ -40,9 +40,25 @@ npm run test:e2e
 npm run lint
 ```
 
-### Customize configuration
+### Run the server component
 
-See [Configuration Reference](https://cli.vuejs.org/config/).
+```sh
+# Build the static assets first. These are served by the server.
+npm run build
+
+# Run the actual server
+npm run server:start
+
+# Optional: The app uses pino for structured logging.
+#           To prettify the output when debugging, run the following:
+npm install -g pino-pretty
+npm run server:start | pino-pretty
+```
+
+### Disable Keycloak
+
+For testing and development, it might be easier to disable Keycloak entirely. When running with `npm run serve`, you'll need to modify [config-dev.json](public/config-dev.json) and set `isKeycloakDisabled` to `true`.
+When running the server, you'll need to set the env var `KEYCLOAK_DISABLED=true`.
 
 ### Export Keycloak realm config
 

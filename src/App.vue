@@ -1,7 +1,11 @@
 <template>
   <div id="app">
     <header class="has-background-white">
-      <nav class="navbar container" role="navigation" aria-label="main navigation">
+      <nav
+        class="navbar container"
+        role="navigation"
+        aria-label="main navigation"
+      >
         <div class="navbar-brand">
           <a class="navbar-item" href="/">
             <picture>
@@ -9,19 +13,23 @@
               <source srcset="@/assets/miracum-logo.png" type="image/png" />
               <img src="@/assets/miracum-logo.png" alt="Logo MIRACUM" />
             </picture>
-            <span class="navbar-item has-text-primary">Rekrutierungsunterstützung</span>
+            <span class="navbar-item has-text-primary"
+              >Rekrutierungsunterstützung</span
+            >
           </a>
         </div>
         <div class="navbar-end">
           <div class="navbar-item">
-            <span class="mr-3">{{ login }}</span>
+            <b-icon pack="fas" size="is-small" icon="user"></b-icon>
+            <span class="mr-3 ml-3">{{ username }}</span>
             <b-button
               type="is-primary"
               outlined
-              @click="$keycloak.logoutFn"
-              v-if="$keycloak.authenticated"
+              @click="logout"
+              v-if="isAuthenticated"
               size="is-small"
-            >Ausloggen</b-button>
+              >Ausloggen</b-button
+            >
           </div>
         </div>
       </nav>
@@ -44,8 +52,16 @@ export default {
   name: "App",
   computed: {
     version: () => process.env.VUE_APP_VERSION,
-    login: function login() {
-      return this.$keycloak.fullName;
+    username: function username() {
+      return (this.$keycloak && this.$keycloak.fullName) || "Anonym";
+    },
+    isAuthenticated: function isAuthenticated() {
+      return (this.$keycloak && this.$keycloak.authenticated) || false;
+    },
+  },
+  methods: {
+    logout: function logout() {
+      this.$keycloak.logoutFn();
     },
   },
 };

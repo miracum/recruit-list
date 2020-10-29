@@ -1,5 +1,4 @@
 const path = require("path");
-const logger = require("morgan");
 const debug = require("debug")("server:server");
 const bearerToken = require("express-bearer-token");
 const promBundle = require("express-prom-bundle");
@@ -8,27 +7,31 @@ const axios = require("axios");
 const http = require("http");
 const health = require("@cloudnative/health-connect");
 const helmet = require("helmet");
+const pino = require("pino-http")();
+
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const { NodeTracerProvider } = require("@opentelemetry/node");
 const { BatchSpanProcessor } = require("@opentelemetry/tracing");
 const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
 const { JaegerHttpTracePropagator } = require("@opentelemetry/propagator-jaeger");
 
-let [authUrl, authClientId, authRealm] = [
+let [authUrl, authClientId, authRealm, isKeycloakDisabled] = [
   process.env.KEYCLOAK_AUTH_URL,
   process.env.KEYCLOAK_CLIENT_ID,
   process.env.KEYCLOAK_REALM,
+  process.env.KEYCLOAK_DISABLED === "true" || process.env.KEYCLOAK_DISABLED === "1",
 ];
 
 if (process.env.NODE_ENV !== "production") {
-  [authUrl, authClientId, authRealm] = [
+  [authUrl, authClientId, authRealm, isKeycloakDisabled] = [
     "http://localhost:8083/auth",
     "uc1-screeninglist",
     "MIRACUM",
+    false,
   ];
 }
 
-if (!authUrl || !authClientId || !authRealm) {
+if (!isKeycloakDisabled && (!authUrl || !authClientId || !authRealm)) {
   console.error("Error: Keycloak not configured.");
   process.exit(1);
 }
@@ -78,8 +81,9 @@ app.use(
     contentSecurityPolicy: false,
   })
 );
+
 app.use(bearerToken());
-app.use(logger("dev"));
+app.use(pino);
 app.use(express.json());
 app.use(metricsMiddleware);
 
@@ -146,13 +150,14 @@ app.use(
         }
       }
     },
-    onProxyRes(_proxyRes, _req, _res) {},
+    onProxyRes() {},
     xfwd: true,
   })
 );
 
 app.get("/config", (_req, res) =>
   res.json({
+    isKeycloakDisabled,
     authClientId,
     authUrl,
     authRealm,
