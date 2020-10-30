@@ -68,7 +68,6 @@
           >
             <span class="status-option-container">
               <b-icon
-                style
                 pack="fas"
                 size="is-small"
                 icon="circle"
