@@ -81,7 +81,6 @@ app.use(
     contentSecurityPolicy: false,
   })
 );
-
 app.use(bearerToken());
 app.use(pino);
 app.use(express.json());

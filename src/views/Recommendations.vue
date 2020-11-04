@@ -7,16 +7,22 @@
         <br />
         <pre>{{ errorMessage }}</pre>
       </b-message>
-      <b-message v-else-if="noList" type="is-warning">Keine Rekrutierungsvorschläge vorhanden.</b-message>
+      <b-message v-else-if="noList" type="is-warning"
+        >Keine Rekrutierungsvorschläge vorhanden.</b-message
+      >
       <template v-else>
         <header class="study-description-header">
-          <h1 class="title is-3">{{ getStudyDisplayFromList(screeningList) }}</h1>
+          <h1 class="title is-3">
+            {{ getStudyDisplayFromList(screeningList) }}
+          </h1>
           <b-message v-if="screeningList.note" has-icon type="is-warning">
-            <p v-for="(note, index) in screeningList.note" :key="index">{{ note.text }}</p>
+            <p v-for="(note, index) in screeningList.note" :key="index">
+              {{ note.text }}
+            </p>
           </b-message>
         </header>
         <ScreeningList :items="screeningList.entry" />
-        <p class="has-text-grey">
+        <p class="has-text-grey mt-6 mb-6">
           Letzte Änderung:
           {{ new Date(screeningList.meta.lastUpdated).toLocaleString("de-DE") }}
         </p>
