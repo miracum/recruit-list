@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <header class="has-background-white">
+    <header class="has-background-primary">
       <nav
-        class="navbar container"
+        class="navbar container has-background-primary"
         role="navigation"
         aria-label="main navigation"
       >
@@ -11,19 +11,19 @@
             <picture>
               <source srcset="@/assets/miracum-logo.webp" type="image/webp" />
               <source srcset="@/assets/miracum-logo.png" type="image/png" />
-              <img src="@/assets/miracum-logo.png" alt="Logo MIRACUM" />
+              <img src="@/assets/miracum-logo.png" alt="MIRACUM Logo" />
             </picture>
-            <span class="navbar-item has-text-primary"
-              >Rekrutierungsunterstützung</span
+            <span class="navbar-item has-text-white"
+              >MIRACUM Rekrutierungsunterstützung</span
             >
           </a>
         </div>
         <div class="navbar-end">
-          <div class="navbar-item">
+          <div class="navbar-item has-text-white">
             <b-icon pack="fas" size="is-small" icon="user"></b-icon>
             <span class="mr-3 ml-3">{{ username }}</span>
             <b-button
-              type="is-primary"
+              type="is-white"
               outlined
               @click="logout"
               v-if="isAuthenticated"
@@ -39,7 +39,7 @@
         <router-view />
       </section>
     </main>
-    <footer class="footer">
+    <footer class="footer has-background-primary-muted">
       <div class="content has-text-centered is-size-7 has-text-grey-light">
         <p>{{ version }}</p>
       </div>
@@ -75,6 +75,9 @@ export default {
 $primary: #1b2259;
 $primary-invert: findColorInvert($primary);
 
+$primary-muted: #f0f3fb;
+$primary-muted-invert: findColorInvert($primary-muted);
+
 $success: #00a579;
 $success-invert: findColorInvert($success);
 
@@ -99,6 +102,10 @@ $colors: (
   "primary": (
     $primary,
     $primary-invert,
+  ),
+  "primary-muted": (
+    $primary-muted,
+    $primary-muted-invert,
   ),
   "info": (
     $info,
@@ -134,7 +141,7 @@ $link-focus-border: $primary;
   display: flex;
   min-height: 100vh;
   flex-direction: column;
-  background-color: #f0f3fb;
+  background-color: #ffffff;
 }
 
 main {
@@ -142,4 +149,10 @@ main {
   width: 100%;
   margin-top: 15px;
 }
+
+.navbar-brand > .navbar-item > picture > img {
+  border-radius: 50%;
+  min-height: 3rem;
+}
+
 </style>

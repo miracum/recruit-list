@@ -1,7 +1,9 @@
 <template>
   <section>
     <div class="field">
-      <b-checkbox v-model="hideSubjectsOnStudy">Bereits rekrutierte Patienten ausblenden</b-checkbox>
+      <b-checkbox v-model="hideSubjectsOnStudy"
+        >Bereits rekrutierte Patienten ausblenden</b-checkbox
+      >
     </div>
     <b-table
       :data="filteredSubjects"
@@ -11,7 +13,12 @@
       :striped="true"
       :hoverable="true"
     >
-      <b-table-column label="#" field="subject.individual.id" v-slot="props" sortable>
+      <b-table-column
+        label="Patientennummer"
+        field="subject.individual.id"
+        v-slot="props"
+        sortable
+      >
         <span>{{ props.row.mrNumber || props.row.subject.individual.id }}</span>
       </b-table-column>
 
@@ -22,12 +29,18 @@
         sortable
       >
         <span>
-          geb. {{ props.row.subject.individual.birthDate ? new Date(props.row.subject.individual.birthDate).getFullYear() : "unbekannt" }}, {{
-          props.row.subject.individual
-          ? (props.row.subject.individual.gender === "male"
-          ? "m"
-          : "w")
-          : "u"
+          geb.
+          {{
+            props.row.subject.individual.birthDate
+              ? new Date(props.row.subject.individual.birthDate).getFullYear()
+              : "unbekannt"
+          }},
+          {{
+            props.row.subject.individual
+              ? props.row.subject.individual.gender === "male"
+                ? "m"
+                : "w"
+              : "u"
           }}
         </span>
       </b-table-column>
@@ -35,30 +48,54 @@
       <b-table-column label="Letzter Aufenthalt" v-slot="props">
         <template v-if="props.row.encounter">
           <span class="is-size-7 has-text-weight-semibold">
-            {{ new Date(props.row.encounter.period.start).toLocaleDateString() }} -
+            {{
+              new Date(props.row.encounter.period.start).toLocaleDateString()
+            }}
+            -
             {{ new Date(props.row.encounter.period.end).toLocaleDateString() }}:
           </span>
           <br />
         </template>
-        <address v-if="props.row.location">
-          <span class="has-text-weight-semibold">{{ props.row.location.name }}</span>
+        <p v-if="props.row.location">
+          <span class="has-text-weight-semibold">{{
+            props.row.location.name
+          }}</span>
           <br />
-          <span v-for="(telecom, index) in props.row.location.telecom" :key="index">
-            {{telecom.value}}
+          <span
+            v-for="(telecom, index) in props.row.location.telecom"
+            :key="index"
+          >
+            {{ telecom.value }}
             <br />
           </span>
-        </address>
+        </p>
       </b-table-column>
 
-      <b-table-column label="Status" field="subject.status" v-slot="props" sortable>
+      <b-table-column label="Notiz" field="note" v-slot="props">
+        <b-field>
+          <b-input type="textarea" v-model="props.row.note"></b-input>
+        </b-field>
+      </b-table-column>
+
+      <b-table-column
+        label="Status"
+        field="subject.status"
+        v-slot="props"
+        sortable
+      >
         <b-dropdown aria-role="list" v-model="props.row.subject.status">
           <b-button
-            :class="[ 'button', 'recruitment-status-select', getTypeFromStatus(props.row.subject.status) ]"
+            :class="[
+              'button',
+              'recruitment-status-select',
+              getTypeFromStatus(props.row.subject.status),
+            ]"
             type="button"
             size="is-small"
             slot="trigger"
             icon-right="sort-down"
-          >{{ recruitmentStatusOptions[props.row.subject.status] }}</b-button>
+            >{{ recruitmentStatusOptions[props.row.subject.status] }}</b-button
+          >
 
           <b-dropdown-item
             aria-role="listitem"
@@ -79,11 +116,6 @@
         </b-dropdown>
       </b-table-column>
 
-      <b-table-column label="Notiz" field="note" v-slot="props">
-        <b-field>
-          <b-input type="textarea" v-model="props.row.note"></b-input>
-        </b-field>
-      </b-table-column>
       <b-table-column label="Aktionen" v-slot="props">
         <div class="columns is-desktop is-1 is-variable">
           <div class="column">
@@ -93,31 +125,40 @@
               type="is-primary"
               size="is-small"
               icon-left="save"
-            >Speichern</b-button>
+              >Speichern</b-button
+            >
           </div>
           <div class="column">
             <b-button
               tag="router-link"
-              :to="{ name: 'patient-record', params: { patientId: props.row.subject.individual.id } }"
+              :to="{
+                name: 'patient-record',
+                params: { patientId: props.row.subject.individual.id },
+              }"
               type="is-primary"
               size="is-small"
               icon-left="notes-medical"
               outlined
               target="_blank"
               rel="noopener noreferrer"
-            >Patientenakte</b-button>
+              >Patientenakte</b-button
+            >
           </div>
           <div class="column">
             <b-button
               tag="router-link"
-              :to="{ name: 'researchsubject-history', params: { subjectId: props.row.id } }"
+              :to="{
+                name: 'researchsubject-history',
+                params: { subjectId: props.row.id },
+              }"
               type="is-primary"
               size="is-small"
               icon-left="history"
               outlined
               target="_blank"
               rel="noopener noreferrer"
-            >Änderungshistorie</b-button>
+              >Änderungshistorie</b-button
+            >
           </div>
         </div>
       </b-table-column>
