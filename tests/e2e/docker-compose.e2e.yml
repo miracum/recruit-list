@@ -45,7 +45,7 @@ services:
       - keycloak
 
   keycloak:
-    image: quay.io/keycloak/keycloak:11.0.2
+    image: quay.io/keycloak/keycloak:11.0.3
     command:
       - -Dkeycloak.migration.action=import
       - -Dkeycloak.migration.provider=singleFile
