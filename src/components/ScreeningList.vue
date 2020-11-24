@@ -39,7 +39,9 @@
             props.row.subject.individual
               ? props.row.subject.individual.gender === "male"
                 ? "m"
-                : "w"
+                : props.row.subject.individual.gender === "female"
+                  ? "w"
+                  : "u"
               : "u"
           }}
         </span>
