@@ -30,7 +30,7 @@
     "buefy": "0.9.4",
     "connect-history-api-fallback": "1.6.0",
     "core-js": "3.7.0",
-    "debug": "4.2.0",
+    "debug": "4.3.1",
     "express": "4.17.1",
     "express-bearer-token": "2.4.0",
     "express-prom-bundle": "6.2.0",
@@ -44,22 +44,22 @@
     "prom-client": "12.0.0",
     "vue": "2.6.12",
     "vue-router": "3.4.9",
-    "vuejs-logger": "1.5.4"
+    "vuejs-logger": "1.5.5"
   },
   "devDependencies": {
     "@commitlint/cli": "11.0.0",
     "@commitlint/config-conventional": "11.0.0",
-    "@vue/cli-plugin-babel": "4.5.8",
-    "@vue/cli-plugin-eslint": "4.5.8",
-    "@vue/cli-plugin-router": "4.5.8",
-    "@vue/cli-plugin-unit-jest": "4.5.8",
-    "@vue/cli-service": "4.5.8",
+    "@vue/cli-plugin-babel": "4.5.9",
+    "@vue/cli-plugin-eslint": "4.5.9",
+    "@vue/cli-plugin-router": "4.5.9",
+    "@vue/cli-plugin-unit-jest": "4.5.9",
+    "@vue/cli-service": "4.5.9",
     "@vue/eslint-config-airbnb": "5.1.0",
     "@vue/test-utils": "1.1.1",
     "babel-eslint": "10.1.0",
     "cypress-keycloak": "1.5.0",
     "dart-sass": "1.25.0",
-    "eslint": "7.13.0",
+    "eslint": "7.14.0",
     "eslint-config-prettier": "6.15.0",
     "eslint-plugin-vue": "7.1.0",
     "husky": "4.3.0",
@@ -79,6 +79,6 @@
     }
   },
   "optionalDependencies": {
-    "@vue/cli-plugin-e2e-cypress": "4.5.8"
+    "@vue/cli-plugin-e2e-cypress": "4.5.9"
   }
 }
