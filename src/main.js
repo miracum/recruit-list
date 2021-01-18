@@ -35,7 +35,7 @@ Vue.use(Buefy, {
 Vue.config.productionTip = false;
 
 axios
-  .get(process.env.VUE_APP_KEYCLOAK_CONFIG_URL || "/config")
+  .get(process.env.VUE_APP_CONFIG_URL || "/config")
   .then((response) => {
     // handle success
     Vue.$log.info("Using config: ", response.data);

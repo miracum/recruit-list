@@ -16,6 +16,7 @@ const router = new Router({
       path: "/",
       name: "recommendations",
       component: ScreeningListOverview,
+      props: true,
     },
     {
       path: "/recommendations/:listId",
