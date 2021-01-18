@@ -65,3 +65,8 @@ When running the server, you'll need to set the env var `KEYCLOAK_DISABLED=true`
 ```sh
 standalone.sh -Dkeycloak.migration.action=export -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/tmp/aio-export.json
 ```
+
+### Configure Table Columns
+
+Editing the shown tablecolumns is possible. When running with `npm run serve`, you'll need to modify [config-dev.json](public/config-dev.json) and set `hideDemographics`, `hideLastVisit` and/or `hideEhrButton` to `true`.
+When running the server, you'll need to set the env vars `HIDE_DEMOGRAPHICS=true`, `HIDE_LAST_VISIT=true`, `HIDE_EHR_BUTTON=true`.

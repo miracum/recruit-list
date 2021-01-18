@@ -21,7 +21,7 @@
             </p>
           </b-message>
         </header>
-        <ScreeningList :items="screeningList.entry" />
+        <ScreeningList :items="screeningList.entry"/>
         <p class="has-text-grey mt-6 mb-6">
           Letzte Änderung:
           {{ new Date(screeningList.meta.lastUpdated).toLocaleString("de-DE") }}
@@ -57,7 +57,6 @@ export default {
   async mounted() {
     try {
       const list = await Api.fetchListById(this.listId);
-
       this.screeningList = Object.freeze(list);
     } catch (exc) {
       this.errorMessage = exc;

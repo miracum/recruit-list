@@ -57,7 +57,7 @@ export default {
     },
     isAuthenticated: function isAuthenticated() {
       return (this.$keycloak && this.$keycloak.authenticated) || false;
-    },
+    }
   },
   methods: {
     logout: function logout() {

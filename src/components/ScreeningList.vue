@@ -27,6 +27,7 @@
         field="subject.individual.birthDate"
         v-slot="props"
         sortable
+        v-if="!hideDemographics"
       >
         <span>
           geb.
@@ -47,7 +48,7 @@
         </span>
       </b-table-column>
 
-      <b-table-column label="Letzter Aufenthalt" v-slot="props">
+      <b-table-column label="Letzter Aufenthalt" v-slot="props" v-if= "!hideLastVisit">
         <template v-if="props.row.encounter">
           <span class="is-size-7 has-text-weight-semibold">
             {{
@@ -130,7 +131,7 @@
               >Speichern</b-button
             >
           </div>
-          <div class="column">
+          <div class="column" v-if="!hideEhrButton">
             <b-button
               tag="router-link"
               :to="{
@@ -179,6 +180,7 @@
   </section>
 </template>
 
+
 <script>
 import fhirpath from "fhirpath";
 import Constants from "@/const";
@@ -194,6 +196,9 @@ export default {
   },
   data() {
     return {
+      hideDemographics: true,
+      hideLastVisit: true,
+      hideEhrButton: true,
       isLoading: false,
       failedToLoad: false,
       errorMessage: "",
@@ -213,6 +218,11 @@ export default {
     this.isLoading = true;
 
     try {
+      const config = await Api.fetchConfig();
+      this.hideDemographics = config.hideDemographics;
+      this.hideLastVisit = config.hideLastVisit;
+      this.hideEhrButton = config.hideEhrButton;
+
       this.fhirClient = Api.getFhirClient();
       const allSubjects = this.items.map((e) => e.item);
 

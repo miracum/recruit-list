@@ -15,7 +15,10 @@ const { BatchSpanProcessor } = require("@opentelemetry/tracing");
 const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
 const { JaegerHttpTracePropagator } = require("@opentelemetry/propagator-jaeger");
 
-let [authUrl, authClientId, authRealm, isKeycloakDisabled] = [
+let [hideDemographics, hideLastVisit, hideEhrButton, authUrl, authClientId, authRealm, isKeycloakDisabled] = [
+  process.env.HIDE_DEMOGRAPHICS !== "true" && process.env.HIDE_DEMOGRAPHICS !== "1",
+  process.env.HIDE_LAST_VISIT !== "true" && process.env.HIDE_LAST_VISIT !== "1",
+  process.env.HIDE_EHR_BUTTON !== "true" && process.env.HIDE_EHR_BUTTON !== "1",
   process.env.KEYCLOAK_AUTH_URL,
   process.env.KEYCLOAK_CLIENT_ID,
   process.env.KEYCLOAK_REALM,
@@ -23,7 +26,10 @@ let [authUrl, authClientId, authRealm, isKeycloakDisabled] = [
 ];
 
 if (process.env.NODE_ENV !== "production") {
-  [authUrl, authClientId, authRealm, isKeycloakDisabled] = [
+  [hideDemographics, hideLastVisit, hideEhrButton, authUrl, authClientId, authRealm, isKeycloakDisabled] = [
+    false,
+    false,
+    false,
     "http://localhost:8083/auth",
     "uc1-screeninglist",
     "MIRACUM",
@@ -156,6 +162,9 @@ app.use(
 
 app.get("/config", (_req, res) =>
   res.json({
+    hideDemographics,
+    hideLastVisit,
+    hideEhrButton,
     isKeycloakDisabled,
     authClientId,
     authUrl,

@@ -2,6 +2,8 @@ import FHIR from "fhirclient";
 import fhirpath from "fhirpath";
 import Constants from "@/const";
 import Vue from "vue";
+import axios from "axios";
+
 
 function createFhirClient() {
   let fhirUrl = process.env.VUE_APP_FHIR_URL;
@@ -22,6 +24,10 @@ function createFhirClient() {
 const actions = {
   getFhirClient() {
     return createFhirClient();
+  },
+  async fetchConfig() {
+    const response = await axios.get(process.env.VUE_APP_CONFIG_URL || "/config");
+    return response.data;
   },
   async fetchLists() {
     const client = createFhirClient();

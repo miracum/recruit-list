@@ -3,5 +3,8 @@
   "authUrl": "http://localhost:8083/auth",
   "authRealm": "MIRACUM",
   "logoutRedirectUri": "/",
-  "isKeycloakDisabled": false
+  "isKeycloakDisabled": false,
+  "hideDemographics": true,
+  "hideLastVisit": true,
+  "hideEhrButton": false
 }
