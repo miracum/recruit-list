@@ -29,7 +29,7 @@
         field="subject.individual.birthDate"
         v-slot="props"
         sortable
-        v-if="!hideDemographics"
+        :visible="!hideDemographics"
       >
         <span>
           geb.
@@ -53,7 +53,7 @@
       <b-table-column
         label="Letzter Aufenthalt"
         v-slot="props"
-        v-if="!hideLastVisit"
+        :visible="!hideLastVisit"
       >
         <template v-if="props.row.encounter">
           <span class="is-size-7 has-text-weight-semibold">
