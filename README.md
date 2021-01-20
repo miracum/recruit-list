@@ -2,13 +2,20 @@
 
 > The FHIR-based Screening List Module
 
-## Development Setup
+## Development
+
+### Setup
 
 ```sh
 npm install
 # starts a FHIR-server preloaded with sample studies @ http://localhost:8082/
 docker-compose -f deploy/docker-compose.dev.yml up
 ```
+
+The patient identifiers in [sample-record-1.json](deploy/data/sample-record-1.json) have been encrypted to show how de-pseudonymization works.
+The `docker-compose.dev.yml` contains the fhir-pseudonymizer configured to decrypt these identifiers.
+
+You can then enabled it by setting `DE_PSEUDONYMIZATION_ENABLED=1` before running `npm run server:watch`.
 
 ### Compiles and hot-reloads for development
 
@@ -46,8 +53,8 @@ npm run lint
 # Build the static assets first. These are served by the server.
 npm run build
 
-# Run the actual server
-npm run server:start
+# Run the actual server and auto-reload it whenever any JS file in the `/server/` dir is changed.
+npm run server:watch
 
 # Optional: The app uses pino for structured logging.
 #           To prettify the output when debugging, run the following:

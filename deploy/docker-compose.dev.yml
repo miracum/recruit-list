@@ -3,12 +3,12 @@ version: "3.7"
 services:
   fhir:
     image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:v8.1.3
-    ports:
-      - "8082:8080"
     environment:
       subscription.resthook.enabled: "true"
       subscription.websocket.enabled: "false"
       validation.requests.enabled: "true"
+    ports:
+      - "8082:8080"
 
   loader:
     image: curlimages/curl:7.74.0
@@ -42,3 +42,14 @@ services:
       - ./data/aio-export.json:/tmp/realm.json
     ports:
       - 8083:8080
+
+  fhir-pseudonymizer:
+    image: docker.miracum.org/miracum-etl/fhir-pseudonymizer:v2.2.0
+    environment:
+      APIKEY: "fhir-pseudonymizer-api-key"
+      JAEGER__ENABLED: "true"
+      JAEGER__HOST: "jaeger"
+    volumes:
+      - ./anonymization.yaml:/etc/anonymization.yaml:ro
+    ports:
+      - 5000:8080
