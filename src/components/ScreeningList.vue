@@ -202,9 +202,9 @@ export default {
   },
   data() {
     return {
-      hideDemographics: true,
-      hideLastVisit: true,
-      hideEhrButton: true,
+      hideDemographics: false,
+      hideLastVisit: false,
+      hideEhrButton: false,
       isLoading: false,
       failedToLoad: false,
       errorMessage: "",
