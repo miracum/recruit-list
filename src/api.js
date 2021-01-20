@@ -99,18 +99,18 @@ const actions = {
   async fetchLatestEncounterWithLocation(patientId) {
     const client = createFhirClient();
 
-    // fetch the all Encounters for the given patient, sorted by modification date
+    // fetch the latest 10 Encounters for the given patient, sorted by modification date
     // and include the Encounter's location to reduce the number of server round-trips
     const entries = await client.request(
-      `Encounter?subject=Patient/${patientId}&_sort=-date&_count=50&_include=Encounter:location&_pretty=false`,
+      `Encounter?subject=Patient/${patientId}&_sort=-date&_count=10&_include=Encounter:location&_pretty=false`,
       {
         flat: true,
         pageLimit: 0,
       }
     );
 
-    // unfortunately, resolveReferences to directly replace the encounter.location.reference
-    // withe the actual Location resource doesn't work. So we need to build a manual
+    // unfortunately, using resolveReferences to directly replace the encounter.location.reference
+    // with the the actual Location object doesn't work. So we need to build a manual
     // lookup from Location.id to the Location object.
     const locations = entries.filter((entry) => entry.resourceType === "Location");
     const locationLookup = new Map(
@@ -143,7 +143,6 @@ const actions = {
               `Found Encounter referencing a location with status ${locationEntry.status}`
             );
 
-            Vue.$log.debug("Found encounter with telecom set");
             return { encounter, location };
           }
         }

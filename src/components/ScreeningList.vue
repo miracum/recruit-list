@@ -19,7 +19,9 @@
         v-slot="props"
         sortable
       >
-        <span>{{ props.row.mrNumber || props.row.subject.individual.id }}</span>
+        <p class="patient-id">
+          {{ props.row.mrNumber || props.row.subject.individual.id }}
+        </p>
       </b-table-column>
 
       <b-table-column
@@ -41,14 +43,18 @@
               ? props.row.subject.individual.gender === "male"
                 ? "m"
                 : props.row.subject.individual.gender === "female"
-                  ? "w"
-                  : "u"
+                ? "w"
+                : "u"
               : "u"
           }}
         </span>
       </b-table-column>
 
-      <b-table-column label="Letzter Aufenthalt" v-slot="props" v-if= "!hideLastVisit">
+      <b-table-column
+        label="Letzter Aufenthalt"
+        v-slot="props"
+        v-if="!hideLastVisit"
+      >
         <template v-if="props.row.encounter">
           <span class="is-size-7 has-text-weight-semibold">
             {{
@@ -354,5 +360,11 @@ export default {
 
 .status-option-container > span {
   vertical-align: middle;
+}
+
+.patient-id {
+  word-wrap: break-word;
+  max-width: 40em;
+  max-width: 50ch;
 }
 </style>

@@ -3,11 +3,12 @@ const debug = require("debug")("server:server");
 const bearerToken = require("express-bearer-token");
 const promBundle = require("express-prom-bundle");
 const history = require("connect-history-api-fallback");
-const axios = require("axios");
 const http = require("http");
-const health = require("@cloudnative/health-connect");
 const helmet = require("helmet");
 const pino = require("pino-http")();
+const modifyResponse = require("node-http-proxy-json");
+const probe = require("kube-probe");
+const logger = require("pino")();
 
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const { NodeTracerProvider } = require("@opentelemetry/node");
@@ -15,7 +16,15 @@ const { BatchSpanProcessor } = require("@opentelemetry/tracing");
 const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
 const { JaegerHttpTracePropagator } = require("@opentelemetry/propagator-jaeger");
 
-let [hideDemographics, hideLastVisit, hideEhrButton, authUrl, authClientId, authRealm, isKeycloakDisabled] = [
+let [
+  hideDemographics,
+  hideLastVisit,
+  hideEhrButton,
+  authUrl,
+  authClientId,
+  authRealm,
+  isKeycloakDisabled,
+] = [
   process.env.HIDE_DEMOGRAPHICS !== "true" && process.env.HIDE_DEMOGRAPHICS !== "1",
   process.env.HIDE_LAST_VISIT !== "true" && process.env.HIDE_LAST_VISIT !== "1",
   process.env.HIDE_EHR_BUTTON !== "true" && process.env.HIDE_EHR_BUTTON !== "1",
@@ -25,20 +34,40 @@ let [hideDemographics, hideLastVisit, hideEhrButton, authUrl, authClientId, auth
   process.env.KEYCLOAK_DISABLED === "true" || process.env.KEYCLOAK_DISABLED === "1",
 ];
 
+const config = {
+  pseudonymization: {
+    enabled:
+      process.env.DE_PSEUDONYMIZATION_ENABLED === "true" ||
+      process.env.DE_PSEUDONYMIZATION_ENABLED === "1",
+    url: process.env.DE_PSEUDONYMIZATION_SERVICE_URL || "http://localhost:5000/fhir",
+    apiKey: process.env.DE_PSEUDONYMIZATION_API_KEY || "fhir-pseudonymizer-api-key",
+  },
+  jaeger: {
+    serviceName:
+      process.env.JAEGER_SERVICE_NAME || process.env.OTEL_SERVICE_NAME || "screeninglist",
+  },
+  shouldLogRequests: process.env.LOG_REQUESTS === "true" || process.env.LOG_REQUESTS === "1",
+  metrics: {
+    bearerToken: process.env.METRICS_BEARER_TOKEN,
+  },
+  fhirUrl: process.env.FHIR_URL || "http://localhost:8082/fhir",
+};
+
+// TODO: this is quite ugly
 if (process.env.NODE_ENV !== "production") {
-  [hideDemographics, hideLastVisit, hideEhrButton, authUrl, authClientId, authRealm, isKeycloakDisabled] = [
-    false,
-    false,
-    false,
-    "http://localhost:8083/auth",
-    "uc1-screeninglist",
-    "MIRACUM",
-    false,
-  ];
+  [
+    hideDemographics,
+    hideLastVisit,
+    hideEhrButton,
+    authUrl,
+    authClientId,
+    authRealm,
+    isKeycloakDisabled,
+  ] = [false, false, false, "http://localhost:8083/auth", "uc1-screeninglist", "MIRACUM", true];
 }
 
 if (!isKeycloakDisabled && (!authUrl || !authClientId || !authRealm)) {
-  console.error("Error: Keycloak not configured.");
+  logger.error("Error: Keycloak not configured.");
   process.exit(1);
 }
 
@@ -52,7 +81,7 @@ const provider = new NodeTracerProvider({
     http: {
       enabled: true,
       path: "@opentelemetry/plugin-http",
-      ignoreIncomingPaths: [/^\/(live|ready|health|css|js|img|metrics|favicon|site.webmanifest)/],
+      ignoreIncomingPaths: [/^\/(api\/health\/.*|css|js|img|metrics|favicon|site.webmanifest)/],
       // used by the readiness check
       ignoreOutgoingUrls: [/\/fhir\/metadata/],
     },
@@ -60,14 +89,14 @@ const provider = new NodeTracerProvider({
   propagator: new JaegerHttpTracePropagator(),
 });
 const exporter = new JaegerExporter({
-  serviceName: process.env.JAEGER_SERVICE_NAME || process.env.OTEL_SERVICE_NAME || "screeninglist",
+  serviceName: config.jaeger.serviceName,
 });
 provider.addSpanProcessor(new BatchSpanProcessor(exporter));
 provider.register();
 
+// express is required to be imported after the OTEL SDK is setup so the plugins work correctly
 const express = require("express");
-
-const healthcheck = new health.HealthChecker();
+const dePseudonymizer = require("./de-pseudonymizer");
 
 const metricsMiddleware = promBundle({
   includeMethod: true,
@@ -76,42 +105,81 @@ const metricsMiddleware = promBundle({
     ["^/css/.*", "/css/#file"],
     ["^/img/.*", "/img/#file"],
     ["^/js/.*", "/js/#file"],
-    ["^/static/.*", "/static/#file"],
-    ["^/details/.*", "/details/#study-id"],
+    ["^/recommendations/.*", "/recommendations/#recommendation-id"],
+    ["^/patients/.*/record", "/patients/#subject-id/record"],
   ],
 });
 
 const app = express();
+
+// add liveness and readiness probes
+probe(app);
+
+if (config.shouldLogRequests) {
+  app.use(pino);
+}
+
 app.use(
   helmet({
     contentSecurityPolicy: false,
   })
 );
 app.use(bearerToken());
-app.use(pino);
 app.use(express.json());
 app.use(metricsMiddleware);
 
-const livePromise = () =>
-  new Promise((resolve) => {
-    resolve();
-  });
-const liveCheck = new health.LivenessCheck("is alive", livePromise);
-healthcheck.registerLivenessCheck(liveCheck);
+const proxyRequestFilter = (_pathname, req) => req.method === "GET" || req.method === "PATCH";
+const proxy = createProxyMiddleware(proxyRequestFilter, {
+  target: config.fhirUrl,
+  changeOrigin: false,
+  pathRewrite: {
+    "^/fhir": "/",
+  },
+  secure: false,
+  xfwd: true,
+  onProxyReq(proxyReq) {
+    // the ApacheProxyAddressStrategy used by HAPI FHIR
+    // constructs the server URL from both the X-Forwarded-Host and X-Forwarded-Port
+    // since the X-Forwarded-Host created by HPM already contains the port (eg. localhost:8443)
+    // the resulting FHIR server URL would end with the port number twice (eg. https://localhost:8443:8443)
+    proxyReq.removeHeader("X-Forwarded-Port");
 
-const FHIR_URL = process.env.FHIR_URL || "http://localhost:8082/fhir";
+    const proto = proxyReq.getHeader("X-Forwarded-Proto");
 
-const readyPromise = () => axios.get(`${FHIR_URL}/metadata`);
-const readyCheck = new health.ReadinessCheck("can connect to fhir server", readyPromise);
-healthcheck.registerReadinessCheck(readyCheck);
-
-app.use("/live", health.LivenessEndpoint(healthcheck));
-app.use("/ready", health.ReadinessEndpoint(healthcheck));
-app.use("/health", health.HealthEndpoint(healthcheck));
+    if (proto) {
+      if (proto.includes("https")) {
+        proxyReq.setHeader("X-Forwarded-Proto", "https");
+      } else {
+        proxyReq.setHeader("X-Forwarded-Proto", "http");
+      }
+    }
+  },
+  onProxyRes(proxyRes, _req, res) {
+    // eslint-disable-next-line no-param-reassign
+    proxyRes.headers["Cache-Control"] = "no-store";
+    if (config.pseudonymization.enabled) {
+      logger.debug("De-pseudonymization is enabled. Modifying the response.");
+      return modifyResponse(res, proxyRes, async (body) => {
+        if (body) {
+          if (body.resourceType !== "Patient" && body.resourceType !== "Encounter") {
+            return body;
+          }
+          try {
+            return await dePseudonymizer.dePseudonymize(config.pseudonymization, body);
+          } catch (err) {
+            logger.error(`De-pseudonymization failed: '${err}'. Returning original resource.`);
+          }
+        }
+        return body;
+      });
+    }
+    return res;
+  },
+});
 
 app.use((req, res, next) => {
   if (req.path.endsWith("/metrics")) {
-    const expectedToken = process.env.METRICS_BEARER_TOKEN;
+    const expectedToken = config.metrics.bearerToken;
     if (expectedToken) {
       if (!req.token) {
         return res.sendStatus(403);
@@ -125,40 +193,7 @@ app.use((req, res, next) => {
   return next();
 });
 
-const proxyRequestFilter = (_pathname, req) => {
-  return req.method === "GET" || req.method === "PATCH";
-};
-
-app.use(
-  "^/fhir",
-  createProxyMiddleware(proxyRequestFilter, {
-    target: FHIR_URL,
-    changeOrigin: false,
-    pathRewrite: {
-      "^/fhir": "/",
-    },
-    secure: false,
-    onProxyReq(proxyReq) {
-      // the ApacheProxyAddressStrategy used by HAPI FHIR
-      // constructs the server URL from both the X-Forwarded-Host and X-Forwarded-Port
-      // since the X-Forwarded-Host created by HPM already contains the port (eg. localhost:8443)
-      // the resulting FHIR server URL would end with the port number twice (eg. https://localhost:8443:8443)
-      proxyReq.removeHeader("X-Forwarded-Port");
-
-      const proto = proxyReq.getHeader("X-Forwarded-Proto");
-
-      if (proto) {
-        if (proto.includes("https")) {
-          proxyReq.setHeader("X-Forwarded-Proto", "https");
-        } else {
-          proxyReq.setHeader("X-Forwarded-Proto", "http");
-        }
-      }
-    },
-    onProxyRes() {},
-    xfwd: true,
-  })
-);
+app.use("^/fhir", proxy);
 
 app.get("/config", (_req, res) =>
   res.json({
