@@ -1,13 +1,9 @@
 <template>
   <div id="app">
-    <header class="has-background-primary">
-      <nav
-        class="navbar container has-background-primary"
-        role="navigation"
-        aria-label="main navigation"
-      >
-        <div class="navbar-brand">
-          <a class="navbar-item" href="/">
+    <header>
+      <b-navbar type="is-primary">
+        <template #brand>
+          <b-navbar-item tag="router-link" :to="{ path: '/' }">
             <picture>
               <source srcset="@/assets/miracum-logo.webp" type="image/webp" />
               <source srcset="@/assets/miracum-logo.png" type="image/png" />
@@ -16,23 +12,26 @@
             <span class="navbar-item has-text-white"
               >MIRACUM Rekrutierungsunterstützung</span
             >
-          </a>
-        </div>
-        <div class="navbar-end">
-          <div class="navbar-item has-text-white">
-            <b-icon pack="fas" size="is-small" icon="user"></b-icon>
-            <span class="mr-3 ml-3">{{ username }}</span>
-            <b-button
-              type="is-white"
-              outlined
-              @click="logout"
-              v-if="isAuthenticated"
-              size="is-small"
-              >Ausloggen</b-button
-            >
-          </div>
-        </div>
-      </nav>
+          </b-navbar-item>
+        </template>
+
+        <template #end>
+          <b-navbar-item type="is-primary" tag="div">
+            <b-icon pack="fas" size="is-small" type="is-white" icon="user"></b-icon>
+            <span class="mr-3 ml-3 has-text-white">{{ username }}</span>
+            <div class="buttons">
+              <b-button
+                outlined
+                type="is-white"
+                @click="logout"
+                v-if="isAuthenticated"
+                size="is-small"
+                >Ausloggen</b-button
+              >
+            </div>
+          </b-navbar-item>
+        </template>
+      </b-navbar>
     </header>
     <main>
       <section class="container content">
@@ -57,7 +56,7 @@ export default {
     },
     isAuthenticated: function isAuthenticated() {
       return (this.$keycloak && this.$keycloak.authenticated) || false;
-    }
+    },
   },
   methods: {
     logout: function logout() {
@@ -155,4 +154,7 @@ main {
   min-height: 3rem;
 }
 
+.navbar-menu {
+  background-color: #1b2259;
+}
 </style>
