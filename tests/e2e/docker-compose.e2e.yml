@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   list:
-    image: docker.miracum.org/uc1-recruit/list:${IMAGE_TAG}
+    image: harbor.miracum.org/uc1-recruit/list:${IMAGE_TAG}
     environment:
       - FHIR_URL=http://fhir:8080/fhir
       - KEYCLOAK_CLIENT_ID=uc1-screeninglist
@@ -13,7 +13,7 @@ services:
       - keycloak
 
   e2e:
-    image: docker.miracum.org/uc1-recruit/list/ci/cypress:3.8.3
+    image: harbor.miracum.org/uc1-recruit/list/ci/cypress:3.8.3
     working_dir: /e2e
     environment:
       - CYPRESS_BASE_URL=http://list:8080/
@@ -25,7 +25,7 @@ services:
       - ${PWD}:/e2e
 
   fhir:
-    image: docker.miracum.org/miracum-data/hapi-fhir-jpaserver:v8.1.3
+    image: harbor.miracum.org/miracum-data/hapi-fhir-jpaserver:v8.1.3
     environment:
       subscription.resthook.enabled: "false"
       subscription.websocket.enabled: "false"
