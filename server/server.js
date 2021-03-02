@@ -37,7 +37,8 @@ const config = {
     url: process.env.DE_PSEUDONYMIZATION_SERVICE_URL || "http://localhost:5000/fhir",
     apiKey: process.env.DE_PSEUDONYMIZATION_API_KEY || "fhir-pseudonymizer-api-key",
   },
-  jaeger: {
+  tracing: {
+    enabled: process.env.TRACING_ENABLED === "true" || process.env.TRACING_ENABLED === "1",
     serviceName:
       process.env.JAEGER_SERVICE_NAME || process.env.OTEL_SERVICE_NAME || "screeninglist",
   },
@@ -63,28 +64,30 @@ if (!isKeycloakDisabled && (!authUrl || !authClientId || !authRealm)) {
   process.exit(1);
 }
 
-// Use Jaeger propagator
-const provider = new NodeTracerProvider({
-  plugins: {
-    express: {
-      enabled: true,
-      path: "@opentelemetry/plugin-express",
+if (config.tracing.enabled) {
+  // Use Jaeger propagator
+  const provider = new NodeTracerProvider({
+    plugins: {
+      express: {
+        enabled: true,
+        path: "@opentelemetry/plugin-express",
+      },
+      http: {
+        enabled: true,
+        path: "@opentelemetry/plugin-http",
+        ignoreIncomingPaths: [/^\/(api\/health\/.*|css|js|img|metrics|favicon|site.webmanifest)/],
+        // used by the readiness check
+        ignoreOutgoingUrls: [/\/fhir\/metadata/],
+      },
     },
-    http: {
-      enabled: true,
-      path: "@opentelemetry/plugin-http",
-      ignoreIncomingPaths: [/^\/(api\/health\/.*|css|js|img|metrics|favicon|site.webmanifest)/],
-      // used by the readiness check
-      ignoreOutgoingUrls: [/\/fhir\/metadata/],
-    },
-  },
-  propagator: new JaegerHttpTracePropagator(),
-});
-const exporter = new JaegerExporter({
-  serviceName: config.jaeger.serviceName,
-});
-provider.addSpanProcessor(new BatchSpanProcessor(exporter));
-provider.register();
+    propagator: new JaegerHttpTracePropagator(),
+  });
+  const exporter = new JaegerExporter({
+    serviceName: config.tracing.serviceName,
+  });
+  provider.addSpanProcessor(new BatchSpanProcessor(exporter));
+  provider.register();
+}
 
 // express is required to be imported after the OTEL SDK is setup so the plugins work correctly
 const express = require("express");
