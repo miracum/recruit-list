@@ -17,7 +17,12 @@
 
         <template #end>
           <b-navbar-item type="is-primary" tag="div">
-            <b-icon pack="fas" size="is-small" type="is-white" icon="user"></b-icon>
+            <b-icon
+              pack="fas"
+              size="is-small"
+              type="is-white"
+              icon="user"
+            ></b-icon>
             <span class="mr-3 ml-3 has-text-white">{{ username }}</span>
             <div class="buttons">
               <b-button
@@ -28,6 +33,16 @@
                 size="is-small"
                 >Ausloggen</b-button
               >
+              <b-tooltip label="Benutzerhilfe öffnen" position="is-left">
+                <b-button
+                  tag="a"
+                  outlined
+                  size="is-small"
+                  type="is-white"
+                  icon-left="question"
+                  href="/help/manual.pdf"
+                ></b-button>
+              </b-tooltip>
             </div>
           </b-navbar-item>
         </template>
