@@ -43,12 +43,12 @@
     >
       <b-table-column
         label="Patientennummer"
-        field="subject.individual.id"
+        field="mrNumber"
         v-slot="props"
         sortable
       >
         <p class="patient-id">
-          {{ props.row.mrNumber || props.row.subject.individual.id }}
+          {{ props.row.mrNumber }}
         </p>
       </b-table-column>
 
@@ -293,7 +293,7 @@ export default {
 
           return {
             id: subject.id,
-            mrNumber,
+            mrNumber: mrNumber || subject.individual.id,
             subject,
             note: fhirpath.evaluate(
               subject,
