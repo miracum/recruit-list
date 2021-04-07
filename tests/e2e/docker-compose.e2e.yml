@@ -36,7 +36,7 @@ services:
       HAPI_FHIR_CORS_ALLOWED_ORIGIN: "http://list:8080"
 
   loader:
-    image: curlimages/curl:7.75.0
+    image: curlimages/curl:7.76.0
     command: >
       sh -c "curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/data/sample-record-1.json' http://fhir:8080/fhir &&
              curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/data/sample-record-2.json' http://fhir:8080/fhir &&
