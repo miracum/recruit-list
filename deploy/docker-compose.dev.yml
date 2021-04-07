@@ -13,7 +13,7 @@ services:
       - "8082:8080"
 
   loader:
-    image: curlimages/curl:7.75.0
+    image: curlimages/curl:7.76.0
     command: >
       sh -c "curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/data/sample-record-1.json' http://fhir:8080/fhir &&
              curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/data/sample-record-2.json' http://fhir:8080/fhir &&
@@ -46,7 +46,7 @@ services:
       - 8083:8080
 
   fhir-pseudonymizer:
-    image: ghcr.io/miracum/fhir-pseudonymizer:v2.5.1
+    image: ghcr.io/miracum/fhir-pseudonymizer:v2.5.4
     environment:
       APIKEY: "fhir-pseudonymizer-api-key"
       TRACING__ENABLED: "true"
