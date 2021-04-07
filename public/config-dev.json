@@ -4,7 +4,7 @@
   "authRealm": "MIRACUM",
   "logoutRedirectUri": "/",
   "isKeycloakDisabled": false,
-  "hideDemographics": true,
-  "hideLastVisit": true,
+  "hideDemographics": false,
+  "hideLastVisit": false,
   "hideEhrButton": false
 }

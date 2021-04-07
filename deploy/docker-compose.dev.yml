@@ -1,13 +1,14 @@
-version: "3.7"
+version: "3.9"
 
 services:
   fhir:
-    image: ghcr.io/chgl/hapi/hapi-fhir-jpaserver-starter:5.2.0-distroless
+    image: hapiproject/hapi:v5.4.0
     environment:
       HAPI_FHIR_VALIDATION_REQUESTS_ENABLED: "true"
       HAPI_FHIR_SUBSCRIPTION_RESTHOOK_ENABLED: "true"
       HAPI_FHIR_FHIR_VERSION: "R4"
-      HAPI_FHIR_CORS_ALLOWED_ORIGIN: "http://localhost:8080"
+      HAPI_FHIR_CORS_ALLOWCREDENTIALS: "false"
+      HAPI_FHIR_CORS_ALLOWED_ORIGIN: "*"
     ports:
       - "8082:8080"
 
@@ -45,11 +46,11 @@ services:
       - 8083:8080
 
   fhir-pseudonymizer:
-    image: harbor.miracum.org/miracum-etl/fhir-pseudonymizer:2.3
+    image: ghcr.io/miracum/fhir-pseudonymizer:v2.5.1
     environment:
       APIKEY: "fhir-pseudonymizer-api-key"
-      JAEGER__ENABLED: "true"
-      JAEGER__HOST: "jaeger"
+      TRACING__ENABLED: "true"
+      TRACING__HOST: "jaeger"
     volumes:
       - ./anonymization.yaml:/etc/anonymization.yaml:ro
     ports:

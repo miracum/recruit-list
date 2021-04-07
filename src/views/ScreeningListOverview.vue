@@ -6,22 +6,32 @@
       <br />
       <pre>{{ errorMessage }}</pre>
     </b-message>
-    <b-message v-else-if="noLists" type="is-warning">Keine Rekrutierungsvorschläge vorhanden.</b-message>
+    <b-message v-else-if="noLists" type="is-warning"
+      >Keine Rekrutierungsvorschläge vorhanden. <br />
+      Ggf. fehlen die notwendingen Berechtigungen um Rekrutierungsvorschläge
+      einsehen zu können. <br />
+      Bitte wenden Sie sich an einen verantwortlichen Administrator.</b-message
+    >
     <div v-else>
       <h1 class="title is-3">Laufende Studien</h1>
       <div v-for="(list, index) in screeningLists" :key="index" class="card">
-        <router-link :to="{ name: 'patient-recommendations-by-id', params: { listId: list.id }}">
+        <router-link
+          :to="{
+            name: 'patient-recommendations-by-id',
+            params: { listId: list.id },
+          }"
+        >
           <div class="card-content">
             <div class="media">
               <div class="media-left">
-                <b-tag
-                  type="is-primary"
-                  size="is-large"
-                  rounded
-                >{{ list.entry ? list.entry.length : 0 }}</b-tag>
+                <b-tag type="is-primary" size="is-large" rounded>{{
+                  list.entry ? list.entry.length : 0
+                }}</b-tag>
               </div>
               <div class="media-right">
-                <h4 class="title is-4 mb-0">{{ getStudyDisplayFromList(list) }}</h4>
+                <h4 class="title is-4 mb-0">
+                  {{ getStudyDisplayFromList(list) }}
+                </h4>
               </div>
             </div>
           </div>

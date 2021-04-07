@@ -1,35 +1,28 @@
 <template>
-   <section>
-
-    <b-dropdown
-      v-model="selectedFilterOptions"
-      multiple
-      aria-role="list">
-
+  <section>
+    <b-dropdown v-model="selectedFilterOptions" multiple aria-role="list">
       <template #trigger>
-        <b-button
-          type="is-primary"
-          icon-right="sort-down">
+        <b-button type="is-primary" icon-right="sort-down">
           Vorschläge nach Status ausblenden: {{ selectedFilterOptions.length }}
         </b-button>
       </template>
 
       <b-dropdown-item
         aria-role="listitem"
-        v-for="(deFilterStatus, enFilterStatus) in recruitmentStatusOptions "
+        v-for="(deFilterStatus, enFilterStatus) in recruitmentStatusOptions"
         :value="enFilterStatus"
         :key="deFilterStatus"
       >
-      <span class="status-option-container">
-        <b-icon
-          pack="fas"
-          size="is-small"
-          icon="circle"
-          :type="getTypeFromStatus(enFilterStatus)"
-        ></b-icon>
+        <span class="status-option-container">
+          <b-icon
+            pack="fas"
+            size="is-small"
+            icon="circle"
+            :type="getTypeFromStatus(enFilterStatus)"
+          ></b-icon>
 
-        <span>{{ deFilterStatus }}</span>
-       </span>
+          <span>{{ deFilterStatus }}</span>
+        </span>
       </b-dropdown-item>
     </b-dropdown>
 
@@ -225,13 +218,22 @@ export default {
       default: () => [],
       type: Array,
     },
+    hideDemographics: {
+      default: () => false,
+      type: Boolean,
+    },
+    hideLastVisit: {
+      default: () => false,
+      type: Boolean,
+    },
+    hideEhrButton: {
+      default: () => false,
+      type: Boolean,
+    },
   },
   data() {
     return {
       selectedFilterOptions: [],
-      hideDemographics: false,
-      hideLastVisit: false,
-      hideEhrButton: false,
       isLoading: false,
       failedToLoad: false,
       errorMessage: "",
@@ -250,11 +252,6 @@ export default {
     this.isLoading = true;
 
     try {
-      const config = await Api.fetchConfig();
-      this.hideDemographics = config.hideDemographics;
-      this.hideLastVisit = config.hideLastVisit;
-      this.hideEhrButton = config.hideEhrButton;
-
       this.fhirClient = Api.getFhirClient();
       const allSubjects = this.items.map((e) => e.item);
 
@@ -311,7 +308,9 @@ export default {
         });
     },
     filteredSubjects() {
-      return this.patientViewModel.filter((entry) => ! this.selectedFilterOptions.includes(entry.subject.status))
+      return this.patientViewModel.filter(
+        (entry) => !this.selectedFilterOptions.includes(entry.subject.status)
+      );
     },
   },
 
