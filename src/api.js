@@ -4,7 +4,6 @@ import Constants from "@/const";
 import Vue from "vue";
 import axios from "axios";
 
-
 function createFhirClient() {
   let fhirUrl = process.env.VUE_APP_FHIR_URL;
   if (!fhirUrl) {
@@ -12,12 +11,11 @@ function createFhirClient() {
     fhirUrl = `${window.location.protocol}//${window.location.host}/fhir`;
   }
 
-  Vue.$log.debug("Keycloak:", Vue.$keycloak);
-
   return FHIR.client({
     serverUrl: fhirUrl,
-    clientSecret: Vue.$keycloak?.token,
-    clientId: Vue.$keycloak?.userName,
+    tokenResponse: {
+      access_token: Vue.prototype.$keycloak?.token,
+    },
   });
 }
 
@@ -59,6 +57,10 @@ const actions = {
     }
 
     const list = fhirpath.evaluate(allResources, "List")[0];
+
+    if(!list) {
+      throw new Error("No list found for the given id.")
+    }
 
     if (list.entry) {
       // a manual "resolveReferences" implementation since fhir.js doesn't support

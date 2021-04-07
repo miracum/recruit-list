@@ -20,13 +20,13 @@ FROM base
 ENV NODE_ENV=production \
     NO_UPDATE_NOTIFIER=true
 COPY package*.json ./
+COPY --from=release /app/node_modules node_modules
 COPY --from=release /app/server server
 COPY --from=release /app/dist dist
-COPY --from=release /app/node_modules node_modules
 
 USER 11111
 EXPOSE 8080
-HEALTHCHECK CMD wget --quiet --tries=1 --spider http://localhost:8080/api/health/readiness|| exit 1
+HEALTHCHECK CMD wget --quiet --tries=1 --spider http://localhost:8080/api/health/readiness || exit 1
 ENTRYPOINT [ "npm", "run", "server:start"]
 
 ARG VERSION="0.0.0"
