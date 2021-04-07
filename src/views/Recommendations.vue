@@ -3,7 +3,8 @@
     <b-loading :active="isLoading" :is-full-page="false" />
     <template v-if="!isLoading">
       <b-message v-if="failedToLoad" type="is-danger">
-        Rekrutierungsvorschläge konnten nicht geladen werden:
+        Rekrutierungsvorschläge konnten nicht geladen werden. Ggf. sind Sie für
+        den Zugriff auf diese Rekrutierungsvorschläge nicht freigeschalten.
         <br />
         <pre>{{ errorMessage }}</pre>
       </b-message>
@@ -21,7 +22,12 @@
             </p>
           </b-message>
         </header>
-        <ScreeningList :items="screeningList.entry"/>
+        <ScreeningList
+          :items="screeningList.entry"
+          :hideDemographics="hideDemographics"
+          :hideLastVisit="hideLastVisit"
+          :hideEhrButton="hideEhrButton"
+        />
         <p class="has-text-grey mt-6 mb-6">
           Letzte Änderung:
           {{ new Date(screeningList.meta.lastUpdated).toLocaleString("de-DE") }}
@@ -52,12 +58,20 @@ export default {
       isLoading: true,
       noList: false,
       errorMessage: "",
+      hideDemographics: false,
+      hideLastVisit: false,
+      hideEhrButton: false,
     };
   },
   async mounted() {
     try {
       const list = await Api.fetchListById(this.listId);
       this.screeningList = Object.freeze(list);
+
+      const config = await Api.fetchConfig();
+      this.hideDemographics = config.hideDemographics;
+      this.hideLastVisit = config.hideLastVisit;
+      this.hideEhrButton = config.hideEhrButton;
     } catch (exc) {
       this.errorMessage = exc;
       this.failedToLoad = true;

@@ -33,4 +33,5 @@ e2e:
     - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml run loader
     - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml run e2e
   after_script:
+    - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml logs
     - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml down -v --remove-orphans

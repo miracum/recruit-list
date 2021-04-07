@@ -1,5 +1,4 @@
 const path = require("path");
-const debug = require("debug")("server:server");
 const bearerToken = require("express-bearer-token");
 const promBundle = require("express-prom-bundle");
 const history = require("connect-history-api-fallback");
@@ -8,79 +7,65 @@ const helmet = require("helmet");
 const pino = require("pino-http")();
 const modifyResponse = require("node-http-proxy-json");
 const probe = require("kube-probe");
-const logger = require("pino")();
+const logger = require("pino")({ level: process.env.LOG_LEVEL || "info" });
+const yaml = require("js-yaml");
+const fs = require("fs");
+const cors = require("cors");
 
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const { NodeTracerProvider } = require("@opentelemetry/node");
+const { registerInstrumentations } = require("@opentelemetry/instrumentation");
 const { BatchSpanProcessor } = require("@opentelemetry/tracing");
 const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
-const { JaegerHttpTracePropagator } = require("@opentelemetry/propagator-jaeger");
+const { createJwtCheck } = require("./auth");
+const { createAccessFilter } = require("./fhirAccessFilter");
 
-const [hideDemographics, hideLastVisit, hideEhrButton] = [
-  process.env.HIDE_DEMOGRAPHICS === "true" || process.env.HIDE_DEMOGRAPHICS === "1",
-  process.env.HIDE_LAST_VISIT === "true" || process.env.HIDE_LAST_VISIT === "1",
-  process.env.HIDE_EHR_BUTTON === "true" || process.env.HIDE_EHR_BUTTON === "1",
-];
+const { config } = require("./config");
 
-let [authUrl, authClientId, authRealm, isKeycloakDisabled] = [
-  process.env.KEYCLOAK_AUTH_URL,
-  process.env.KEYCLOAK_CLIENT_ID,
-  process.env.KEYCLOAK_REALM,
-  process.env.KEYCLOAK_DISABLED === "true" || process.env.KEYCLOAK_DISABLED === "1",
-];
-
-const config = {
-  pseudonymization: {
-    enabled:
-      process.env.DE_PSEUDONYMIZATION_ENABLED === "true" ||
-      process.env.DE_PSEUDONYMIZATION_ENABLED === "1",
-    url: process.env.DE_PSEUDONYMIZATION_SERVICE_URL || "http://localhost:5000/fhir",
-    apiKey: process.env.DE_PSEUDONYMIZATION_API_KEY || "fhir-pseudonymizer-api-key",
-  },
-  tracing: {
-    enabled: process.env.TRACING_ENABLED === "true" || process.env.TRACING_ENABLED === "1",
-    serviceName:
-      process.env.JAEGER_SERVICE_NAME || process.env.OTEL_SERVICE_NAME || "screeninglist",
-  },
-  shouldLogRequests: process.env.LOG_REQUESTS === "true" || process.env.LOG_REQUESTS === "1",
-  metrics: {
-    bearerToken: process.env.METRICS_BEARER_TOKEN,
-  },
-  fhirUrl: process.env.FHIR_URL || "http://localhost:8082/fhir",
-};
-
-// TODO: this is quite ugly
-if (process.env.NODE_ENV !== "production") {
-  [authUrl, authClientId, authRealm, isKeycloakDisabled] = [
-    "http://localhost:8083/auth",
-    "uc1-screeninglist",
-    "MIRACUM",
-    true,
-  ];
-}
-
-if (!isKeycloakDisabled && (!authUrl || !authClientId || !authRealm)) {
-  logger.error("Error: Keycloak not configured.");
+if (!config.auth.disabled && (!config.auth.url || !config.auth.clientId || !config.auth.realm)) {
+  logger.error("Keycloak is not configured correctly: URL, client id, and realm are required.");
   process.exit(1);
 }
 
+const checkJwt = createJwtCheck(config);
+
+// by default, do not any filtering, simply returing the resource to be filtered.
+// eslint-disable-next-line no-unused-vars
+let filterAcessibleResources = (resource, _user) => resource;
+
+try {
+  logger.child({ path: config.rulesFilePath }).debug("Trying to load trials config");
+  const configString = fs.readFileSync(config.rulesFilePath, "utf8");
+  const rulesConfig = yaml.load(configString);
+  filterAcessibleResources = createAccessFilter(rulesConfig.notify.rules.trials, config.auth);
+} catch (error) {
+  logger
+    .child({ error })
+    .error("Failed to load the trial rules config. Defaulting to no filtering.");
+}
+
 if (config.tracing.enabled) {
-  // Use Jaeger propagator
-  const provider = new NodeTracerProvider({
-    plugins: {
-      express: {
-        enabled: true,
-        path: "@opentelemetry/plugin-express",
+  logger.child({ serviceName: config.tracing.serviceName }).info("Tracing is enabled.");
+  const provider = new NodeTracerProvider();
+  registerInstrumentations({
+    instrumentations: [
+      {
+        plugins: {
+          express: {
+            enabled: true,
+            path: "@opentelemetry/plugin-express",
+          },
+          http: {
+            enabled: true,
+            path: "@opentelemetry/plugin-http",
+            ignoreIncomingPaths: [
+              /^\/(api\/health\/.*|css|js|img|metrics|favicon|site.webmanifest)/,
+            ],
+          },
+        },
       },
-      http: {
-        enabled: true,
-        path: "@opentelemetry/plugin-http",
-        ignoreIncomingPaths: [/^\/(api\/health\/.*|css|js|img|metrics|favicon|site.webmanifest)/],
-        // used by the readiness check
-        ignoreOutgoingUrls: [/\/fhir\/metadata/],
-      },
-    },
-    propagator: new JaegerHttpTracePropagator(),
+    ],
+    tracerProvider: provider,
   });
   const exporter = new JaegerExporter({
     serviceName: config.tracing.serviceName,
@@ -90,8 +75,10 @@ if (config.tracing.enabled) {
 }
 
 // express is required to be imported after the OTEL SDK is setup so the plugins work correctly
+// eslint-disable-next-line import/order
 const express = require("express");
-const dePseudonymizer = require("./de-pseudonymizer");
+
+const dePseudonymizer = require("./dePseudonymizer");
 
 const metricsMiddleware = promBundle({
   includeMethod: true,
@@ -119,6 +106,7 @@ app.use(
     contentSecurityPolicy: false,
   })
 );
+app.use(cors());
 app.use(bearerToken());
 app.use(express.json());
 app.use(metricsMiddleware);
@@ -149,26 +137,32 @@ const proxy = createProxyMiddleware(proxyRequestFilter, {
       }
     }
   },
-  onProxyRes(proxyRes, _req, res) {
+  onProxyRes(proxyRes, req, res) {
     // eslint-disable-next-line no-param-reassign
     proxyRes.headers["Cache-Control"] = "no-store";
-    if (config.pseudonymization.enabled) {
-      logger.debug("De-pseudonymization is enabled. Modifying the response.");
-      return modifyResponse(res, proxyRes, async (body) => {
-        if (body) {
-          if (body.resourceType !== "Patient" && body.resourceType !== "Encounter") {
-            return body;
-          }
+    return modifyResponse(res, proxyRes, async (body) => {
+      if (!body) {
+        return body;
+      }
+
+      let modifiedBody = filterAcessibleResources(body, req.user);
+
+      if (config.pseudonymization.enabled) {
+        logger.debug("De-pseudonymization is enabled. Modifying the response.");
+        if (body.resourceType !== "Patient" && body.resourceType !== "Encounter") {
+          modifiedBody = body;
+        } else {
           try {
-            return await dePseudonymizer.dePseudonymize(config.pseudonymization, body);
-          } catch (err) {
-            logger.error(`De-pseudonymization failed: '${err}'. Returning original resource.`);
+            modifiedBody = await dePseudonymizer.dePseudonymize(config.pseudonymization, body);
+          } catch (error) {
+            logger
+              .child({ error })
+              .error("De-pseudonymization failed. Returning original resource.");
           }
         }
-        return body;
-      });
-    }
-    return res;
+      }
+      return modifiedBody;
+    });
   },
 });
 
@@ -188,20 +182,20 @@ app.use((req, res, next) => {
   return next();
 });
 
-app.use("^/fhir", proxy);
+app.use("^/fhir", checkJwt, proxy);
 
 app.get("/config", (_req, res) =>
   res.json({
-    hideDemographics,
-    hideLastVisit,
-    hideEhrButton,
-    isKeycloakDisabled,
-    authClientId,
-    authUrl,
-    authRealm,
-    realm: authRealm,
-    url: authUrl,
-    clientId: authClientId,
+    hideDemographics: config.ui.hideDemographics,
+    hideLastVisit: config.ui.hideLastVisit,
+    hideEhrButton: config.ui.hideEhrButton,
+    isKeycloakDisabled: config.auth.disabled,
+    authClientId: config.auth.clientId,
+    authUrl: config.auth.url,
+    authRealm: config.auth.realm,
+    realm: config.auth.realm,
+    url: config.auth.url,
+    clientId: config.auth.clientId,
   })
 );
 
@@ -219,7 +213,7 @@ function onError(error) {
   if (error.syscall !== "listen") {
     throw error;
   }
-  console.error(`${error}`);
+  logger.child({ error }).error(error);
   process.exit(1);
 }
 
@@ -227,7 +221,7 @@ const server = http.createServer(app);
 
 function onListening() {
   const addr = server.address();
-  debug(`Listening on ${addr}`);
+  logger.info(`Listening on '${addr.address}:${addr.port}'`);
 }
 
 server.listen(port);

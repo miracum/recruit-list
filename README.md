@@ -8,12 +8,13 @@
 
 ```sh
 npm install
-# starts a FHIR-server preloaded with sample studies @ http://localhost:8082/
+# starts a FHIR-server and other services for testing.
+# the FHIR-server comes preloaded with sample recommendations @ http://localhost:8082/fhir
 docker-compose -f deploy/docker-compose.dev.yml up
 ```
 
 The patient identifiers in [sample-record-1.json](deploy/data/sample-record-1.json) have been encrypted to show how de-pseudonymization works.
-The `docker-compose.dev.yml` contains the fhir-pseudonymizer configured to decrypt these identifiers.
+The `docker-compose.dev.yml` contains the fhir-pseudonymizer service configured to decrypt these identifiers.
 
 You can then enabled it by setting `DE_PSEUDONYMIZATION_ENABLED=1` before running `npm run server:watch`.
 
@@ -59,19 +60,51 @@ npm run server:watch
 # Optional: The app uses pino for structured logging.
 #           To prettify the output when debugging, run the following:
 npm install -g pino-pretty
-npm run server:start | pino-pretty
+npm run server:watch | pino-pretty
 ```
 
-### Disable Keycloak
+#### Running server and client app in hot-reload mode at the same time
+
+By default, the client-side app directly communicates with the FHIR server. To test de-pseudonymization and access
+restrictions, you have to configure the following:
+
+1. set `VUE_APP_FHIR_URL` in [.env.development](.env.development) to `http://localhost:8080/fhir`
+1. run `npm run server:watch`
+1. in a new terminal run `npm run serve`. The app should now be accessible on <http://localhost:8081/> and use the server as its backend.
+
+### Keycloak
+
+For development, a Keycloak server with a pre-configured test realm called "MIRACUM" is included in `docker-compose.dev.yaml`. It sets up a `uc1-screeninglist` client, representing this application. It also includes a few sample users to test the access control:
+
+- name: admin, password: admin (Keycloak Admin)
+- name: user1, password: user1
+- name: user2, password: user2
+- name: user3, password: user3
+- name: uc1-admin, password: admin (has the `admin` role in the `uc1-screeninglist` client and therefore allowed to access everything)
+
+The repo also contains a set of sample authorization rules in [notify-rules.dev.yaml](notify-rules.dev.yaml) which are automatically loaded for development.
+
+#### Disable Keycloak
 
 For testing and development, it might be easier to disable Keycloak entirely. When running with `npm run serve`, you'll need to modify [config-dev.json](public/config-dev.json) and set `isKeycloakDisabled` to `true`.
 When running the server, you'll need to set the env var `KEYCLOAK_DISABLED=true`.
 
-### Export Keycloak realm config
+#### Export Keycloak realm config
 
-```sh
-standalone.sh -Dkeycloak.migration.action=export -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/tmp/aio-export.json
-```
+When you make changes to the test realm, you can do the following to keep the included config up-to-date:
+
+1. Within the Keycloak container run:
+
+   ```sh
+   cd /opt/jboss/keycloak/bin/
+   standalone.sh -Dkeycloak.migration.action=export -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/tmp/aio-export.json
+   ```
+
+1. Copy the export to the local FS/repo:
+
+   ```sh
+   docker cp deploy_keycloak_1:/tmp/aio-export.json ./deploy/data/aio-export.json
+   ```
 
 ### Configure Table Columns
 
