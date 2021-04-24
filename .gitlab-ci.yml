@@ -20,7 +20,7 @@ unit:
 e2e:
   stage: test
   image:
-    name: docker/compose:1.29.0
+    name: docker/compose:1.29.1
     entrypoint: [""]
   extends: .job_defaults
   before_script:
