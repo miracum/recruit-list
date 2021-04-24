@@ -2,7 +2,6 @@ const path = require("path");
 const bearerToken = require("express-bearer-token");
 const promBundle = require("express-prom-bundle");
 const history = require("connect-history-api-fallback");
-const http = require("http");
 const helmet = require("helmet");
 const pino = require("pino-http")();
 const modifyResponse = require("node-http-proxy-json");
@@ -17,6 +16,9 @@ const { NodeTracerProvider } = require("@opentelemetry/node");
 const { registerInstrumentations } = require("@opentelemetry/instrumentation");
 const { BatchSpanProcessor } = require("@opentelemetry/tracing");
 const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
+const { ExpressInstrumentation } = require("@opentelemetry/instrumentation-express");
+const { HttpInstrumentation } = require("@opentelemetry/instrumentation-http");
+
 const { createJwtCheck } = require("./auth");
 const { createAccessFilter } = require("./fhirAccessFilter");
 
@@ -48,35 +50,34 @@ if (config.tracing.enabled) {
   logger.child({ serviceName: config.tracing.serviceName }).info("Tracing is enabled.");
   const provider = new NodeTracerProvider();
   registerInstrumentations({
-    instrumentations: [
-      {
-        plugins: {
-          express: {
-            enabled: true,
-            path: "@opentelemetry/plugin-express",
-          },
-          http: {
-            enabled: true,
-            path: "@opentelemetry/plugin-http",
-            ignoreIncomingPaths: [
-              /^\/(api\/health\/.*|css|js|img|metrics|favicon|site.webmanifest)/,
-            ],
-          },
-        },
-      },
-    ],
     tracerProvider: provider,
+    instrumentations: [
+      // Express instrumentation expects HTTP layer to be instrumented
+      new HttpInstrumentation(),
+      new ExpressInstrumentation({
+        ignoreLayers: [/^\/(api\/health\/.*|css|js|img|metrics|favicon|site.webmanifest)/],
+      }),
+    ],
   });
+
   const exporter = new JaegerExporter({
     serviceName: config.tracing.serviceName,
   });
+
   provider.addSpanProcessor(new BatchSpanProcessor(exporter));
+
+  // Initialize the OpenTelemetry APIs to use the NodeTracerProvider bindings
   provider.register();
+} else {
+  logger.info("Tracing is disabled");
 }
 
 // express is required to be imported after the OTEL SDK is setup so the plugins work correctly
 // eslint-disable-next-line import/order
 const express = require("express");
+
+// eslint-disable-next-line import/order
+const http = require("http");
 
 const dePseudonymizer = require("./dePseudonymizer");
 
@@ -145,7 +146,11 @@ const proxy = createProxyMiddleware(proxyRequestFilter, {
         return body;
       }
 
-      let modifiedBody = filterAcessibleResources(body, req.user);
+      let modifiedBody = body;
+
+      if (!config.auth.disabled) {
+        filterAcessibleResources(body, req.user);
+      }
 
       if (config.pseudonymization.enabled) {
         logger.debug("De-pseudonymization is enabled. Modifying the response.");
