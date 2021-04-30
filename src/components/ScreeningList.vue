@@ -76,13 +76,20 @@
         v-slot="props"
         :visible="!hideLastVisit"
       >
-        <template v-if="props.row.encounter">
-          <span class="is-size-7 has-text-weight-semibold">
-            {{
-              new Date(props.row.encounter.period.start).toLocaleDateString()
-            }}
+        <template v-if="props.row.encounterPeriod">
+          <span
+            v-if="props.row.encounterPeriod.end"
+            class="is-size-7 has-text-weight-semibold"
+          >
+            {{ new Date(props.row.encounterPeriod.start).toLocaleDateString() }}
             -
-            {{ new Date(props.row.encounter.period.end).toLocaleDateString() }}:
+            {{ new Date(props.row.encounterPeriod.end).toLocaleDateString() }}:
+          </span>
+          <span v-else class="is-size-7 has-text-weight-semibold">
+            seit
+            {{
+              new Date(props.row.encounterPeriod.start).toLocaleDateString()
+            }}:
           </span>
           <br />
         </template>
@@ -288,6 +295,12 @@ export default {
             }
           )[0];
 
+          const locationEntryComponent =
+            latestEncounterAndLocation?.locationEntry;
+          const encounterPeriod =
+            locationEntryComponent?.period ||
+            latestEncounterAndLocation?.encounter?.period;
+
           return {
             id: subject.id,
             mrNumber: mrNumber || subject.individual.id,
@@ -299,11 +312,8 @@ export default {
                 noteExtensionUrl: Constants.URL_NOTE_EXTENSION,
               }
             )[0],
-            location:
-              latestEncounterAndLocation && latestEncounterAndLocation.location,
-            encounter:
-              latestEncounterAndLocation &&
-              latestEncounterAndLocation.encounter,
+            encounterPeriod,
+            location: locationEntryComponent?.location,
           };
         });
     },
