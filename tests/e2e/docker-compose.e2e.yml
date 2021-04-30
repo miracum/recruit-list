@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   list:
-    image: harbor.miracum.org/uc1-recruit/list:${IMAGE_TAG}
+    image: quay.io/miracum/recruit-list:${IMAGE_TAG}
     environment:
       - FHIR_URL=http://fhir:8080/fhir
       - KEYCLOAK_CLIENT_ID=uc1-screeninglist
@@ -28,7 +28,7 @@ services:
       - ${PWD}:/e2e
 
   fhir:
-    image: hapiproject/hapi:v5.4.0
+    image: hapiproject/hapi:v5.3.0
     environment:
       HAPI_FHIR_VALIDATION_REQUESTS_ENABLED: "true"
       HAPI_FHIR_SUBSCRIPTION_RESTHOOK_ENABLED: "true"
@@ -38,10 +38,10 @@ services:
   loader:
     image: curlimages/curl:7.76.1
     command: >
-      sh -c "curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/data/sample-record-1.json' http://fhir:8080/fhir &&
-             curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/data/sample-record-2.json' http://fhir:8080/fhir &&
-             curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/data/sample-record-3.json' http://fhir:8080/fhir &&
-             curl -X POST -H 'Content-Type:application/json' --retry-connrefuse --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 10 --data '@/data/sample-lists.json' http://fhir:8080/fhir"
+      sh -c "curl -X POST -H 'Content-Type: application/fhir+json' --retry-connrefuse --connect-timeout 30 --max-time 60 --retry 5 --retry-delay 15 --data '@/data/sample-record-1.json' http://fhir:8080/fhir &&
+             curl -X POST -H 'Content-Type: application/fhir+json' --retry-connrefuse --connect-timeout 30 --max-time 60 --retry 5 --retry-delay 15 --data '@/data/sample-record-2.json' http://fhir:8080/fhir &&
+             curl -X POST -H 'Content-Type: application/fhir+json' --retry-connrefuse --connect-timeout 30 --max-time 60 --retry 5 --retry-delay 15 --data '@/data/sample-record-3.json' http://fhir:8080/fhir &&
+             curl -X POST -H 'Content-Type: application/fhir+json' --retry-connrefuse --connect-timeout 30 --max-time 60 --retry 5 --retry-delay 15 --data '@/data/sample-lists.json' http://fhir:8080/fhir"
     volumes:
       - ${PWD}/deploy/data:/data:ro
     depends_on:

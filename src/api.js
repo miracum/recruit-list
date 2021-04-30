@@ -58,8 +58,8 @@ const actions = {
 
     const list = fhirpath.evaluate(allResources, "List")[0];
 
-    if(!list) {
-      throw new Error("No list found for the given id.")
+    if (!list) {
+      throw new Error("No list found for the given id.");
     }
 
     if (list.entry) {
@@ -98,13 +98,13 @@ const actions = {
 
     return record;
   },
-  async fetchLatestEncounterWithLocation(patientId) {
+  async fetchLatestEncounterWithLocation(patientId, maxNumberOfEncounters = 5) {
     const client = createFhirClient();
 
-    // fetch the latest 10 Encounters for the given patient, sorted by modification date
+    // fetch the latest 5 (or maxNumberOfEncounters) Encounters for the given patient, sorted by date
     // and include the Encounter's location to reduce the number of server round-trips
     const entries = await client.request(
-      `Encounter?subject=Patient/${patientId}&_sort=-date&_count=10&_include=Encounter:location&_pretty=false`,
+      `Encounter?subject=Patient/${patientId}&_sort=-date&_count=${maxNumberOfEncounters}&_include=Encounter:location&_pretty=false`,
       {
         flat: true,
         pageLimit: 0,
@@ -119,33 +119,80 @@ const actions = {
       locations.map((location) => [`Location/${location.id}`, location])
     );
 
-    // filter out the encounters so we only need to iterate over them
-    const encounters = entries.filter((entry) => entry.resourceType === "Encounter");
+    // select the encounters so we only need to iterate over them
+    const encounters = entries
+      .filter((entry) => entry.resourceType === "Encounter")
+      .sort((e1, e2) => {
+        // in the rare case that multiple encounters start at the same time
+        // order the encounter whose status is in-progress or without an end-date
+        // before the other.
+        if (e1.period?.start === e2.period?.start) {
+          if (e1.status === "in-progress") {
+            return -1;
+          }
+
+          if (!e1.period?.end) {
+            return -1;
+          }
+
+          return 1;
+        }
+
+        return 0;
+      });
+
+    Vue.$log.debug(`Found ${encounters.length} for Patient/${patientId}`);
 
     for (let i = 0; i < encounters.length; i += 1) {
       const encounter = encounters[i];
 
       // if there's a location associated with the encounter then that's already a good sign
+      // that this is the most recent encounter we can use for displaying
       if (encounter.location) {
         Vue.$log.debug(
-          `Found Encounter ${encounter.id} with location containing ${encounter.location.length} entries`
+          `Found Encounter/${encounter.id} with location containing ${encounter.location?.length} entries`
         );
+
+        // sort updates in-place
+        encounter.location.sort((a, b) => {
+          if (a.period?.start && b.period?.start) {
+            return new Date(b.period.start) - new Date(a.period.start);
+          }
+          // only sort if period.start is set for both items. If not, treat them equally as no temporal
+          // comparison is feasible
+          return 0;
+        });
 
         for (let k = 0; k < encounter.location.length; k += 1) {
           const locationEntry = encounter.location[k];
-          const locationReference = locationEntry.location.reference;
 
-          // we currently only handle encounters that explicitely reference a defined Location
-          // resource and not yet logical references
+          const locationReference = locationEntry.location.reference;
           if (locationReference) {
             // get the actual Location resource via the lookup call
             const location = locationLookup.get(locationReference);
 
             Vue.$log.debug(
-              `Found Encounter referencing a location with status ${locationEntry.status}`
+              `Found Encounter/${encounter.id} referencing location ${locationEntry.name} with status ${locationEntry.status}`
             );
 
-            return { encounter, location };
+            // replace reference with the actual location object
+            locationEntry.location = location;
+
+            return { encounter, locationEntry };
+          }
+
+          // if no reference is set, there still might be a display element we could use
+
+          const locationDisplay = locationEntry.location.display;
+          if (locationDisplay) {
+            Vue.$log.debug(
+              `Found Encounter with location display ${locationDisplay} with status ${locationEntry.status}`
+            );
+
+            // replace reference with a "Location" object where only the name is set
+            locationEntry.location = { name: locationDisplay };
+
+            return { encounter, locationEntry };
           }
         }
       }
