@@ -1,9 +1,16 @@
 variables:
-  CONTAINER_PROJECT_PATH: /uc1-recruit/list
+  CONTAINER_REGISTRY_HOST: quay.io
+  CONTAINER_PROJECT_PATH: /miracum/recruit-list
 
 include:
   - project: "devops/ci-templates"
     file: "/standard/.container-build.yml"
+
+.registry_login:
+  before_script:
+    - echo $QUAY_IO_REGISTRY_PASSWORD | docker login -u $QUAY_IO_REGISTRY_USERNAME $CONTAINER_REGISTRY_HOST --password-stdin
+  after_script:
+    - docker logout $CONTAINER_REGISTRY_HOST
 
 unit:
   stage: test
