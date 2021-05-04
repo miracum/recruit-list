@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   list:
-    image: quay.io/miracum/recruit-list:${IMAGE_TAG}
+    image: ghcr.io/miracum/recruit/list:${IMAGE_TAG}
     environment:
       - FHIR_URL=http://fhir:8080/fhir
       - KEYCLOAK_CLIENT_ID=uc1-screeninglist
@@ -28,7 +28,7 @@ services:
       - ${PWD}:/e2e
 
   fhir:
-    image: hapiproject/hapi:v5.3.0
+    image: hapiproject/hapi:v5.4.0
     environment:
       HAPI_FHIR_VALIDATION_REQUESTS_ENABLED: "true"
       HAPI_FHIR_SUBSCRIPTION_RESTHOOK_ENABLED: "true"
