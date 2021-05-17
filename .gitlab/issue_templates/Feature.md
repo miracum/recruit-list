@@ -11,3 +11,5 @@
 ### Mögliche Implementierung
 
 <!--- Not obligatory, but suggest an idea for implementing addition or change -->
+
+/label ~enhancement
