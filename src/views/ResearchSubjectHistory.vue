@@ -10,18 +10,19 @@
       <template v-else>
         <header class="has-text-centered">
           <h1 class="title is-3">Patient {{ mrNumber || subject.id }}</h1>
-          <h2
-            class="subtitle is-5"
-          >geboren {{ new Date(subject.birthDate).getFullYear() }}, {{ subject.gender === "male" ? "männlich" : "weiblich"}}</h2>
+          <h2 class="subtitle is-5">
+            geboren {{ new Date(subject.birthDate).getFullYear() }},
+            {{ subject.gender === "male" ? "männlich" : "weiblich" }}
+          </h2>
         </header>
         <div class="timeline">
           <div v-for="(entry, index) in history" :key="index">
             <div class="card history-item">
               <span class="dot has-background-primary"></span>
               <div class="card-content">
-                <p
-                  class="history-item-date"
-                >{{ new Date(entry.meta.lastUpdated).toLocaleString("de-DE") }}</p>
+                <p class="history-item-date">
+                  {{ new Date(entry.meta.lastUpdated).toLocaleString("de-DE") }}
+                </p>
                 <p>
                   Status:
                   <strong>{{ translateSubjectStatus(entry.status) }}</strong>
@@ -78,15 +79,13 @@ export default {
   },
   computed: {
     mrNumber() {
-      const mrNumber = fhirpath.evaluate(
+      return fhirpath.evaluate(
         this.subject,
         "Patient.identifier.where(type.coding.system=%identifierType and type.coding.code='MR').value",
         {
           identifierType: Constants.SYSTEM_IDENTIFIER_TYPE,
         }
       )[0];
-
-      return mrNumber;
     },
   },
   methods: {
