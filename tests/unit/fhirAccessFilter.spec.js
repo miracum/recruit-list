@@ -7,6 +7,7 @@ const doc = yaml.load(fs.readFileSync("tests/unit/fixtures/test-notify-rules.yam
 const singleList = require("./fixtures/bundle-with-single-list.json");
 const multipleLists = require("./fixtures/bundle-with-multiple-lists.json");
 const listsWithoutStudyExtension = require("./fixtures/bundle-with-list-without-study-extension.json");
+const bundleWithoutEntries = require("./fixtures/bundle-without-entries.json");
 
 const userWithoutAnyAccess = {
   preferred_username: "userWithoutAccess",
@@ -67,5 +68,11 @@ describe("fhirAccessFilter", () => {
     const filtered = filterAcessibleResources(multipleLists, userWithoutUsernameAndEmail);
 
     expect(filtered.entry).toHaveLength(0);
+  });
+  it("should return empty list if bundle contains no entries", () => {
+    const filtered = filterAcessibleResources(bundleWithoutEntries, userWithAdminRole);
+
+    expect(filtered.total).toBe(0);
+    expect(filtered.entry).toBeUndefined();
   });
 });

@@ -46,6 +46,37 @@ const userHasAdminRole = (user, authConfig) => {
   return roles.includes("admin");
 };
 
+const getEntriesToKeepFromBundle = (bundle, accessibleStudyAcronyms) =>
+  bundle.entry.filter((entry) => {
+    if (entry.resource.resourceType === "List") {
+      const belongsToStudyExtension = entry.resource.extension?.filter(
+        (extension) => extension.url === URL_LIST_BELONGS_TO_STUDY_EXTENSION
+      )[0];
+      const belongsToStudyAcronym = belongsToStudyExtension?.valueReference.display;
+      if (!belongsToStudyAcronym) {
+        logger
+          .child({ fullUrl: entry.fullUrl })
+          .error(
+            "The List resource does not contain a reference to the study acronym. " +
+              "Denying access by default."
+          );
+        return false;
+      }
+      if (
+        accessibleStudyAcronyms.includes("*") ||
+        accessibleStudyAcronyms.includes(belongsToStudyAcronym)
+      ) {
+        return true;
+      }
+
+      return false;
+    }
+    // Filtering is currently only applied to the List resources. All others are passed through.
+    // A more thorough solution should filter out all resources referenced by Lists that aren't accessible
+    // as well.
+    return true;
+  });
+
 exports.createAccessFilter = (trialsConfig, authConfig) => (resource, user) => {
   if (userHasAdminRole(user, authConfig)) {
     return resource;
@@ -54,35 +85,12 @@ exports.createAccessFilter = (trialsConfig, authConfig) => (resource, user) => {
   const accessibleStudyAcronyms = getAccessibleStudyAcronymsForUser(user, trialsConfig);
 
   const handleBundle = (bundle) => {
-    const entriesToKeep = bundle.entry.filter((entry) => {
-      if (entry.resource.resourceType === "List") {
-        const belongsToStudyExtension = entry.resource.extension?.filter(
-          (extension) => extension.url === URL_LIST_BELONGS_TO_STUDY_EXTENSION
-        )[0];
-        const belongsToStudyAcronym = belongsToStudyExtension?.valueReference.display;
-        if (!belongsToStudyAcronym) {
-          logger
-            .child({ fullUrl: entry.fullUrl })
-            .error(
-              "The List resource does not contain a reference to the study acronym. " +
-                "Denying access by default."
-            );
-          return false;
-        }
-        if (
-          accessibleStudyAcronyms.includes("*") ||
-          accessibleStudyAcronyms.includes(belongsToStudyAcronym)
-        ) {
-          return true;
-        }
-
-        return false;
-      }
-      // Filtering is currently only applied to the List resources. All others are passed through.
-      // A more thorough solution should filter out all resources referenced by Lists that aren't accessible
-      // as well.
+    if (!bundle.entry) {
+      logger.child({ bundleId: bundle.id }).warn("search result does not contain any entries.");
       return true;
-    });
+    }
+
+    const entriesToKeep = getEntriesToKeepFromBundle(bundle, accessibleStudyAcronyms);
 
     // copies/clones the bundle
     const modifiedBundle = { ...bundle };

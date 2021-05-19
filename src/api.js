@@ -78,25 +78,18 @@ const actions = {
   },
   async fetchSubjectHistory(subjectId) {
     const client = createFhirClient();
-    const subjectHistory = await client.request(`ResearchSubject/${subjectId}/_history`, {
+    return client.request(`ResearchSubject/${subjectId}/_history`, {
       flat: true,
       pageLimit: 0,
       resolveReferences: ["individual"],
     });
-
-    return subjectHistory;
   },
   async fetchPatientRecord(patientId) {
     const client = createFhirClient();
-    const record = await client.request(
-      `Patient/${patientId}/$everything?_count=250&_pretty=false`,
-      {
-        flat: true,
-        pageLimit: 0,
-      }
-    );
-
-    return record;
+    return client.request(`Patient/${patientId}/$everything?_count=250&_pretty=false`, {
+      flat: true,
+      pageLimit: 0,
+    });
   },
   async fetchLatestEncounterWithLocation(patientId, maxNumberOfEncounters = 5) {
     const client = createFhirClient();
@@ -143,9 +136,8 @@ const actions = {
 
     Vue.$log.debug(`Found ${encounters.length} for Patient/${patientId}`);
 
-    for (let i = 0; i < encounters.length; i += 1) {
-      const encounter = encounters[i];
-
+    // eslint-disable-next-line no-restricted-syntax
+    for (const encounter of encounters) {
       // if there's a location associated with the encounter then that's already a good sign
       // that this is the most recent encounter we can use for displaying
       if (encounter.location) {
@@ -163,9 +155,8 @@ const actions = {
           return 0;
         });
 
-        for (let k = 0; k < encounter.location.length; k += 1) {
-          const locationEntry = encounter.location[k];
-
+        // eslint-disable-next-line no-restricted-syntax
+        for (const locationEntry of encounter.location) {
           const locationReference = locationEntry.location.reference;
           if (locationReference) {
             // get the actual Location resource via the lookup call
