@@ -53,10 +53,10 @@ if (config.tracing.enabled) {
     tracerProvider: provider,
     instrumentations: [
       // Express instrumentation expects HTTP layer to be instrumented
-      new HttpInstrumentation(),
-      new ExpressInstrumentation({
-        ignoreLayers: [/^\/(api\/health\/.*|css|js|img|metrics|favicon|site.webmanifest)/],
+      new HttpInstrumentation({
+        ignoreIncomingPaths: [/^\/(api\/health\/.*|css|js|img|metrics|favicon|site\.webmanifest)/],
       }),
+      new ExpressInstrumentation(),
     ],
   });
 
