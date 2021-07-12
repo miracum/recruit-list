@@ -12,15 +12,10 @@ const fs = require("fs");
 const cors = require("cors");
 
 const { createProxyMiddleware } = require("http-proxy-middleware");
-const { NodeTracerProvider } = require("@opentelemetry/node");
-const { registerInstrumentations } = require("@opentelemetry/instrumentation");
-const { BatchSpanProcessor } = require("@opentelemetry/tracing");
-const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
-const { ExpressInstrumentation } = require("@opentelemetry/instrumentation-express");
-const { HttpInstrumentation } = require("@opentelemetry/instrumentation-http");
 
 const { createJwtCheck } = require("./auth");
 const { createAccessFilter } = require("./fhirAccessFilter");
+const { setupTracing } = require("./tracing");
 
 const { config } = require("./config");
 
@@ -48,26 +43,7 @@ try {
 
 if (config.tracing.enabled) {
   logger.child({ serviceName: config.tracing.serviceName }).info("Tracing is enabled.");
-  const provider = new NodeTracerProvider();
-  registerInstrumentations({
-    tracerProvider: provider,
-    instrumentations: [
-      // Express instrumentation expects HTTP layer to be instrumented
-      new HttpInstrumentation({
-        ignoreIncomingPaths: [/^\/(api\/health\/.*|css|js|img|metrics|favicon|site\.webmanifest)/],
-      }),
-      new ExpressInstrumentation(),
-    ],
-  });
-
-  const exporter = new JaegerExporter({
-    serviceName: config.tracing.serviceName,
-  });
-
-  provider.addSpanProcessor(new BatchSpanProcessor(exporter));
-
-  // Initialize the OpenTelemetry APIs to use the NodeTracerProvider bindings
-  provider.register();
+  setupTracing(config.tracing);
 } else {
   logger.info("Tracing is disabled");
 }
@@ -201,6 +177,7 @@ app.get("/config", (_req, res) =>
     realm: config.auth.realm,
     url: config.auth.url,
     clientId: config.auth.clientId,
+    checkLoginIframeDisabled: config.auth.checkLoginIframeDisabled,
   })
 );
 
