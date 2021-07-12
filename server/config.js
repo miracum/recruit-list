@@ -21,6 +21,9 @@ exports.config = {
     clientId: process.env.KEYCLOAK_CLIENT_ID || "uc1-screeninglist",
     realm: process.env.KEYCLOAK_REALM || "MIRACUM",
     disabled: process.env.KEYCLOAK_DISABLED === "true" || process.env.KEYCLOAK_DISABLED === "1",
+    checkLoginIframeDisabled:
+      process.env.KEYCLOAK_CHECK_LOGIN_IFRAME_DISABLED === "true" ||
+      process.env.KEYCLOAK_CHECK_LOGIN_IFRAME_DISABLED === "1",
   },
   ui: {
     hideDemographics:
@@ -28,5 +31,5 @@ exports.config = {
     hideLastVisit: process.env.HIDE_LAST_VISIT === "true" || process.env.HIDE_LAST_VISIT === "1",
     hideEhrButton: process.env.HIDE_EHR_BUTTON === "true" || process.env.HIDE_EHR_BUTTON === "1",
   },
-  rulesFilePath: process.env.RULES_FILE_PATH || "./notify-rules.dev.yaml"
+  rulesFilePath: process.env.RULES_FILE_PATH || "./notify-rules.dev.yaml",
 };
