@@ -42,7 +42,10 @@ axios
     if (!response.data.isKeycloakDisabled) {
       Vue.use(VueKeycloakJs, {
         config: response.data,
-        init: { onLoad: "login-required" },
+        init: {
+          onLoad: "login-required",
+          checkLoginIframe: !response.data.checkLoginIframeDisabled,
+        },
         onReady: () => {
           new Vue({
             router,
