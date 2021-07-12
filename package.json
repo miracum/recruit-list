@@ -25,6 +25,8 @@
     "@opentelemetry/instrumentation-express": "0.23.0",
     "@opentelemetry/instrumentation-http": "0.23.0",
     "@opentelemetry/node": "0.23.0",
+    "@opentelemetry/resources": "0.23.0",
+    "@opentelemetry/semantic-conventions": "0.23.0",
     "@opentelemetry/tracing": "0.23.0",
     "axios": "0.21.1",
     "buefy": "0.9.8",
