@@ -124,48 +124,52 @@
       </b-table-column>
 
       <b-table-column label="Aktionen" v-slot="props">
-        <div class="columns is-desktop is-1 is-variable">
-          <div class="column">
-            <b-button
-              @click="onSaveRowChanges($event, props.row)"
-              class="save-status"
-              type="is-primary"
-              size="is-small"
-              icon-left="save"
-              >Speichern</b-button
-            >
+        <div class="columns is-multiline">
+          <div class="column is-narrow">
+            <b-tooltip label="Änderungen Speichern" position="is-bottom">
+              <b-button
+                @click="onSaveRowChanges($event, props.row)"
+                class="save-status"
+                type="is-primary"
+                size="is-small"
+                icon-left="save"
+                >Speichern</b-button
+              >
+            </b-tooltip>
           </div>
-          <div class="column" v-if="!hideEhrButton">
-            <b-button
-              tag="router-link"
-              :to="{
-                name: 'patient-record',
-                params: { patientId: props.row.subject.individual.id },
-              }"
-              type="is-primary"
-              size="is-small"
-              icon-left="notes-medical"
-              outlined
-              target="_blank"
-              rel="noopener noreferrer"
-              >Patientenakte</b-button
-            >
+          <div class="column is-narrow" v-if="!hideEhrButton">
+            <b-tooltip label="Patientenakte anzeigen" position="is-bottom">
+              <b-button
+                tag="router-link"
+                :to="{
+                  name: 'patient-record',
+                  params: { patientId: props.row.subject.individual.id },
+                }"
+                type="is-primary"
+                size="is-small"
+                icon-left="notes-medical"
+                outlined
+                target="_blank"
+                rel="noopener noreferrer"
+              ></b-button>
+            </b-tooltip>
           </div>
-          <div class="column">
-            <b-button
-              tag="router-link"
-              :to="{
-                name: 'researchsubject-history',
-                params: { subjectId: props.row.id },
-              }"
-              type="is-primary"
-              size="is-small"
-              icon-left="history"
-              outlined
-              target="_blank"
-              rel="noopener noreferrer"
-              >Änderungshistorie</b-button
-            >
+          <div class="column is-narrow">
+            <b-tooltip label="Änderungshistorie anzeigen" position="is-bottom">
+              <b-button
+                tag="router-link"
+                :to="{
+                  name: 'researchsubject-history',
+                  params: { subjectId: props.row.id },
+                }"
+                type="is-primary"
+                size="is-small"
+                icon-left="history"
+                outlined
+                target="_blank"
+                rel="noopener noreferrer"
+              ></b-button>
+            </b-tooltip>
           </div>
         </div>
       </b-table-column>
@@ -339,7 +343,6 @@ export default {
 
 .patient-id {
   word-wrap: break-word;
-  max-width: 40em;
-  max-width: 50ch;
+  max-width: 25ch;
 }
 </style>
