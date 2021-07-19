@@ -1,5 +1,13 @@
 <template>
   <div class="last-stay">
+    <template v-if="isLoading">
+      <span>Sucht letzten bekannten Aufenthalt...</span>
+    </template>
+    <b-message v-if="errorMessage" type="is-danger">
+      Fehler beim suchen des letzten bekannten Aufenthalts:
+      <br />
+      <pre>{{ errorMessage }}</pre>
+    </b-message>
     <template v-if="encounterPeriod">
       <span
         v-if="encounterPeriod.end"
@@ -50,6 +58,7 @@ export default {
   data() {
     return {
       isLoading: false,
+      errorMessage: "",
       latestEncounterAndLocation: {},
       contactPointSystemToIcon: {
         phone: "phone",
@@ -71,7 +80,6 @@ export default {
       );
     } catch (exc) {
       this.$log.error(exc);
-      this.failedToLoad = true;
       this.errorMessage = exc.message;
     } finally {
       this.isLoading = false;
