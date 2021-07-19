@@ -120,11 +120,7 @@ const actions = {
         // order the encounter whose status is in-progress or without an end-date
         // before the other.
         if (e1.period?.start === e2.period?.start) {
-          if (e1.status === "in-progress") {
-            return -1;
-          }
-
-          if (!e1.period?.end) {
+          if (e1.status === "in-progress" || !e1.period?.end) {
             return -1;
           }
 
@@ -134,7 +130,7 @@ const actions = {
         return 0;
       });
 
-    Vue.$log.debug(`Found ${encounters.length} for Patient/${patientId}`);
+    Vue.$log.debug(`Found ${encounters.length} encounters for Patient/${patientId}`);
 
     // eslint-disable-next-line no-restricted-syntax
     for (const encounter of encounters) {
@@ -163,7 +159,7 @@ const actions = {
             const location = locationLookup.get(locationReference);
 
             Vue.$log.debug(
-              `Found Encounter/${encounter.id} referencing location ${locationEntry.name} with status ${locationEntry.status}`
+              `Found location entry referencing location "${location.name}" with status "${locationEntry.status}"`
             );
 
             // replace reference with the actual location object
@@ -173,15 +169,28 @@ const actions = {
           }
 
           // if no reference is set, there still might be a display element we could use
-
           const locationDisplay = locationEntry.location.display;
           if (locationDisplay) {
             Vue.$log.debug(
-              `Found Encounter with location display ${locationDisplay} with status ${locationEntry.status}`
+              `Found location entry with display "${locationDisplay}" with status "${locationEntry.status}"`
             );
 
             // replace reference with a "Location" object where only the name is set
+            // this makes it easier to work with later on, since we don't have to duplicate
+            // these various edge cases when actually displaying the location
             locationEntry.location = { name: locationDisplay };
+
+            return { encounter, locationEntry };
+          }
+
+          // if neither reference nor display are set, maybe there's still the identifier value we could use
+          const locationIdentifier = locationEntry.location.identifier;
+          if (locationIdentifier) {
+            Vue.$log.debug(
+              `Found location entry with identifier "${locationIdentifier.value}" with status "${locationEntry.status}"`
+            );
+
+            locationEntry.location = { name: locationIdentifier.value };
 
             return { encounter, locationEntry };
           }

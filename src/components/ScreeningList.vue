@@ -76,36 +76,7 @@
         v-slot="props"
         :visible="!hideLastVisit"
       >
-        <template v-if="props.row.encounterPeriod">
-          <span
-            v-if="props.row.encounterPeriod.end"
-            class="is-size-7 has-text-weight-semibold"
-          >
-            {{ new Date(props.row.encounterPeriod.start).toLocaleDateString() }}
-            -
-            {{ new Date(props.row.encounterPeriod.end).toLocaleDateString() }}:
-          </span>
-          <span v-else class="is-size-7 has-text-weight-semibold">
-            seit
-            {{
-              new Date(props.row.encounterPeriod.start).toLocaleDateString()
-            }}:
-          </span>
-          <br />
-        </template>
-        <p v-if="props.row.location">
-          <span class="has-text-weight-semibold">{{
-            props.row.location.name
-          }}</span>
-          <br />
-          <span
-            v-for="(telecom, index) in props.row.location.telecom"
-            :key="index"
-          >
-            {{ telecom.value }}
-            <br />
-          </span>
-        </p>
+        <last-stay :subject="props.row.subject"></last-stay>
       </b-table-column>
 
       <b-table-column label="Notiz" field="note" v-slot="props">
@@ -217,6 +188,7 @@
 import fhirpath from "fhirpath";
 import Constants from "@/const";
 import Api from "@/api";
+import LastStay from "@/components/LastStay.vue";
 
 export default {
   name: "ScreeningList",
@@ -238,6 +210,9 @@ export default {
       type: Boolean,
     },
   },
+  components: {
+    LastStay,
+  },
   data() {
     return {
       selectedFilterOptions: [],
@@ -252,41 +227,16 @@ export default {
         withdrawn: "Studienteilnahme abgelehnt",
       },
       fhirClient: {},
-      encounterWithLocationLookup: new Map(),
     };
   },
   async mounted() {
-    this.isLoading = true;
-
-    try {
-      this.fhirClient = Api.getFhirClient();
-      const allSubjects = this.items.map((e) => e.item);
-
-      const locationPromise = allSubjects.map(async (subject) => [
-        subject.individual.id,
-        await Api.fetchLatestEncounterWithLocation(subject.individual.id),
-      ]);
-
-      this.encounterWithLocationLookup = new Map(
-        await Promise.all(locationPromise)
-      );
-    } catch (exc) {
-      this.$log.error(exc);
-      this.failedToLoad = true;
-      this.errorMessage = exc.message;
-    } finally {
-      this.isLoading = false;
-    }
+    this.fhirClient = Api.getFhirClient();
   },
   computed: {
     patientViewModel() {
       return this.items
         .map((entry) => entry.item)
         .map((subject) => {
-          const latestEncounterAndLocation = this.encounterWithLocationLookup.get(
-            subject.individual.id
-          );
-
           const mrNumber = fhirpath.evaluate(
             subject.individual,
             "Patient.identifier.where(type.coding.system=%identifierType and type.coding.code='MR').value",
@@ -295,25 +245,19 @@ export default {
             }
           )[0];
 
-          const locationEntryComponent =
-            latestEncounterAndLocation?.locationEntry;
-          const encounterPeriod =
-            locationEntryComponent?.period ||
-            latestEncounterAndLocation?.encounter?.period;
+          const note = fhirpath.evaluate(
+            subject,
+            "ResearchSubject.extension(%noteExtensionUrl).valueString",
+            {
+              noteExtensionUrl: Constants.URL_NOTE_EXTENSION,
+            }
+          )[0];
 
           return {
             id: subject.id,
             mrNumber: mrNumber || subject.individual.id,
             subject,
-            note: fhirpath.evaluate(
-              subject,
-              "ResearchSubject.extension.where(url=%noteExtensionUrl).valueString",
-              {
-                noteExtensionUrl: Constants.URL_NOTE_EXTENSION,
-              }
-            )[0],
-            encounterPeriod,
-            location: locationEntryComponent?.location,
+            note,
           };
         });
     },
@@ -323,7 +267,6 @@ export default {
       );
     },
   },
-
   methods: {
     getTypeFromStatus(status) {
       const lookup = {
@@ -338,7 +281,7 @@ export default {
 
       return lookup[status] || lookup.default;
     },
-    async onSaveRowChanges(event, row) {
+    async onSaveRowChanges(_event, row) {
       const patch = [
         {
           op: "replace",
