@@ -1,7 +1,11 @@
 <template>
   <div class="procedure-list">
     <b-table :data="items" :striped="true" sort-icon="menu-up">
-      <b-table-column v-slot="props" label="Prozedur">{{ props.row.code.text }}</b-table-column>
+      <b-table-column v-slot="props" label="Prozedur">{{
+        props.row.code.text ||
+        props.row.code.coding[0].text ||
+        props.row.code.coding[0].code
+      }}</b-table-column>
       <b-table-column v-slot="props" label="Status">{{ props.row.status }}</b-table-column>
       <b-table-column v-slot="props" field="performed" label="Durchgeführt" sortable centered>
         <b-tag type="is-primary">{{ getPerformed(props.row) }}</b-tag>

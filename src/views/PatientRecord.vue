@@ -9,10 +9,28 @@
       </b-message>
       <template v-else>
         <header class="has-text-centered">
-          <h1 class="title is-3">Patient {{ record.patient.id }}</h1>
-          <h2
-            class="subtitle is-5"
-          >geboren {{ new Date(record.patient.birthDate).getFullYear() }}, {{ record.patient.gender === "male" ? "männlich" : "weiblich"}}</h2>
+          <h1 class="title is-3">
+            Patient {{ mrNumber || record.patient.id }}
+          </h1>
+          <h2 class="subtitle is-5">
+            <span>
+              geb.
+              {{
+                record.patient.birthDate
+                  ? new Date(record.patient.birthDate).getFullYear()
+                  : "unbekannt"
+              }},
+              {{
+                record.patient
+                  ? record.patient.gender === "male"
+                    ? "m"
+                    : record.patient.gender === "female"
+                    ? "w"
+                    : "u"
+                  : "u"
+              }}
+            </span>
+          </h2>
         </header>
         <b-tabs position="is-centered">
           <b-tab-item>
@@ -40,14 +58,15 @@
               <b-icon icon="pills"></b-icon>
               <span>
                 Medikation
-                <b-tag
-                  rounded
-                >{{ record.medicationStatement.length + record.medicationRequest.length }}</b-tag>
+                <b-tag rounded>{{
+                  record.medicationStatements.length +
+                  record.medicationAdministrations.length
+                }}</b-tag>
               </span>
             </template>
             <medication-list
-              :medicationStatement="record.medicationStatement"
-              :medicationRequest="record.medicationRequest"
+              :medicationStatements="record.medicationStatements"
+              :medicationAdministrations="record.medicationAdministrations"
             />
           </b-tab-item>
           <b-tab-item>
@@ -72,6 +91,7 @@ import ConditionList from "@/components/record/ConditionList.vue";
 import MedicationList from "@/components/record/MedicationList.vue";
 import ProcedureList from "@/components/record/ProcedureList.vue";
 import ObservationList from "@/components/record/ObservationList.vue";
+import Constants from "@/const";
 import Api from "@/api";
 
 export default {
@@ -89,8 +109,8 @@ export default {
       record: {
         patient: {},
         conditions: Array,
-        medicationRequest: Array,
-        medicationStatement: Array,
+        medicationAdministrations: Array,
+        medicationStatements: Array,
         procedures: Array,
         observations: Array,
       },
@@ -110,12 +130,12 @@ export default {
           "where(resourceType='Condition')"
         );
 
-        this.record.medicationRequest = fhirpath.evaluate(
+        this.record.medicationAdministrations = fhirpath.evaluate(
           record,
-          "where(resourceType='MedicationRequest')"
+          "where(resourceType='MedicationAdministration')"
         );
 
-        this.record.medicationStatement = fhirpath.evaluate(
+        this.record.medicationStatements = fhirpath.evaluate(
           record,
           "where(resourceType='MedicationStatement')"
         );
@@ -140,6 +160,17 @@ export default {
     }
   },
   methods: {},
+  computed: {
+    mrNumber() {
+      return fhirpath.evaluate(
+        this.record.patient,
+        "Patient.identifier.where(type.coding.system=%identifierType and type.coding.code='MR').value",
+        {
+          identifierType: Constants.SYSTEM_IDENTIFIER_TYPE,
+        }
+      )[0];
+    },
+  },
 };
 </script>
 
