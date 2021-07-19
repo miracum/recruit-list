@@ -83,7 +83,7 @@ export default {
     getStudyDisplayFromList(list) {
       const study = fhirpath.evaluate(
         list,
-        "List.extension.where(url=%url).valueReference",
+        "List.extension(%url).valueReference",
         {
           url: Constants.URL_LIST_BELONGS_TO_STUDY_EXTENSION,
         }
@@ -91,7 +91,7 @@ export default {
 
       const acronym = fhirpath.evaluate(
         study,
-        "ResearchStudy.extension.where(url=%acronymSystem).valueString",
+        "ResearchStudy.extension(%acronymSystem).valueString",
         {
           acronymSystem: Constants.SYSTEM_STUDY_ACRONYM,
         }
