@@ -1,7 +1,5 @@
-FROM node:14.17-alpine AS base
+FROM node:16.5 AS build
 WORKDIR /app
-
-FROM base AS build
 COPY package*.json ./
 RUN npm ci --no-optional
 COPY . .
@@ -16,7 +14,8 @@ RUN npm run test:unit
 FROM build AS release
 RUN npm prune --production
 
-FROM base
+FROM node:16.5-slim
+WORKDIR /app
 ENV NODE_ENV=production \
     NO_UPDATE_NOTIFIER=true
 COPY package*.json ./
