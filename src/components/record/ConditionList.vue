@@ -1,7 +1,11 @@
 <template>
   <div class="condition-list">
     <b-table :data="items" :striped="true" sort-icon="menu-up">
-      <b-table-column v-slot="props" label="Diagnose">{{ props.row.code.text }}</b-table-column>
+      <b-table-column v-slot="props" label="Diagnose">{{
+        props.row.code.text ||
+        props.row.code.coding[0].text ||
+        props.row.code.coding[0].code
+      }}</b-table-column>
       <b-table-column
         v-slot="props"
         field="onsetDateTime"
@@ -9,7 +13,9 @@
         sortable
         centered
       >
-        <b-tag type="is-primary">{{ new Date(props.row.onsetDateTime).toLocaleDateString() }}</b-tag>
+        <b-tag type="is-primary">{{
+          new Date(props.row.onsetDateTime).toLocaleDateString()
+        }}</b-tag>
       </b-table-column>
       <b-table-column
         v-slot="props"
@@ -18,7 +24,9 @@
         sortable
         centered
       >
-        <b-tag type="is-primary">{{ new Date(props.row.recordedDate).toLocaleDateString() }}</b-tag>
+        <b-tag type="is-primary">{{
+          new Date(props.row.recordedDate).toLocaleDateString()
+        }}</b-tag>
       </b-table-column>
       <template slot="empty">
         <section class="section">

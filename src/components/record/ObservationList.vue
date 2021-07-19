@@ -1,7 +1,11 @@
 <template>
   <div class="condition-list">
     <b-table :data="items" :striped="true" sort-icon="menu-up">
-      <b-table-column v-slot="props" label="Parameter">{{ props.row.code.text }}</b-table-column>
+      <b-table-column v-slot="props" label="Parameter">{{
+        props.row.code.text ||
+        props.row.code.coding[0].text ||
+        props.row.code.coding[0].code
+      }}</b-table-column>
       <b-table-column v-slot="props" label="Wert">{{ getObservationValue(props.row) }}</b-table-column>
       <b-table-column v-slot="props" label="Gültigkeit" centered>
         <b-tag type="is-primary">{{ getEffective(props.row) }}</b-tag>
