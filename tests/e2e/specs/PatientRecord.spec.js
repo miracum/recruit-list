@@ -20,8 +20,11 @@ describe("PatientRecord", () => {
       cy.wait("@getRecord");
     });
 
-    it("should display the patient id", () => {
-      cy.get("h1", { timeout: 30000 }).should("have.text", "Patient 1");
+    it("should display the patient's medical record number", () => {
+      cy.get("h1", { timeout: 30000 }).should(
+        "contain.text",
+        "Patient 3354978E05D57044AA924A221928938F9C97179FD6D9E6E70CD199D4A31D9B21EFB5618A653B04DAA1E38D4FCE73BAD95DD26099C6C8F987F6332D8E21F6E48F"
+      );
     });
   });
 });

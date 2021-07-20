@@ -92,7 +92,7 @@ export default {
     getHistoryNote(researchSubject) {
       return fhirpath.evaluate(
         researchSubject,
-        "ResearchSubject.extension.where(url=%noteExtensionUrl).valueString",
+        "ResearchSubject.extension(%noteExtensionUrl).valueString",
         {
           noteExtensionUrl: Constants.URL_NOTE_EXTENSION,
         }
