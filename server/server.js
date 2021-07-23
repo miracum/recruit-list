@@ -34,6 +34,10 @@ try {
   logger.child({ path: config.rulesFilePath }).debug("Trying to load trials config");
   const configString = fs.readFileSync(config.rulesFilePath, "utf8");
   const rulesConfig = yaml.load(configString);
+  if (!rulesConfig.notify?.rules?.trials) {
+    throw new Error("Invalid configuration file structure. Should be: notify.rules.trials.");
+  }
+
   filterAcessibleResources = createAccessFilter(rulesConfig.notify.rules.trials, config.auth);
 } catch (error) {
   logger
