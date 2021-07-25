@@ -43,7 +43,7 @@ const userHasAdminRole = (user, authConfig) => {
     return false;
   }
   const roles = user?.resource_access[authConfig?.clientId]?.roles;
-  return roles.includes("admin");
+  return roles?.includes("admin") || false;
 };
 
 const getEntriesToKeepFromBundle = (bundle, accessibleStudyAcronyms) =>
