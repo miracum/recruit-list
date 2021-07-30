@@ -15,6 +15,6 @@ exports.createJwtCheck = (config) => {
       jwksRequestsPerMinute: 5,
       jwksUri: `${config.auth.url}/realms/${config.auth.realm}/protocol/openid-connect/certs`,
     }),
-    algorithms: ["RS256"],
+    algorithms: ["RS256", "RS384", "RS512"],
   });
 };
