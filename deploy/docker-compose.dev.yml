@@ -32,7 +32,7 @@ services:
       - 6832:6832/udp
 
   keycloak:
-    image: quay.io/keycloak/keycloak:14.0.0
+    image: quay.io/keycloak/keycloak:15.0.0
     command:
       - -Dkeycloak.migration.action=import
       - -Dkeycloak.migration.provider=singleFile
