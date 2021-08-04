@@ -5,7 +5,6 @@ const history = require("connect-history-api-fallback");
 const helmet = require("helmet");
 const pino = require("pino-http")();
 const modifyResponse = require("node-http-proxy-json");
-const probe = require("kube-probe");
 const logger = require("pino")({ level: process.env.LOG_LEVEL || "info" });
 const yaml = require("js-yaml");
 const fs = require("fs");
@@ -74,9 +73,6 @@ const metricsMiddleware = promBundle({
 });
 
 const app = express();
-
-// add liveness and readiness probes
-probe(app);
 
 if (config.shouldLogRequests) {
   app.use(pino);
@@ -184,6 +180,10 @@ app.get("/config", (_req, res) =>
     checkLoginIframeDisabled: config.auth.checkLoginIframeDisabled,
   })
 );
+
+app.get("/api/health/:probe", (req, res) => {
+  res.send({ probe: req.params.probe, status: "ok" }).end();
+});
 
 app.use(history());
 
