@@ -1,4 +1,4 @@
-FROM node:16.5 AS build
+FROM node:16.6 AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --no-optional
@@ -14,7 +14,7 @@ RUN npm run test:unit
 FROM build AS release
 RUN npm prune --production
 
-FROM node:16.5-slim
+FROM node:16.6-slim
 WORKDIR /app
 ENV NODE_ENV=production \
     NO_UPDATE_NOTIFIER=true
@@ -23,7 +23,7 @@ COPY --from=release /app/node_modules node_modules
 COPY --from=release /app/server server
 COPY --from=release /app/dist dist
 
-USER 11111
+USER 65534
 EXPOSE 8080
 HEALTHCHECK CMD wget --quiet --tries=1 --spider http://localhost:8080/api/health/readiness || exit 1
 ENTRYPOINT [ "npm", "run", "server:start"]
