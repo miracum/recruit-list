@@ -5,12 +5,13 @@ const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
 const { ExpressInstrumentation } = require("@opentelemetry/instrumentation-express");
 const { HttpInstrumentation } = require("@opentelemetry/instrumentation-http");
 const { Resource } = require("@opentelemetry/resources");
-const { ResourceAttributes } = require("@opentelemetry/semantic-conventions");
+const { SemanticResourceAttributes } = require("@opentelemetry/semantic-conventions");
 
 exports.setupTracing = (tracingConfig) => {
   const provider = new NodeTracerProvider({
     resource: new Resource({
-      [ResourceAttributes.SERVICE_NAME]: tracingConfig.serviceName,
+      [SemanticResourceAttributes.SERVICE_NAME]: tracingConfig.serviceName,
+      [SemanticResourceAttributes.SERVICE_VERSION]: process.env.VERSION || "0.0.0",
     }),
   });
   registerInstrumentations({
@@ -30,4 +31,4 @@ exports.setupTracing = (tracingConfig) => {
 
   // Initialize the OpenTelemetry APIs to use the NodeTracerProvider bindings
   provider.register();
-}
+};

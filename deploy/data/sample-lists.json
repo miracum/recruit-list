@@ -137,7 +137,7 @@
       "request": {
         "method": "POST",
         "url": "Location",
-        "ifNoneExist": "identifier=https://diz.mii.de/fhir/CodeSystem/TestOrganisationAbteilungen|Chirurgie"
+        "ifNoneExist": "Location?identifier=https://diz.mii.de/fhir/CodeSystem/TestOrganisationAbteilungen|Chirurgie"
       }
     },
     {
@@ -147,7 +147,7 @@
         "identifier": [
           {
             "system": "https://diz.mii.de/fhir/CodeSystem/TestOrganisationAbteilungen",
-            "value": "Medizinische Klinik 1"
+            "value": "MedizinischeKlinik1"
           }
         ],
         "status": "active",
@@ -165,7 +165,7 @@
       "request": {
         "method": "POST",
         "url": "Location",
-        "ifNoneExist": "identifier=https://diz.mii.de/fhir/CodeSystem/TestOrganisationAbteilungen|Medizinische+Klinik+1"
+        "ifNoneExist": "Location?identifier=https://diz.mii.de/fhir/CodeSystem/TestOrganisationAbteilungen|MedizinischeKlinik1"
       }
     },
     {
@@ -176,6 +176,10 @@
           {
             "system": "http://ohdsi.org/omop/fhir/subject-identifier",
             "value": "1"
+          },
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "bf3d74b1-5abf-4af9-89a3-69ee772bd88f"
           }
         ],
         "name": [
@@ -190,7 +194,7 @@
       "request": {
         "method": "POST",
         "url": "Patient",
-        "ifNoneExist": "identifier=https://github.com/synthetichealth/synthea|bf3d74b1-5abf-4af9-89a3-69ee772bd88f"
+        "ifNoneExist": "Patient?identifier=https://github.com/synthetichealth/synthea|bf3d74b1-5abf-4af9-89a3-69ee772bd88f"
       }
     },
     {
@@ -201,6 +205,10 @@
           {
             "system": "http://ohdsi.org/omop/fhir/subject-identifier",
             "value": "2"
+          },
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "be1a04bd-2ecc-4996-a646-bc7ed0b0c4ea"
           }
         ],
         "name": [
@@ -215,7 +223,7 @@
       "request": {
         "method": "POST",
         "url": "Patient",
-        "ifNoneExist": "identifier=https://github.com/synthetichealth/synthea|be1a04bd-2ecc-4996-a646-bc7ed0b0c4ea"
+        "ifNoneExist": "Patient?identifier=https://github.com/synthetichealth/synthea|be1a04bd-2ecc-4996-a646-bc7ed0b0c4ea"
       }
     },
     {
@@ -226,6 +234,10 @@
           {
             "system": "http://ohdsi.org/omop/fhir/subject-identifier",
             "value": "3"
+          },
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "4399ee58-809f-4ad7-a8ab-309bc4cea8f3"
           }
         ],
         "name": [
@@ -240,7 +252,7 @@
       "request": {
         "method": "POST",
         "url": "Patient",
-        "ifNoneExist": "identifier=https://github.com/synthetichealth/synthea|4399ee58-809f-4ad7-a8ab-309bc4cea8f3"
+        "ifNoneExist": "Patient?identifier=https://github.com/synthetichealth/synthea|4399ee58-809f-4ad7-a8ab-309bc4cea8f3"
       }
     },
     {
@@ -377,7 +389,7 @@
       },
       "request": {
         "method": "PUT",
-        "url": "List?identifier=http%3A%2F%2miracum.org%2Ffhir%2Fscreening-list-cohort-identifier|1"
+        "url": "List?identifier=http://miracum.org/fhir/screening-list-cohort-identifier|1"
       }
     },
     {
@@ -429,7 +441,7 @@
       },
       "request": {
         "method": "PUT",
-        "url": "List?identifier=http%3A%2F%2miracum.org%2Ffhir%2Fscreening-list-cohort-identifier|2"
+        "url": "List?identifier=http://miracum.org/fhir/screening-list-cohort-identifier|2"
       }
     },
     {
@@ -462,7 +474,7 @@
       "request": {
         "method": "POST",
         "url": "ResearchStudy",
-        "ifNoneExist": "identifier=http://clinicaltrials.gov/|NCT03521531"
+        "ifNoneExist": "ResearchStudy?identifier=http://clinicaltrials.gov/|NCT03521531"
       }
     },
     {
@@ -495,7 +507,7 @@
       "request": {
         "method": "POST",
         "url": "ResearchStudy",
-        "ifNoneExist": "identifier=http://clinicaltrials.gov/|NCT03555877"
+        "ifNoneExist": "ResearchStudy?identifier=http://clinicaltrials.gov/|NCT03555877"
       }
     }
   ]
