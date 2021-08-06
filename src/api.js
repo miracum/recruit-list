@@ -31,7 +31,7 @@ const actions = {
     const client = createFhirClient();
 
     const screeningLists = await client.request(
-      `List/?code=${Constants.SYSTEM_SCREENING_LIST}%7Cscreening-recommendations`,
+      `List/?code=${Constants.SYSTEM_SCREENING_LIST}%7Cscreening-recommendations&status=current`,
       {
         resolveReferences: ["extension.0.valueReference", ""],
         flat: true,
