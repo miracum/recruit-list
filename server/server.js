@@ -95,7 +95,7 @@ const proxy = createProxyMiddleware(proxyRequestFilter, {
   pathRewrite: {
     "^/fhir": "/",
   },
-  secure: false,
+  secure: config.proxy.isSecureBackend,
   xfwd: true,
   onProxyReq(proxyReq) {
     // the ApacheProxyAddressStrategy used by HAPI FHIR
