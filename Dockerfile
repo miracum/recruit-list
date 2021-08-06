@@ -25,7 +25,6 @@ COPY --from=release /app/dist dist
 
 USER 65534
 EXPOSE 8080
-HEALTHCHECK CMD wget --quiet --tries=1 --spider http://localhost:8080/api/health/readiness || exit 1
 ENTRYPOINT [ "npm", "run", "server:start"]
 
 ARG VERSION="0.0.0"
