@@ -31,5 +31,9 @@ exports.config = {
     hideLastVisit: process.env.HIDE_LAST_VISIT === "true" || process.env.HIDE_LAST_VISIT === "1",
     hideEhrButton: process.env.HIDE_EHR_BUTTON === "true" || process.env.HIDE_EHR_BUTTON === "1",
   },
+  proxy: {
+    isSecureBackend:
+      process.env.PROXY_IS_SECURE_BACKEND === "true" || process.env.PROXY_IS_SECURE_BACKEND === "1",
+  },
   rulesFilePath: process.env.RULES_FILE_PATH || "./notify-rules.dev.yaml",
 };
