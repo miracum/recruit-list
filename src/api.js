@@ -100,7 +100,7 @@ const actions = {
       `Encounter?subject=Patient/${patientId}&_sort=-date&_count=${maxNumberOfEncounters}&_include=Encounter:location&_pretty=false`,
       {
         flat: true,
-        pageLimit: 0,
+        pageLimit: 1,
       }
     );
 
