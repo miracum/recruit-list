@@ -78,16 +78,6 @@ if (config.shouldLogRequests) {
   app.use(pino);
 }
 
-app.use(
-  helmet({
-    contentSecurityPolicy: false,
-  })
-);
-app.use(cors());
-app.use(bearerToken());
-app.use(express.json());
-app.use(metricsMiddleware);
-
 const proxyRequestFilter = (_pathname, req) => req.method === "GET" || req.method === "PATCH";
 const proxy = createProxyMiddleware(proxyRequestFilter, {
   target: config.fhirUrl,
@@ -147,6 +137,16 @@ const proxy = createProxyMiddleware(proxyRequestFilter, {
   },
 });
 
+app.use("^/fhir", checkJwt, proxy);
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
+app.use(cors());
+app.use(bearerToken());
+app.use(express.json());
+app.use(metricsMiddleware);
 app.use((req, res, next) => {
   if (req.path.endsWith("/metrics")) {
     const expectedToken = config.metrics.bearerToken;
@@ -162,8 +162,6 @@ app.use((req, res, next) => {
   }
   return next();
 });
-
-app.use("^/fhir", checkJwt, proxy);
 
 app.get("/config", (_req, res) =>
   res.json({
