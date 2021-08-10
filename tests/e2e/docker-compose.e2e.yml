@@ -9,6 +9,7 @@ services:
       - KEYCLOAK_REALM=MIRACUM
       - KEYCLOAK_AUTH_URL=http://keycloak:8080/auth
       - RULES_FILE_PATH=/etc/notify-rules.yaml
+      - PROXY_LOG_LEVEL=debug
     depends_on:
       - fhir
       - keycloak

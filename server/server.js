@@ -95,6 +95,7 @@ const proxy = createProxyMiddleware(proxyRequestFilter, {
   pathRewrite: {
     "^/fhir": "/",
   },
+  logLevel: config.proxy.logLevel,
   secure: config.proxy.isSecureBackend,
   xfwd: true,
   onProxyReq(proxyReq) {

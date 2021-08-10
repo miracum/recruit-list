@@ -32,6 +32,7 @@ exports.config = {
     hideEhrButton: process.env.HIDE_EHR_BUTTON === "true" || process.env.HIDE_EHR_BUTTON === "1",
   },
   proxy: {
+    logLevel: process.env.PROXY_LOG_LEVEL || "info",
     isSecureBackend:
       process.env.PROXY_IS_SECURE_BACKEND === "true" || process.env.PROXY_IS_SECURE_BACKEND === "1",
   },
