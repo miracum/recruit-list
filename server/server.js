@@ -145,7 +145,7 @@ app.use(
 );
 app.use(cors());
 app.use(bearerToken());
-app.use(express.json());
+// app.use(express.json());
 app.use(metricsMiddleware);
 app.use((req, res, next) => {
   if (req.path.endsWith("/metrics")) {
