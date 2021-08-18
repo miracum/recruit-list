@@ -1,6 +1,7 @@
 FROM node:16.6 AS build
 WORKDIR /app
-COPY package*.json ./
+COPY package.json ./
+COPY package-lock.json ./
 RUN npm ci --no-optional
 COPY . .
 ARG VERSION=0.0.0
@@ -18,7 +19,8 @@ FROM node:16.6-slim
 WORKDIR /app
 ENV NODE_ENV=production \
     NO_UPDATE_NOTIFIER=true
-COPY package*.json ./
+COPY package.json ./
+COPY package-lock.json ./
 COPY --from=release /app/node_modules node_modules
 COPY --from=release /app/server server
 COPY --from=release /app/dist dist
