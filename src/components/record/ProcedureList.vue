@@ -1,14 +1,27 @@
 <template>
   <div class="procedure-list">
-    <b-table :data="items" :striped="true" sort-icon="menu-up">
-      <b-table-column v-slot="props" label="Prozedur">{{
-        props.row.code.text ||
-        props.row.code.coding[0].text ||
-        props.row.code.coding[0].code
-      }}</b-table-column>
-      <b-table-column v-slot="props" label="Status">{{ props.row.status }}</b-table-column>
-      <b-table-column v-slot="props" field="performed" label="Durchgeführt" sortable centered>
-        <b-tag type="is-primary">{{ getPerformed(props.row) }}</b-tag>
+    <b-table :data="normalizedProcedures" :striped="true" sort-icon="menu-up">
+      <b-table-column v-slot="props" label="Prozedur">
+        <span class="procedure-display">
+          <template v-if="props.row.code.text">
+            {{ props.row.code.text }}
+          </template>
+          <template v-else>unbekannt</template></span
+        ></b-table-column
+      >
+      <b-table-column
+        v-slot="props"
+        field="performed"
+        label="Durchgeführt"
+        sortable
+        centered
+      >
+        <b-tag type="is-primary" class="procedure-performed"
+          ><template v-if="props.row.performedDateTime">
+            {{ new Date(props.row.performedDateTime).toLocaleDateString() }}
+          </template>
+          <template v-else>unbekannt</template></b-tag
+        >
       </b-table-column>
       <template slot="empty">
         <section class="section">
@@ -34,14 +47,28 @@ export default {
   data() {
     return {};
   },
-  methods: {
-    getPerformed(procedure) {
-      if (procedure.performedPeriod) {
-        const { start, end } = procedure.performedPeriod;
-        return `${new Date(start).toLocaleDateString()} -
-                ${new Date(end).toLocaleDateString()}`;
-      }
-      return "";
+  computed: {
+    normalizedProcedures() {
+      return this.items.map((procedure) => {
+        const normalizedProceduren = procedure;
+
+        normalizedProceduren.performedDateTime =
+          procedure.performedDateTime || procedure.performedPeriod?.start;
+
+        if (!normalizedProceduren.code) {
+          normalizedProceduren.code = {};
+        }
+
+        const display =
+          normalizedProceduren.code?.text ||
+          normalizedProceduren.code?.coding?.at(0).display ||
+          normalizedProceduren.code?.coding?.at(0).code;
+        if (display) {
+          normalizedProceduren.code.text = display;
+        }
+
+        return normalizedProceduren;
+      });
     },
   },
 };
