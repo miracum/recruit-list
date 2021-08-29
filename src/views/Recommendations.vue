@@ -38,8 +38,9 @@
 </template>
 
 <script>
-import Api from "@/api";
 import fhirpath from "fhirpath";
+
+import Api from "@/api";
 import ScreeningList from "@/components/ScreeningList.vue";
 import Constants from "@/const";
 
