@@ -1,8 +1,9 @@
 import FHIR from "fhirclient";
 import fhirpath from "fhirpath";
-import Constants from "@/const";
 import Vue from "vue";
 import axios from "axios";
+
+import Constants from "@/const";
 
 function createFhirClient() {
   let fhirUrl = process.env.VUE_APP_FHIR_URL;
