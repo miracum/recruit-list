@@ -1,7 +1,7 @@
 <template>
   <div class="last-stay">
     <template v-if="isLoading">
-      <span>Sucht letzten bekannten Aufenthalt...</span>
+      <span>Suche letzten bekannten Aufenthalt...</span>
     </template>
     <b-message v-if="errorMessage" type="is-danger">
       Fehler beim suchen des letzten bekannten Aufenthalts:
