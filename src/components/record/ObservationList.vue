@@ -1,14 +1,24 @@
 <template>
   <div class="condition-list">
-    <b-table :data="items" :striped="true" sort-icon="menu-up">
-      <b-table-column v-slot="props" label="Parameter">{{
-        props.row.code.text ||
-        props.row.code.coding[0].text ||
-        props.row.code.coding[0].code
+    <b-table :data="normalizedObservations" :striped="true" sort-icon="menu-up">
+      <b-table-column v-slot="props" label="Parameter">
+        <span class="observation-display">
+          <template v-if="props.row.code.text">
+            {{ props.row.code.text }}
+          </template>
+          <template v-else>unbekannt</template></span
+        ></b-table-column
+      >
+      <b-table-column v-slot="props" label="Wert">{{
+        getObservationValue(props.row)
       }}</b-table-column>
-      <b-table-column v-slot="props" label="Wert">{{ getObservationValue(props.row) }}</b-table-column>
-      <b-table-column v-slot="props" label="Gültigkeit" centered>
-        <b-tag type="is-primary">{{ getEffective(props.row) }}</b-tag>
+      <b-table-column v-slot="props" label="Zeitpunkt" centered>
+        <b-tag type="is-primary"
+          ><template v-if="props.row.effectiveDateTime">
+            {{ new Date(props.row.effectiveDateTime).toLocaleDateString() }}
+          </template>
+          <template v-else>unbekannt</template></b-tag
+        >
       </b-table-column>
       <template slot="empty">
         <section class="section">
@@ -34,10 +44,33 @@ export default {
   data() {
     return {};
   },
-  methods: {
-    getObservationLabel(o) {
-      return o.code.text;
+  computed: {
+    normalizedObservations() {
+      return this.items.map((observation) => {
+        const normalizedObservation = observation;
+
+        normalizedObservation.effectiveDateTime =
+          observation.effectiveDateTime ||
+          observation.effectivePeriod?.start ||
+          observation.effectiveInstant;
+
+        if (!observation.code) {
+          normalizedObservation.code = {};
+        }
+
+        const display =
+          normalizedObservation.code?.text ||
+          normalizedObservation.code?.coding?.at(0).display ||
+          normalizedObservation.code?.coding?.at(0).code;
+        if (display) {
+          normalizedObservation.code.text = display;
+        }
+
+        return normalizedObservation;
+      });
     },
+  },
+  methods: {
     getObservationValue(o) {
       if (Array.isArray(o.component)) {
         return o.component.map((c) => {
@@ -82,34 +115,19 @@ export default {
 
       if (Object.prototype.hasOwnProperty.call(o, "valueQuantity")) {
         let { value } = o.valueQuantity;
-        const units = o.valueQuantity.unit;
+        const { unit } = o.valueQuantity;
 
         if (!Number.isNaN(parseFloat(value))) {
           value = Math.round(value * 100) / 100;
         }
 
-        return `${value} ${units}`;
+        return `${value} ${unit}`;
       }
 
       if (Object.prototype.hasOwnProperty.call(o, "valueRatio")) {
         return `${o.valueRatio.numerator} / ${o.valueRatio.denominator}`;
       }
 
-      return null;
-    },
-    getEffective(o) {
-      if (Object.prototype.hasOwnProperty.call(o, "effectiveDateTime")) {
-        return new Date(o.effectiveDateTime).toLocaleDateString();
-      }
-      if (Object.prototype.hasOwnProperty.call(o, "effectivePeriod")) {
-        return o.effectivePeriod;
-      }
-      if (Object.prototype.hasOwnProperty.call(o, "effectiveTiming")) {
-        return o.effectiveTiming;
-      }
-      if (Object.prototype.hasOwnProperty.call(o, "effectiveInstant")) {
-        return o.effectiveInstant;
-      }
       return null;
     },
   },

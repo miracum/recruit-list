@@ -1,6 +1,6 @@
 <template>
   <div class="recommendations">
-    <b-loading :active="isLoading" :is-full-page="false" />
+    <b-loading :active="isLoading" :is-full-page="true" />
     <template v-if="!isLoading">
       <b-message v-if="failedToLoad" type="is-danger">
         Rekrutierungsvorschläge konnten nicht geladen werden. Ggf. sind Sie für
@@ -38,8 +38,9 @@
 </template>
 
 <script>
-import Api from "@/api";
 import fhirpath from "fhirpath";
+
+import Api from "@/api";
 import ScreeningList from "@/components/ScreeningList.vue";
 import Constants from "@/const";
 
@@ -64,6 +65,7 @@ export default {
     };
   },
   async mounted() {
+    this.isLoading = true;
     try {
       const list = await Api.fetchListById(this.listId);
       this.screeningList = Object.freeze(list);
