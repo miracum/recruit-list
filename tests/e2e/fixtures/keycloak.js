@@ -4,7 +4,7 @@ const oidcConfig = {
   username: "user1",
   password: "user1",
   client_id: "uc1-screeninglist",
-  redirect_uri: "http://list:8080/recommendations",
+  redirect_uri: "http://list:8080/",
 };
 
 export default oidcConfig;

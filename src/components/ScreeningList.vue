@@ -34,6 +34,12 @@
       :striped="true"
       :hoverable="true"
     >
+      <b-table-column label="Marker" v-slot="props">
+        <recommendation-stats
+          :patientId="props.row.subject.individual.id"
+        ></recommendation-stats>
+      </b-table-column>
+
       <b-table-column
         label="Patientennummer"
         field="mrNumber"
@@ -124,8 +130,8 @@
       </b-table-column>
 
       <b-table-column label="Aktionen" v-slot="props">
-        <div class="columns is-multiline">
-          <div class="column is-narrow">
+        <div class="columns is-desktop">
+          <div class="column">
             <b-tooltip label="Änderungen Speichern" position="is-bottom">
               <b-button
                 @click="onSaveRowChanges($event, props.row)"
@@ -137,7 +143,7 @@
               >
             </b-tooltip>
           </div>
-          <div class="column is-narrow" v-if="!hideEhrButton">
+          <div class="column" v-if="!hideEhrButton">
             <b-tooltip label="Patientenakte anzeigen" position="is-bottom">
               <b-button
                 tag="router-link"
@@ -154,7 +160,7 @@
               ></b-button>
             </b-tooltip>
           </div>
-          <div class="column is-narrow">
+          <div class="column">
             <b-tooltip label="Änderungshistorie anzeigen" position="is-bottom">
               <b-button
                 tag="router-link"
@@ -193,6 +199,7 @@ import fhirpath from "fhirpath";
 import Constants from "@/const";
 import Api from "@/api";
 import LastStay from "@/components/LastStay.vue";
+import RecommendationStats from "@/components/RecommendationStats.vue";
 
 export default {
   name: "ScreeningList",
@@ -216,6 +223,7 @@ export default {
   },
   components: {
     LastStay,
+    RecommendationStats,
   },
   data() {
     return {

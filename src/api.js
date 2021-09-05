@@ -197,9 +197,29 @@ const actions = {
           }
         }
       }
+
+      // if Encounter.location doesn't contain a viable location, try using the Encounter.serviceProvider.display
+      if (encounter.serviceProvider?.display) {
+        return {
+          encounter,
+          locationEntry: { location: { name: encounter.serviceProvider.display } },
+        };
+      }
     }
 
     return null;
+  },
+  async fetchAllRecommendationsByPatientId(patientId) {
+    const client = createFhirClient();
+
+    return client.request(
+      `ResearchSubject?patient=Patient/${patientId}&_include=ResearchSubject:study&_pretty=false`,
+      {
+        flat: true,
+        pageLimit: 0,
+        resolveReferences: ["study"],
+      }
+    );
   },
 };
 

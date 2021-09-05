@@ -45,11 +45,61 @@
         "period": {
           "end": "2020-03-13T12:00:00+01:00",
           "start": "2020-02-13T12:00:00+01:00"
+        },
+        "serviceProvider": {
+          "reference": "urn:uuid:4240038d-7e59-456a-a619-4abb85d3f06e",
+          "display": "Test Org. Einheit"
         }
       },
       "request": {
         "method": "POST",
         "url": "Encounter"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:4240038d-7e59-456a-a619-4abb85d3f06e",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "4240038d-7e59-456a-a619-4abb85d3f06e",
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "4240038d-7e59-456a-a619-4abb85d3f06e"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                "code": "prov",
+                "display": "Healthcare Provider"
+              }
+            ],
+            "text": "Healthcare Provider"
+          }
+        ],
+        "name": "Test Org. Einheit",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "413-596-5550"
+          }
+        ],
+        "address": [
+          {
+            "line": ["2344 BOSTON RD"],
+            "city": "WILBRAHAM",
+            "state": "MA",
+            "postalCode": "01095-1104",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
       }
     },
     {
@@ -259,7 +309,7 @@
       "fullUrl": "ResearchSubject/0",
       "resource": {
         "resourceType": "ResearchSubject",
-        "status": "candidate",
+        "status": "on-study",
         "study": {
           "reference": "ResearchStudy/0"
         },

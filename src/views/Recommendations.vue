@@ -99,7 +99,7 @@ export default {
         }
       )[0];
 
-      return acronym || study.title || study.description;
+      return acronym || study?.title || study?.description || "unbekannt";
     },
   },
 };
