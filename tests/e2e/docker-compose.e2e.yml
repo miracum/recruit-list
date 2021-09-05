@@ -28,7 +28,7 @@ services:
       - ${PWD}:/e2e
 
   fhir:
-    image: hapiproject/hapi:v5.4.1
+    image: ghcr.io/chgl/hapi/hapi-fhir-jpaserver-starter:5.4.2-distroless
     environment:
       HAPI_FHIR_VALIDATION_REQUESTS_ENABLED: "true"
       HAPI_FHIR_SUBSCRIPTION_RESTHOOK_ENABLED: "true"

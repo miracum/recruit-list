@@ -5,6 +5,7 @@ exports.config = {
       process.env.DE_PSEUDONYMIZATION_ENABLED === "1",
     url: process.env.DE_PSEUDONYMIZATION_SERVICE_URL || "http://localhost:5000/fhir",
     apiKey: process.env.DE_PSEUDONYMIZATION_API_KEY || "fhir-pseudonymizer-api-key",
+    timeoutMs: process.env.DE_PSEUDONYMIZATION_REQUEST_TIMEOUT_MS || 30_000,
   },
   tracing: {
     enabled: process.env.TRACING_ENABLED === "true" || process.env.TRACING_ENABLED === "1",

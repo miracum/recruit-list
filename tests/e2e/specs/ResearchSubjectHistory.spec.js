@@ -11,7 +11,7 @@ describe("ResearchSubjectHistory", () => {
     beforeEach(() => {
       cy.server();
       cy.route("GET", subjectRequestUrl).as("getSubject");
-      cy.visit("/subjects/783/history", {
+      cy.visit("/subjects/784/history", {
         onBeforeLoad: (win) => {
           // eslint-disable-next-line no-param-reassign
           win.fetch = null;
