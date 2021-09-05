@@ -111,9 +111,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-header {
-  margin-bottom: 1.25rem;
-}
-</style>
