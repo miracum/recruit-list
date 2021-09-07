@@ -495,6 +495,41 @@
       }
     },
     {
+      "fullUrl": "List/2",
+      "resource": {
+        "resourceType": "List",
+        "status": "current",
+        "identifier": [
+          {
+            "system": "http://miracum.org/fhir/screening-list-cohort-identifier",
+            "value": "3"
+          }
+        ],
+        "extension": [
+          {
+            "url": "https://fhir.miracum.org/uc1/StructureDefinition/belongsToStudy",
+            "valueReference": {
+              "reference": "ResearchStudy/2",
+              "display": "SECRET"
+            }
+          }
+        ],
+        "mode": "working",
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.miracum.org/uc1/CodeSystem/screeningList",
+              "code": "screening-recommendations"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "List?identifier=http://miracum.org/fhir/screening-list-cohort-identifier|3"
+      }
+    },
+    {
       "fullUrl": "ResearchStudy/0",
       "resource": {
         "resourceType": "ResearchStudy",
@@ -558,6 +593,39 @@
         "method": "POST",
         "url": "ResearchStudy",
         "ifNoneExist": "ResearchStudy?identifier=http://clinicaltrials.gov/|NCT03555877"
+      }
+    },
+    {
+      "fullUrl": "ResearchStudy/2",
+      "resource": {
+        "resourceType": "ResearchStudy",
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://clinicaltrials.gov/",
+            "value": "SECRET"
+          }
+        ],
+        "extension": [
+          {
+            "url": "https://fhir.miracum.org/uc1/StructureDefinition/studyAcronym",
+            "valueString": "SECRET"
+          }
+        ],
+        "title": "SECRET",
+        "description": "This is a multicenter, prospective, randomized, [...]",
+        "status": "active",
+        "relatedArtifact": [
+          {
+            "type": "documentation",
+            "url": "https://clinicaltrials.gov/ct2/show/NCT03555877"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "ResearchStudy",
+        "ifNoneExist": "ResearchStudy?identifier=http://clinicaltrials.gov/|SECRET"
       }
     }
   ]

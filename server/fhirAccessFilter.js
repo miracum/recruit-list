@@ -31,10 +31,6 @@ const getAccessibleStudyAcronymsForUser = (user, trialsConfig) => {
     }
   });
 
-  logger
-    .child({ username: user.preferred_username, accessibleStudyAcronyms })
-    .debug("User can access these studies");
-
   return accessibleStudyAcronyms;
 };
 
@@ -66,8 +62,11 @@ const getEntriesToKeepFromBundle = (bundle, accessibleStudyAcronyms) =>
         accessibleStudyAcronyms.includes("*") ||
         accessibleStudyAcronyms.includes(belongsToStudyAcronym)
       ) {
+        logger.debug(`User is authorized to access the ${belongsToStudyAcronym} study`);
         return true;
       }
+
+      logger.debug(`User is not authorized to access the ${belongsToStudyAcronym} study`);
 
       return false;
     }
@@ -84,6 +83,10 @@ exports.createAccessFilter = (trialsConfig, authConfig) => (resource, user) => {
 
   const accessibleStudyAcronyms = getAccessibleStudyAcronymsForUser(user, trialsConfig);
 
+  logger
+    .child({ username: user.preferred_username, accessibleStudyAcronyms })
+    .debug("User can access these studies");
+
   const handleBundle = (bundle) => {
     if (!bundle.entry) {
       logger.child({ bundleId: bundle.id }).warn("search result does not contain any entries.");
@@ -94,6 +97,12 @@ exports.createAccessFilter = (trialsConfig, authConfig) => (resource, user) => {
 
     // copies/clones the bundle
     const modifiedBundle = { ...bundle };
+
+    logger.debug(
+      `Original bundle contained ${modifiedBundle.entry.length} entries. ` +
+        `Keeping ${entriesToKeep.length} entries after auth filtering`
+    );
+
     modifiedBundle.entry = entriesToKeep;
     modifiedBundle.total = entriesToKeep.length;
     return modifiedBundle;

@@ -125,7 +125,7 @@ const proxy = createProxyMiddleware(proxyRequestFilter, {
       let modifiedBody = body;
 
       if (!config.auth.disabled) {
-        filterAcessibleResources(body, req.user);
+        modifiedBody = filterAcessibleResources(body, req.user);
       }
 
       if (config.pseudonymization.enabled) {
