@@ -20,8 +20,20 @@ describe("ScreeningListOverview", () => {
       cy.wait("@getLists");
     });
 
-    it("two cards for the sample studies exist", () => {
-      cy.get(".card", { timeout: 30000 }).should("have.length", 2);
+    it("three cards for the sample studies exist", () => {
+      cy.get(".card", { timeout: 30000 }).should("have.length", 3);
     });
+
+    it("displays the PROSa, AMICA, and SECRET studies", () => {
+      cy.contains("PROSa");
+      cy.contains("AMICA");
+      cy.contains("SECRET");
+    });
+
+    // we can't easily test this since it requires the server components to be running and
+    // filtering out the resource before display
+    // it("does not display the inaccessible SECRET study", () => {
+    //   cy.not.contains("SECRET");
+    // });
   });
 });

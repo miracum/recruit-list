@@ -12,7 +12,7 @@ describe("Recommendations ", () => {
       cy.server();
       cy.route("GET", listRequestUrl).as("getList");
       cy.route("PATCH", "**/ResearchSubject/**").as("patchSubject");
-      cy.visit("/recommendations/793", {
+      cy.visit("/recommendations/794", {
         onBeforeLoad: (win) => {
           // eslint-disable-next-line no-param-reassign
           win.fetch = null;
@@ -26,8 +26,14 @@ describe("Recommendations ", () => {
     });
 
     it("displays correct total recommendations and participating studies count", () => {
-      cy.get(":nth-child(1) > [data-label='Marker'] .all-recommendations-count").should("contain.text", "2");
-      cy.get(":nth-child(1) > [data-label='Marker'] .participating-studies-count").should("contain.text", "1")
+      cy.get(":nth-child(1) > [data-label='Marker'] .all-recommendations-count").should(
+        "contain.text",
+        "2"
+      );
+      cy.get(":nth-child(1) > [data-label='Marker'] .participating-studies-count").should(
+        "contain.text",
+        "1"
+      );
     });
 
     it("can update and save recruitment status", () => {
