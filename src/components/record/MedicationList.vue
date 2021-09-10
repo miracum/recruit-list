@@ -126,6 +126,8 @@
 </template>
 
 <script>
+import fhirpath from "fhirpath";
+
 export default {
   name: "MedicationList",
   components: {},
@@ -141,21 +143,22 @@ export default {
       resources.map((medicationStatement) => {
         const normalizedMedicationStatement = medicationStatement;
 
-        normalizedMedicationStatement.effectiveDateTime =
-          medicationStatement.effectiveDateTime ||
-          medicationStatement.effectivePeriod?.start;
+        const effectiveDateTime = fhirpath.evaluate(
+          medicationStatement,
+          "effectiveDateTime | effectivePeriod.start"
+        )[0];
+
+        normalizedMedicationStatement.effectiveDateTime = effectiveDateTime;
 
         if (!medicationStatement.medicationCodeableConcept) {
           normalizedMedicationStatement.medicationCodeableConcept = {};
         }
 
-        const display =
-          normalizedMedicationStatement.medicationCodeableConcept?.text ||
-          normalizedMedicationStatement.medicationCodeableConcept?.coding?.at(0)
-            .display ||
-          normalizedMedicationStatement.medicationCodeableConcept?.coding?.at(0)
-            .code ||
-          normalizedMedicationStatement.medicationReference?.display;
+        const display = fhirpath.evaluate(
+          normalizedMedicationStatement,
+          "medicationCodeableConcept.text | medicationCodeableConcept.coding.display | medicationCodeableConcept.coding.code"
+        )[0];
+
         if (display) {
           normalizedMedicationStatement.medicationCodeableConcept.text = display;
         }

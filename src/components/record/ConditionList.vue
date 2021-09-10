@@ -54,6 +54,8 @@
 </template>
 
 <script>
+import fhirpath from "fhirpath";
+
 export default {
   name: "ConditionList",
   components: {},
@@ -67,17 +69,23 @@ export default {
     normalizedConditions() {
       return this.items.map((condition) => {
         const normalizedCondition = condition;
-        normalizedCondition.onsetDateTime =
-          condition.onsetDateTime || condition.onsetPeriod?.start;
+
+        const onsetDateTime = fhirpath.evaluate(
+          condition,
+          "onsetDateTime | onsetPeriod.start"
+        )[0];
+
+        normalizedCondition.onsetDateTime = onsetDateTime;
 
         if (!normalizedCondition.code) {
           normalizedCondition.code = {};
         }
 
-        const display =
-          condition.code?.text ||
-          condition.code?.coding?.at(0).display ||
-          condition.code?.coding?.at(0).code;
+        const display = fhirpath.evaluate(
+          condition,
+          "code.text | code.coding.display | code.coding.code"
+        )[0];
+
         if (display) {
           normalizedCondition.code.text = display;
         }

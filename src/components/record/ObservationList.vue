@@ -35,6 +35,8 @@
 </template>
 
 <script>
+import fhirpath from "fhirpath";
+
 export default {
   name: "ObservationList",
   components: {},
@@ -49,19 +51,22 @@ export default {
       return this.items.map((observation) => {
         const normalizedObservation = observation;
 
-        normalizedObservation.effectiveDateTime =
-          observation.effectiveDateTime ||
-          observation.effectivePeriod?.start ||
-          observation.effectiveInstant;
+        const effectiveDateTime = fhirpath.evaluate(
+          observation,
+          "effectiveDateTime | effectivePeriod.start | effectiveInstant"
+        )[0];
+
+        normalizedObservation.effectiveDateTime = effectiveDateTime;
 
         if (!observation.code) {
           normalizedObservation.code = {};
         }
 
-        const display =
-          normalizedObservation.code?.text ||
-          normalizedObservation.code?.coding?.at(0).display ||
-          normalizedObservation.code?.coding?.at(0).code;
+        const display = fhirpath.evaluate(
+          observation,
+          "code.text | code.coding.display | code.coding.code"
+        )[0];
+
         if (display) {
           normalizedObservation.code.text = display;
         }
@@ -85,32 +90,11 @@ export default {
           : "Positive";
       }
 
-      if (Object.prototype.hasOwnProperty.call(o, "valueString")) {
-        return o.valueString;
-      }
-
-      if (Object.prototype.hasOwnProperty.call(o, "valueInteger")) {
-        return o.valueInteger;
-      }
-
-      if (Object.prototype.hasOwnProperty.call(o, "valueRange")) {
-        return o.valueRange;
-      }
-
-      if (Object.prototype.hasOwnProperty.call(o, "valueTime")) {
-        return o.valueTime;
-      }
-
-      if (Object.prototype.hasOwnProperty.call(o, "valueDateTime")) {
-        return o.valueDateTime;
-      }
-
-      if (Object.prototype.hasOwnProperty.call(o, "valuePeriod")) {
-        return o.valuePeriod;
-      }
-
       if (Object.prototype.hasOwnProperty.call(o, "valueCodeableConcept")) {
-        return o.valueCodeableConcept.coding[0].display;
+        return fhirpath.evaluate(
+          o,
+          "valueCodeableConcept.text | valueCodeableConcept.coding.display | valueCodeableConcept.coding.code"
+        )[0];
       }
 
       if (Object.prototype.hasOwnProperty.call(o, "valueQuantity")) {
@@ -128,7 +112,10 @@ export default {
         return `${o.valueRatio.numerator} / ${o.valueRatio.denominator}`;
       }
 
-      return null;
+      return fhirpath.evaluate(
+        o,
+        "valueString | valueInteger | valueRange | valueTime | valueDateTime | valuePeriod"
+      )[0];
     },
   },
 };
