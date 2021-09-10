@@ -25,7 +25,7 @@ services:
       - fhir
 
   jaeger:
-    image: jaegertracing/all-in-one:1.25
+    image: jaegertracing/all-in-one:1.26
     ports:
       - 16686:16686
       - 6831:6831/udp
