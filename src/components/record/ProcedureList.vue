@@ -38,6 +38,8 @@
 </template>
 
 <script>
+import fhirpath from "fhirpath";
+
 export default {
   name: "ProcedureList",
   components: {},
@@ -52,17 +54,22 @@ export default {
       return this.items.map((procedure) => {
         const normalizedProceduren = procedure;
 
-        normalizedProceduren.performedDateTime =
-          procedure.performedDateTime || procedure.performedPeriod?.start;
+        const performedDateTime = fhirpath.evaluate(
+          procedure,
+          "performedDateTime | performedPeriod.start"
+        )[0];
+
+        normalizedProceduren.performedDateTime = performedDateTime;
 
         if (!normalizedProceduren.code) {
           normalizedProceduren.code = {};
         }
 
-        const display =
-          normalizedProceduren.code?.text ||
-          normalizedProceduren.code?.coding?.at(0).display ||
-          normalizedProceduren.code?.coding?.at(0).code;
+        const display = fhirpath.evaluate(
+          {},
+          "code.text | code.coding.display | code.coding.code"
+        )[0];
+
         if (display) {
           normalizedProceduren.code.text = display;
         }
