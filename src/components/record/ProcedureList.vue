@@ -52,29 +52,29 @@ export default {
   computed: {
     normalizedProcedures() {
       return this.items.map((procedure) => {
-        const normalizedProceduren = procedure;
+        const normalizedProcedure = procedure;
 
         const performedDateTime = fhirpath.evaluate(
           procedure,
           "performedDateTime | performedPeriod.start"
         )[0];
 
-        normalizedProceduren.performedDateTime = performedDateTime;
+        normalizedProcedure.performedDateTime = performedDateTime;
 
-        if (!normalizedProceduren.code) {
-          normalizedProceduren.code = {};
+        if (!normalizedProcedure.code) {
+          normalizedProcedure.code = {};
         }
 
         const display = fhirpath.evaluate(
-          {},
+          procedure,
           "code.text | code.coding.display | code.coding.code"
         )[0];
 
         if (display) {
-          normalizedProceduren.code.text = display;
+          normalizedProcedure.code.text = display;
         }
 
-        return normalizedProceduren;
+        return normalizedProcedure;
       });
     },
   },
