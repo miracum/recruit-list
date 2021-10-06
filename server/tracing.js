@@ -1,6 +1,6 @@
-const { NodeTracerProvider } = require("@opentelemetry/node");
+const { NodeTracerProvider } = require("@opentelemetry/sdk-trace-node");
 const { registerInstrumentations } = require("@opentelemetry/instrumentation");
-const { BatchSpanProcessor } = require("@opentelemetry/tracing");
+const { BatchSpanProcessor } = require("@opentelemetry/sdk-trace-base");
 const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
 const { ExpressInstrumentation } = require("@opentelemetry/instrumentation-express");
 const { HttpInstrumentation } = require("@opentelemetry/instrumentation-http");
