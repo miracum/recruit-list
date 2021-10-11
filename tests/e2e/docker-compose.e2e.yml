@@ -4,11 +4,13 @@ services:
   list:
     image: ghcr.io/miracum/recruit/list:${IMAGE_TAG}
     environment:
-      - FHIR_URL=http://fhir:8080/fhir
-      - KEYCLOAK_CLIENT_ID=uc1-screeninglist
-      - KEYCLOAK_REALM=MIRACUM
-      - KEYCLOAK_AUTH_URL=http://keycloak:8080/auth
-      - RULES_FILE_PATH=/etc/notify-rules.yaml
+      FHIR_URL: http://fhir:8080/fhir
+      KEYCLOAK_CLIENT_ID: uc1-screeninglist
+      KEYCLOAK_REALM: MIRACUM
+      KEYCLOAK_AUTH_URL: http://keycloak:8080/auth
+      RULES_FILE_PATH: /etc/notify-rules.yaml
+      TRACING_ENABLED: "true"
+      OTEL_EXPORTER_JAEGER_ENDPOINT: "jaeger"
     depends_on:
       - fhir
       - keycloak
@@ -28,7 +30,7 @@ services:
       - ${PWD}:/e2e
 
   fhir:
-    image: ghcr.io/chgl/hapi/hapi-fhir-jpaserver-starter:5.4.2-distroless
+    image: docker.io/hapiproject/hapi:v5.5.1-distroless
     environment:
       HAPI_FHIR_VALIDATION_REQUESTS_ENABLED: "true"
       HAPI_FHIR_SUBSCRIPTION_RESTHOOK_ENABLED: "true"
@@ -49,7 +51,7 @@ services:
       - keycloak
 
   keycloak:
-    image: quay.io/keycloak/keycloak:14.0.0
+    image: quay.io/keycloak/keycloak:15.0.2
     command:
       - -Dkeycloak.migration.action=import
       - -Dkeycloak.migration.provider=singleFile
@@ -59,3 +61,6 @@ services:
       KEYCLOAK_PASSWORD: admin
     volumes:
       - ${PWD}/deploy/data/aio-export.json:/tmp/realm.json:ro
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.27
