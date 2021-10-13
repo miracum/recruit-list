@@ -28,7 +28,7 @@ describe("Recommendations ", () => {
     it("displays correct total recommendations and participating studies count", () => {
       cy.get(":nth-child(1) > [data-label='Marker'] .all-recommendations-count").should(
         "contain.text",
-        "2"
+        "1"
       );
       cy.get(":nth-child(1) > [data-label='Marker'] .participating-studies-count").should(
         "contain.text",

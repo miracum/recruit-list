@@ -89,8 +89,17 @@ export default {
         this.patientId
       );
 
+      // include only studies where the patient is not ineligible or withdrawn from
+      // the filter ensures that if a patient's recruitment status is
+      // set to `ineligible`, the referenced study is not included in the list of the patient's
+      // total recommendations
       this.allRecommendedStudies = allRecommendations
-        .filter((resource) => resource.resourceType === "ResearchSubject")
+        .filter(
+          (resource) =>
+            resource.resourceType === "ResearchSubject" &&
+            resource.status !== "ineligible" &&
+            resource.status !== "withdrawn"
+        )
         .map((researchSubject) => researchSubject.study);
 
       this.participatingStudies = allRecommendations
