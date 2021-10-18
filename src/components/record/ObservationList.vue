@@ -41,7 +41,11 @@ export default {
   name: "ObservationList",
   components: {},
   props: {
-    items: Array,
+    items: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
   },
   data() {
     return {};

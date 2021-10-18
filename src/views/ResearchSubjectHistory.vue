@@ -49,7 +49,11 @@ export default {
   name: "ResearchSubjectHistory",
   components: {},
   props: {
-    subjectId: String,
+    subjectId: {
+      type: String,
+      required: false,
+      default: () => null,
+    },
   },
   data() {
     return {
@@ -60,6 +64,17 @@ export default {
       isLoading: true,
       failedToLoad: false,
     };
+  },
+  computed: {
+    mrNumber() {
+      return fhirpath.evaluate(
+        this.subject,
+        "Patient.identifier.where(type.coding.system=%identifierType and type.coding.code='MR').value",
+        {
+          identifierType: Constants.SYSTEM_IDENTIFIER_TYPE,
+        }
+      )[0];
+    },
   },
   async mounted() {
     try {
@@ -76,17 +91,6 @@ export default {
     } finally {
       this.isLoading = false;
     }
-  },
-  computed: {
-    mrNumber() {
-      return fhirpath.evaluate(
-        this.subject,
-        "Patient.identifier.where(type.coding.system=%identifierType and type.coding.code='MR').value",
-        {
-          identifierType: Constants.SYSTEM_IDENTIFIER_TYPE,
-        }
-      )[0];
-    },
   },
   methods: {
     getHistoryNote(researchSubject) {

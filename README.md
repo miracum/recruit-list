@@ -72,6 +72,29 @@ restrictions, you have to configure the following:
 1. run `npm run server:watch`
 1. in a new terminal run `npm run serve`. The app should now be accessible on <http://localhost:8081/> and use the server as its backend.
 
+#### Run E2E tests locally
+
+E2E tests are run as part of the CI pipeline which tests the container and its dependencies in isolation. To replicate
+this setup locally, i.e. if `npm run test:e2e` seems to work on your machine but not in the CI, try:
+
+```sh
+export CI_PROJECT_NAME=list-e2e
+export CI_JOB_ID=locally
+export IMAGE_TAG=test
+
+docker build -t ghcr.io/miracum/recruit/list:${IMAGE_TAG} .
+
+# this starts the FHIR server and pre-loads it with sample data
+docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml run loader
+
+# runs the actual E2E tests by starting the container under test
+docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml run e2e
+
+docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml down -v --remove-orphans
+```
+
+You can find screenshots and videos of the E2E tests inside the [tests/e2e](tests/e2e) directory.
+
 ### Keycloak
 
 For development, a Keycloak server with a pre-configured test realm called "MIRACUM" is included in `docker-compose.dev.yaml`. It sets up a `uc1-screeninglist` client, representing this application. It also includes a few sample users to test the access control:

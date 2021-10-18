@@ -24,9 +24,9 @@
         </header>
         <ScreeningList
           :items="screeningList.entry"
-          :hideDemographics="hideDemographics"
-          :hideLastVisit="hideLastVisit"
-          :hideEhrButton="hideEhrButton"
+          :hide-demographics="hideDemographics"
+          :hide-last-visit="hideLastVisit"
+          :hide-ehr-button="hideEhrButton"
         />
         <p class="has-text-grey mt-6 mb-6">
           Letzte Änderung:
@@ -50,7 +50,11 @@ export default {
     ScreeningList,
   },
   props: {
-    listId: String,
+    listId: {
+      type: String,
+      required: false,
+      default: () => null,
+    },
   },
   data() {
     return {

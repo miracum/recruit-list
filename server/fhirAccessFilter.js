@@ -114,3 +114,10 @@ exports.createAccessFilter = (trialsConfig, authConfig) => (resource, user) => {
 
   return resource;
 };
+
+exports.createPatchFilter = (authConfig) => (resourceType, user) => {
+  if (resourceType === "List") {
+    return userHasAdminRole(user, authConfig);
+  }
+  return true;
+};

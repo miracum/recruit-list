@@ -1,5 +1,5 @@
 // https://docs.cypress.io/api/introduction/api.html
-import oidcConfig from "../fixtures/keycloak";
+import { oidcConfig } from "../fixtures/keycloak";
 
 const patientRequestUrl = "**/Patient/**";
 

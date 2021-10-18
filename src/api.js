@@ -28,11 +28,62 @@ const actions = {
     const response = await axios.get(process.env.VUE_APP_CONFIG_URL || "/config");
     return response.data;
   },
-  async fetchLists() {
+  async updateResearchSubject(subjectId, note, status) {
+    const client = createFhirClient();
+    const patch = [];
+
+    if (status) {
+      patch.push({
+        op: "replace",
+        path: "/status",
+        value: status,
+      });
+    }
+
+    if (note) {
+      patch.push({
+        op: "add",
+        path: "/extension",
+        value: [
+          {
+            url: Constants.URL_NOTE_EXTENSION,
+            valueString: note,
+          },
+        ],
+      });
+    }
+
+    await client.request({
+      url: `ResearchSubject/${subjectId}`,
+      method: "PATCH",
+      body: JSON.stringify(patch),
+      headers: { "Content-Type": "application/json-patch+json" },
+    });
+  },
+  async updateListStatus(listId, status) {
+    const client = createFhirClient();
+    const patch = [];
+
+    if (status) {
+      patch.push({
+        op: "replace",
+        path: "/status",
+        value: status,
+      });
+    }
+
+    await client.request({
+      url: `List/${listId}`,
+      method: "PATCH",
+      body: JSON.stringify(patch),
+      headers: { "Content-Type": "application/json-patch+json" },
+    });
+  },
+  async fetchCurrentAndRetiredLists() {
     const client = createFhirClient();
 
     const screeningLists = await client.request(
-      `List/?code=${Constants.SYSTEM_SCREENING_LIST}%7Cscreening-recommendations&status=current`,
+      `List/?code=${Constants.SYSTEM_SCREENING_LIST}%7Cscreening-recommendations&status=current,retired`,
       {
         resolveReferences: ["extension.0.valueReference", ""],
         flat: true,

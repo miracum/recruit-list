@@ -72,19 +72,6 @@ export default {
       },
     };
   },
-  async mounted() {
-    try {
-      this.isLoading = true;
-      this.latestEncounterAndLocation = await Api.fetchLatestEncounterWithLocation(
-        this.subject.individual.id
-      );
-    } catch (exc) {
-      this.$log.error(exc);
-      this.errorMessage = exc.message;
-    } finally {
-      this.isLoading = false;
-    }
-  },
   computed: {
     // if https://www.hl7.org/fhir/encounter-definitions.html#Encounter.location.period is set, use it
     // to display the stay begin and end. If it is not set, use https://www.hl7.org/fhir/encounter-definitions.html#Encounter.period
@@ -100,6 +87,19 @@ export default {
     latestEncounterLocation() {
       return this.latestEncounterAndLocation?.locationEntry?.location;
     },
+  },
+  async mounted() {
+    try {
+      this.isLoading = true;
+      this.latestEncounterAndLocation = await Api.fetchLatestEncounterWithLocation(
+        this.subject.individual.id
+      );
+    } catch (exc) {
+      this.$log.error(exc);
+      this.errorMessage = exc.message;
+    } finally {
+      this.isLoading = false;
+    }
   },
   methods: {
     getIconNameFromContactPointSystem(system) {

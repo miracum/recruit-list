@@ -60,7 +60,11 @@ export default {
   name: "ConditionList",
   components: {},
   props: {
-    items: Array,
+    items: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
   },
   data() {
     return {};

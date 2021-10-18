@@ -132,8 +132,16 @@ export default {
   name: "MedicationList",
   components: {},
   props: {
-    medicationStatements: Array,
-    medicationAdministrations: Array,
+    medicationStatements: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+    medicationAdministrations: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
   },
   data() {
     return {};

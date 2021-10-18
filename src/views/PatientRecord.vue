@@ -65,8 +65,8 @@
               </span>
             </template>
             <medication-list
-              :medicationStatements="record.medicationStatements"
-              :medicationAdministrations="record.medicationAdministrations"
+              :medication-statements="record.medicationStatements"
+              :medication-administrations="record.medicationAdministrations"
             />
           </b-tab-item>
           <b-tab-item>
@@ -98,7 +98,11 @@ export default {
   name: "PatientRecord",
   components: { ConditionList, MedicationList, ProcedureList, ObservationList },
   props: {
-    patientId: String,
+    patientId: {
+      type: String,
+      required: false,
+      default: () => null,
+    },
   },
   data() {
     return {
@@ -115,6 +119,17 @@ export default {
         observations: Array,
       },
     };
+  },
+  computed: {
+    mrNumber() {
+      return fhirpath.evaluate(
+        this.record.patient,
+        "Patient.identifier.where(type.coding.system=%identifierType and type.coding.code='MR').value",
+        {
+          identifierType: Constants.SYSTEM_IDENTIFIER_TYPE,
+        }
+      )[0];
+    },
   },
   async mounted() {
     try {
@@ -160,17 +175,6 @@ export default {
     }
   },
   methods: {},
-  computed: {
-    mrNumber() {
-      return fhirpath.evaluate(
-        this.record.patient,
-        "Patient.identifier.where(type.coding.system=%identifierType and type.coding.code='MR').value",
-        {
-          identifierType: Constants.SYSTEM_IDENTIFIER_TYPE,
-        }
-      )[0];
-    },
-  },
 };
 </script>
 

@@ -13,7 +13,7 @@ const cors = require("cors");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 
 const { createJwtCheck } = require("./auth");
-const { createAccessFilter } = require("./fhirAccessFilter");
+const { createAccessFilter, createPatchFilter } = require("./fhirAccessFilter");
 const { setupTracing } = require("./tracing");
 
 const { config } = require("./config");
@@ -25,9 +25,10 @@ if (!config.auth.disabled && (!config.auth.url || !config.auth.clientId || !conf
 
 const checkJwt = createJwtCheck(config);
 
-// by default, do not any filtering, simply returing the resource to be filtered.
+// by default, do not do any filtering, simply returing the resource to be filtered.
 // eslint-disable-next-line no-unused-vars
 let filterAcessibleResources = (resource, _user) => resource;
+let isPatchRequestAllowed = (_resourceType, _user) => true;
 
 try {
   logger.child({ path: config.rulesFilePath }).debug("Trying to load trials config");
@@ -38,6 +39,7 @@ try {
   }
 
   filterAcessibleResources = createAccessFilter(rulesConfig.notify.rules.trials, config.auth);
+  isPatchRequestAllowed = createPatchFilter(config.auth);
 } catch (error) {
   logger
     .child({ error })
@@ -88,6 +90,8 @@ app.use(bearerToken());
 app.use(express.json());
 app.use(metricsMiddleware);
 
+const allowedResourcesToPatch = /^\/\/(?<resourceType>ResearchSubject|List)/;
+
 const proxyRequestFilter = (_pathname, req) => req.method === "GET" || req.method === "PATCH";
 const proxy = createProxyMiddleware(proxyRequestFilter, {
   target: config.fhirUrl,
@@ -97,7 +101,7 @@ const proxy = createProxyMiddleware(proxyRequestFilter, {
   },
   secure: config.proxy.isSecureBackend,
   xfwd: true,
-  onProxyReq(proxyReq) {
+  onProxyReq(proxyReq, req, res) {
     // the ApacheProxyAddressStrategy used by HAPI FHIR
     // constructs the server URL from both the X-Forwarded-Host and X-Forwarded-Port
     // since the X-Forwarded-Host created by HPM already contains the port (eg. localhost:8443)
@@ -111,6 +115,30 @@ const proxy = createProxyMiddleware(proxyRequestFilter, {
         proxyReq.setHeader("X-Forwarded-Proto", "https");
       } else {
         proxyReq.setHeader("X-Forwarded-Proto", "http");
+      }
+    }
+
+    // PATCH operations are only allowed on ResearchSubject (to set the recruitment status
+    // and custom note and List resources (to mark them as retired/active)
+    if (req.method === "PATCH" && !config.auth.disabled) {
+      const match = req.url.match(allowedResourcesToPatch);
+      if (match) {
+        logger.child({ url: req.url, match }).info("PATCHing a valid resource");
+        if (!isPatchRequestAllowed(match.groups.resourceType, req.user)) {
+          res
+            .writeHead(403, {
+              "Content-Type": "text/plain",
+            })
+            .end(
+              `Operation unauthorized. Unauthorized to PATCH resources of type ${match.groups.resourceType}`
+            );
+        }
+      } else {
+        res
+          .writeHead(403, {
+            "Content-Type": "text/plain",
+          })
+          .end("Operation unauthorized. Attempted to patch an invalid resource type");
       }
     }
   },
