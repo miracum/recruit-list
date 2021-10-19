@@ -25,7 +25,7 @@ const options = {
 
 Vue.use(VueLogger, options);
 
-Vue.component("vue-fontawesome", FontAwesomeIcon);
+Vue.component("VueFontawesome", FontAwesomeIcon);
 
 Vue.use(Buefy, {
   defaultIconComponent: "vue-fontawesome",

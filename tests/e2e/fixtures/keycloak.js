@@ -7,4 +7,15 @@ const oidcConfig = {
   redirect_uri: "http://list:8080/",
 };
 
-export default oidcConfig;
+// using the object spread operator causes the following error:
+// objectSpread.js:1
+// import defineProperty from "./defineProperty.js";
+// ^
+// ParseError: 'import' and 'export' may appear only with 'sourceType: module'
+
+// eslint-disable-next-line prefer-object-spread
+const adminOidcConfig = Object.assign({}, oidcConfig);
+adminOidcConfig.username = "uc1-admin";
+adminOidcConfig.password = "admin";
+
+export { oidcConfig, adminOidcConfig };

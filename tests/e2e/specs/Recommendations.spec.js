@@ -1,5 +1,5 @@
 // https://docs.cypress.io/api/introduction/api.html
-import oidcConfig from "../fixtures/keycloak";
+import { oidcConfig } from "../fixtures/keycloak";
 
 const listRequestUrl = "**/List/?_id=**";
 
@@ -12,7 +12,7 @@ describe("Recommendations ", () => {
       cy.server();
       cy.route("GET", listRequestUrl).as("getList");
       cy.route("PATCH", "**/ResearchSubject/**").as("patchSubject");
-      cy.visit("/recommendations/794", {
+      cy.visit("/recommendations/795", {
         onBeforeLoad: (win) => {
           // eslint-disable-next-line no-param-reassign
           win.fetch = null;
@@ -48,7 +48,7 @@ describe("Recommendations ", () => {
 
       cy.wait("@patchSubject", { timeout: 30000 });
       // hmm, this is not a great workaround, but it seems it takes
-      // some thime for the FHIR server to respond with the updated resource
+      // some time for the FHIR server to respond with the updated resource
       // maybe some sort of caching issue.
       cy.wait(5000);
       cy.reload();

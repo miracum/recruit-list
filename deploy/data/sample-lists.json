@@ -530,6 +530,41 @@
       }
     },
     {
+      "fullUrl": "List/3",
+      "resource": {
+        "resourceType": "List",
+        "status": "retired",
+        "identifier": [
+          {
+            "system": "http://miracum.org/fhir/screening-list-cohort-identifier",
+            "value": "4"
+          }
+        ],
+        "extension": [
+          {
+            "url": "https://fhir.miracum.org/uc1/StructureDefinition/belongsToStudy",
+            "valueReference": {
+              "reference": "ResearchStudy/3",
+              "display": "RETIRED"
+            }
+          }
+        ],
+        "mode": "working",
+        "code": {
+          "coding": [
+            {
+              "system": "https://fhir.miracum.org/uc1/CodeSystem/screeningList",
+              "code": "screening-recommendations"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "List?identifier=http://miracum.org/fhir/screening-list-cohort-identifier|4"
+      }
+    },
+    {
       "fullUrl": "ResearchStudy/0",
       "resource": {
         "resourceType": "ResearchStudy",
@@ -626,6 +661,33 @@
         "method": "POST",
         "url": "ResearchStudy",
         "ifNoneExist": "ResearchStudy?identifier=http://clinicaltrials.gov/|SECRET"
+      }
+    },
+    {
+      "fullUrl": "ResearchStudy/3",
+      "resource": {
+        "resourceType": "ResearchStudy",
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://clinicaltrials.gov/",
+            "value": "RETIRED"
+          }
+        ],
+        "extension": [
+          {
+            "url": "https://fhir.miracum.org/uc1/StructureDefinition/studyAcronym",
+            "valueString": "RETIRED"
+          }
+        ],
+        "status": "active",
+        "title": "RETIRED",
+        "description": "This is a retired study"
+      },
+      "request": {
+        "method": "POST",
+        "url": "ResearchStudy",
+        "ifNoneExist": "ResearchStudy?identifier=http://clinicaltrials.gov/|RETIRED"
       }
     }
   ]

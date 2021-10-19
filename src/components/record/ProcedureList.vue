@@ -44,7 +44,11 @@ export default {
   name: "ProcedureList",
   components: {},
   props: {
-    items: Array,
+    items: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
   },
   data() {
     return {};

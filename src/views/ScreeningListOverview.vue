@@ -13,54 +13,73 @@
       Bitte wenden Sie sich an einen verantwortlichen Administrator.</b-message
     >
     <div v-else>
-      <h1 class="title is-3">Laufende Studien</h1>
-      <div v-for="(list, index) in screeningLists" :key="index" class="card">
-        <router-link
-          :to="{
-            name: 'patient-recommendations-by-id',
-            params: { listId: list.id },
-          }"
-        >
-          <div class="card-content">
-            <div class="media">
-              <div class="media-left">
-                <b-tag type="is-primary" size="is-large" rounded>{{
-                  list.entry ? list.entry.length : 0
-                }}</b-tag>
-              </div>
-              <div class="media-right">
-                <h4 class="title is-4 mb-0">
-                  {{ getStudyDisplayFromList(list) }}
-                </h4>
-              </div>
-            </div>
-          </div>
-        </router-link>
-      </div>
+      <section class="active-screening-lists">
+        <h1 class="title is-3">Laufende Studien</h1>
+        <screening-list-card
+          v-for="(list, index) in activeScreeningLists"
+          :key="'active-list-' + index"
+          :list="list"
+          :show-active-toggle="isLoggedInAsAdmin"
+          @input="onListStatusToggled"
+        />
+      </section>
+
+      <section v-if="isLoggedInAsAdmin" class="inactive-screening-lists">
+        <h1 class="title is-3">Inaktive Studien</h1>
+        <screening-list-card
+          v-for="(list, index) in inactiveScreeningLists"
+          :key="'inactive-list-' + index"
+          :list="list"
+          :show-active-toggle="isLoggedInAsAdmin"
+          @input="onListStatusToggled"
+        />
+      </section>
     </div>
   </div>
 </template>
 
 <script>
-import fhirpath from "fhirpath";
-import Constants from "@/const";
 import Api from "@/api";
+
+import ScreeningListCard from "@/components/ScreeningListCard.vue";
 
 export default {
   name: "ScreeningListOverview",
-  components: {},
+  components: {
+    ScreeningListCard,
+  },
   data() {
     return {
-      screeningLists: {},
+      screeningLists: [],
       failedToLoad: false,
       isLoading: true,
       noLists: false,
       errorMessage: "",
     };
   },
+  computed: {
+    isLoggedInAsAdmin() {
+      if (!this.$keycloak) {
+        // if keycloak is not set-up, default to displaying the UI as an admin
+        return true;
+      }
+
+      if (this.$keycloak.ready && this.$keycloak.authenticated) {
+        return this.$keycloak.hasResourceRole("admin");
+      }
+
+      return false;
+    },
+    activeScreeningLists() {
+      return this.screeningLists?.filter((list) => list.status === "current");
+    },
+    inactiveScreeningLists() {
+      return this.screeningLists?.filter((list) => list.status === "retired");
+    },
+  },
   async mounted() {
     try {
-      const screeningLists = await Api.fetchLists();
+      const screeningLists = await Api.fetchCurrentAndRetiredLists();
       if (screeningLists.length !== 0) {
         this.screeningLists = screeningLists;
       } else {
@@ -74,24 +93,36 @@ export default {
     }
   },
   methods: {
-    getStudyDisplayFromList(list) {
-      const study = fhirpath.evaluate(
-        list,
-        "List.extension(%url).valueReference",
-        {
-          url: Constants.URL_LIST_BELONGS_TO_STUDY_EXTENSION,
-        }
-      )[0];
+    async onListStatusToggled(e) {
+      this.$log.debug(
+        `List status toggled to ${e.event} for ${e.list}`,
+        e.event
+      );
 
-      const acronym = fhirpath.evaluate(
-        study,
-        "ResearchStudy.extension(%acronymSystem).valueString",
-        {
-          acronymSystem: Constants.SYSTEM_STUDY_ACRONYM,
-        }
-      )[0];
+      const newStatus = e.event ? "current" : "retired";
 
-      return acronym || study.title || study.description;
+      try {
+        await Api.updateListStatus(e.list.id, newStatus);
+        this.$buefy.toast.open({
+          message: "Status der Liste aktualisiert!",
+          type: "is-success",
+        });
+
+        const listToUpdate = this.screeningLists.find(
+          (l) => l.id === e.list.id
+        );
+        this.$log.debug(
+          `Setting status for ${listToUpdate.id} to ${newStatus}`
+        );
+        listToUpdate.status = newStatus;
+      } catch (exc) {
+        this.$log.error(exc);
+        this.$buefy.toast.open({
+          message: `Fehler beim Aktualisieren des Status: ${exc.message}.`,
+          type: "is-danger",
+          duration: 30_000,
+        });
+      }
     },
   },
 };

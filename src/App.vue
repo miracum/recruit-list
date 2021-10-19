@@ -26,11 +26,11 @@
             <span class="mr-3 ml-3 has-text-white">{{ username }}</span>
             <div class="buttons">
               <b-button
+                v-if="isAuthenticated"
                 outlined
                 type="is-white"
-                @click="logout"
-                v-if="isAuthenticated"
                 size="is-small"
+                @click="logout"
                 >Ausloggen</b-button
               >
               <b-tooltip label="Benutzerhilfe öffnen" position="is-left">

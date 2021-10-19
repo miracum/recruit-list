@@ -16,7 +16,7 @@
                 allRecommendedStudies.length
               }}</b-tag>
             </b-taglist>
-            <template v-slot:content>
+            <template #content>
               Der Patient ist Rekrutierungsvorschlag für folgende Studien:
               <ol type="1">
                 <li
@@ -29,7 +29,7 @@
             </template>
           </b-tooltip>
         </div>
-        <div class="control" v-if="participatingStudies.length > 0">
+        <div v-if="participatingStudies.length > 0" class="control">
           <b-tooltip position="is-right" multilined>
             <b-taglist attached>
               <b-tag type="is-dark"
@@ -42,7 +42,7 @@
                 >{{ participatingStudies.length }}</b-tag
               >
             </b-taglist>
-            <template v-slot:content>
+            <template #content>
               Der Patient ist bereits in folgende Studien eingeschlossen:
               <ol type="1">
                 <li v-for="(study, index) in participatingStudies" :key="index">

@@ -8,10 +8,10 @@
       </template>
 
       <b-dropdown-item
-        aria-role="listitem"
         v-for="(deFilterStatus, enFilterStatus) in recruitmentStatusOptions"
-        :value="enFilterStatus"
         :key="deFilterStatus"
+        aria-role="listitem"
+        :value="enFilterStatus"
       >
         <span class="status-option-container">
           <b-icon
@@ -34,16 +34,16 @@
       :striped="true"
       :hoverable="true"
     >
-      <b-table-column label="Marker" v-slot="props">
+      <b-table-column v-slot="props" label="Marker">
         <recommendation-stats
-          :patientId="props.row.subject.individual.id"
+          :patient-id="props.row.subject.individual.id"
         ></recommendation-stats>
       </b-table-column>
 
       <b-table-column
+        v-slot="props"
         label="Patientennummer"
         field="mrNumber"
-        v-slot="props"
         sortable
       >
         <p class="patient-id">
@@ -52,9 +52,9 @@
       </b-table-column>
 
       <b-table-column
+        v-slot="props"
         label="Demografie"
         field="subject.individual.birthDate"
-        v-slot="props"
         sortable
         :visible="!hideDemographics"
       >
@@ -78,27 +78,28 @@
       </b-table-column>
 
       <b-table-column
-        label="Letzter Aufenthalt"
         v-slot="props"
+        label="Letzter Aufenthalt"
         :visible="!hideLastVisit"
       >
         <last-stay :subject="props.row.subject"></last-stay>
       </b-table-column>
 
-      <b-table-column label="Notiz" field="note" v-slot="props">
+      <b-table-column v-slot="props" label="Notiz" field="note">
         <b-field>
-          <b-input type="textarea" v-model="props.row.note"></b-input>
+          <b-input v-model="props.row.note" type="textarea"></b-input>
         </b-field>
       </b-table-column>
 
       <b-table-column
+        v-slot="props"
         label="Status"
         field="subject.status"
-        v-slot="props"
         sortable
       >
-        <b-dropdown aria-role="list" v-model="props.row.subject.status">
+        <b-dropdown v-model="props.row.subject.status" aria-role="list">
           <b-button
+            slot="trigger"
             :class="[
               'button',
               'recruitment-status-select',
@@ -106,15 +107,14 @@
             ]"
             type="button"
             size="is-small"
-            slot="trigger"
             icon-right="sort-down"
             >{{ recruitmentStatusOptions[props.row.subject.status] }}</b-button
           >
           <b-dropdown-item
-            aria-role="listitem"
             v-for="option in Object.keys(recruitmentStatusOptions)"
-            :value="option"
             :key="option"
+            aria-role="listitem"
+            :value="option"
           >
             <span class="status-option-container">
               <b-icon
@@ -129,21 +129,21 @@
         </b-dropdown>
       </b-table-column>
 
-      <b-table-column label="Aktionen" v-slot="props">
+      <b-table-column v-slot="props" label="Aktionen">
         <div class="columns is-desktop">
           <div class="column">
             <b-tooltip label="Änderungen Speichern" position="is-bottom">
               <b-button
-                @click="onSaveRowChanges($event, props.row)"
                 class="save-status"
                 type="is-primary"
                 size="is-small"
                 icon-left="save"
+                @click="onSaveRowChanges($event, props.row)"
                 >Speichern</b-button
               >
             </b-tooltip>
           </div>
-          <div class="column" v-if="!hideEhrButton">
+          <div v-if="!hideEhrButton" class="column">
             <b-tooltip label="Patientenakte anzeigen" position="is-bottom">
               <b-button
                 tag="router-link"
@@ -203,6 +203,10 @@ import RecommendationStats from "@/components/RecommendationStats.vue";
 
 export default {
   name: "ScreeningList",
+  components: {
+    LastStay,
+    RecommendationStats,
+  },
   props: {
     items: {
       default: () => [],
@@ -221,10 +225,6 @@ export default {
       type: Boolean,
     },
   },
-  components: {
-    LastStay,
-    RecommendationStats,
-  },
   data() {
     return {
       selectedFilterOptions: [],
@@ -240,9 +240,6 @@ export default {
       },
       fhirClient: {},
     };
-  },
-  async mounted() {
-    this.fhirClient = Api.getFhirClient();
   },
   computed: {
     patientViewModel() {
@@ -294,34 +291,8 @@ export default {
       return lookup[status] || lookup.default;
     },
     async onSaveRowChanges(_event, row) {
-      const patch = [
-        {
-          op: "replace",
-          path: "/status",
-          value: row.subject.status,
-        },
-      ];
-
-      if (row.note) {
-        patch.push({
-          op: "add",
-          path: "/extension",
-          value: [
-            {
-              url: Constants.URL_NOTE_EXTENSION,
-              valueString: row.note,
-            },
-          ],
-        });
-      }
-
       try {
-        await this.fhirClient.request({
-          url: `ResearchSubject/${row.subject.id}`,
-          method: "PATCH",
-          body: JSON.stringify(patch),
-          headers: { "Content-Type": "application/json-patch+json" },
-        });
+        await Api.updateResearchSubject(row.id, row.note, row.subject.status);
         this.$buefy.toast.open({
           message: "Rekrutierungsstatus aktualisiert!",
           type: "is-success",
@@ -331,7 +302,7 @@ export default {
         this.$buefy.toast.open({
           message: `Fehler beim setzen des Rekrutierungsstatus: ${exc.message}.`,
           type: "is-danger",
-          duration: 15000,
+          duration: 30_000,
         });
       }
     },
