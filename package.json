@@ -66,8 +66,8 @@
     "cypress-keycloak": "1.7.0",
     "eslint": "7.32.0",
     "eslint-config-prettier": "8.3.0",
-    "eslint-plugin-vue": "7.19.1",
-    "sass": "1.43.2",
+    "eslint-plugin-vue": "7.20.0",
+    "sass": "1.43.3",
     "sass-loader": "10.2.0",
     "vue-template-compiler": "2.6.14"
   },
