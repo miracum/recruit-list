@@ -1,4 +1,4 @@
-FROM node:16.12 AS build
+FROM node:16.13 AS build
 WORKDIR /app
 COPY package.json ./
 COPY package-lock.json ./
@@ -15,7 +15,7 @@ RUN npm run test:unit
 FROM build AS release
 RUN npm prune --production
 
-FROM node:16.12-slim
+FROM node:16.13-slim
 WORKDIR /app
 ENV NODE_ENV=production \
     NO_UPDATE_NOTIFIER=true
