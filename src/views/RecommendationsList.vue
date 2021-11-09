@@ -1,5 +1,5 @@
 <template>
-  <div class="recommendations">
+  <div class="recommendations-list">
     <b-loading :active="isLoading" :is-full-page="true" />
     <template v-if="!isLoading">
       <b-message v-if="failedToLoad" type="is-danger">
@@ -45,7 +45,7 @@ import ScreeningList from "@/components/ScreeningList.vue";
 import Constants from "@/const";
 
 export default {
-  name: "Recommendations",
+  name: "RecommendationsList",
   components: {
     ScreeningList,
   },

@@ -2,7 +2,7 @@ import Vue from "vue";
 import Router from "vue-router";
 
 const ScreeningListOverview = () => import("./views/ScreeningListOverview.vue");
-const Recommendations = () => import("./views/Recommendations.vue");
+const Recommendations = () => import("./views/RecommendationsList.vue");
 const ResearchSubjectHistory = () => import("./views/ResearchSubjectHistory.vue");
 const PatientRecord = () => import("./views/PatientRecord.vue");
 
