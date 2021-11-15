@@ -238,6 +238,21 @@ function onListening() {
   logger.info(`Listening on '${addr.address}:${addr.port}'`);
 }
 
+function shutdown(signal) {
+  return (err) => {
+    logger.child({ signal }).info(`Shutdown due to signal.`);
+    if (err) {
+      logger.error({ err });
+    }
+    process.exit(err ? 1 : 0);
+  };
+}
+
+process
+  .on("SIGTERM", shutdown("SIGTERM"))
+  .on("SIGINT", shutdown("SIGINT"))
+  .on("uncaughtException", shutdown("uncaughtException"));
+
 server.listen(port);
 server.on("error", onError);
 server.on("listening", onListening);
