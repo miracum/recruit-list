@@ -27,7 +27,7 @@ COPY --from=release /app/dist dist
 
 USER 65534
 EXPOSE 8080
-ENTRYPOINT [ "npm", "run", "server:start"]
+CMD [ "node", "server/server.js" ]
 
 ARG VERSION="0.0.0"
 ARG GIT_REF=""
