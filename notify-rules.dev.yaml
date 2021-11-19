@@ -8,7 +8,7 @@ notify:
         subscriptions:
           - email: "user.three@example.com"
 
-      # user 1 and user2 are allowed to access screening recommendations for
+      # user1 and user2 are allowed to access screening recommendations for
       # the 'PROSa' study
       - acronym: "PROSa"
         accessibleBy:

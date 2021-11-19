@@ -25,7 +25,6 @@
         </span>
       </b-dropdown-item>
     </b-dropdown>
-
     <b-table
       :data="filteredSubjects"
       :loading="isLoading"
@@ -35,9 +34,12 @@
       :hoverable="true"
     >
       <b-table-column v-slot="props" label="Marker">
-        <recommendation-stats
-          :patient-id="props.row.subject.individual.id"
-        ></recommendation-stats>
+        <recommendation-markers
+          :all-recommended-studies="props.row.allRecommendedStudies"
+          :participating-studies="props.row.participatingStudies"
+          :is-loading="props.row.markerIsLoading"
+          :error-message="props.row.markerErrorMessage"
+        ></recommendation-markers>
       </b-table-column>
 
       <b-table-column
@@ -82,9 +84,13 @@
         label="Letzter Aufenthalt"
         :visible="!hideLastVisit"
       >
-        <last-stay :subject="props.row.subject"></last-stay>
+        <last-stay
+          :subject="props.row.subject"
+          :latest-encounter-and-location="props.row.latestEncounterAndLocation"
+          :is-loading="props.row.lastStayIsLoading"
+          :error-message="props.row.lastStayErrorMessage"
+        ></last-stay>
       </b-table-column>
-
       <b-table-column v-slot="props" label="Notiz" field="note">
         <b-field>
           <b-input v-model="props.row.note" type="textarea"></b-input>
@@ -199,13 +205,13 @@ import fhirpath from "fhirpath";
 import Constants from "@/const";
 import Api from "@/api";
 import LastStay from "@/components/LastStay.vue";
-import RecommendationStats from "@/components/RecommendationStats.vue";
+import RecommendationMarkers from "@/components/RecommendationMarkers.vue";
 
 export default {
   name: "ScreeningList",
   components: {
     LastStay,
-    RecommendationStats,
+    RecommendationMarkers,
   },
   props: {
     items: {
@@ -228,9 +234,9 @@ export default {
   data() {
     return {
       selectedFilterOptions: [],
+      latestEncounterAndLocationLookup: {},
+      recommendationMarkerLookup: {},
       isLoading: false,
-      failedToLoad: false,
-      errorMessage: "",
       recruitmentStatusOptions: {
         candidate: "Rekrutierungsvorschlag",
         screening: "Wird geprüft",
@@ -261,12 +267,32 @@ export default {
               noteExtensionUrl: Constants.URL_NOTE_EXTENSION,
             }
           )[0];
-
           return {
             id: subject.id,
             mrNumber: mrNumber || subject.individual.id,
             subject,
             note,
+            latestEncounterAndLocation:
+              this.latestEncounterAndLocationLookup[subject.individual.id]
+                ?.latestEncounterAndLocation,
+            lastStayIsLoading:
+              this.latestEncounterAndLocationLookup[subject.individual.id]
+                ?.lastStayIsLoading,
+            lastStayErrorMessage:
+              this.latestEncounterAndLocationLookup[subject.individual.id]
+                ?.lastStayErrorMessage,
+            allRecommendedStudies:
+              this.recommendationMarkerLookup[subject.individual.id]
+                ?.allRecommendedStudies,
+            participatingStudies:
+              this.recommendationMarkerLookup[subject.individual.id]
+                ?.participatingStudies,
+            markerIsLoading:
+              this.recommendationMarkerLookup[subject.individual.id]
+                ?.markerIsLoading,
+            markerErrorMessage:
+              this.recommendationMarkerLookup[subject.individual.id]
+                ?.markerErrorMessage,
           };
         });
     },
@@ -275,6 +301,92 @@ export default {
         (entry) => !this.selectedFilterOptions.includes(entry.subject.status)
       );
     },
+  },
+  async mounted() {
+    this.items.map(async (element) => {
+      let latestEncounterAndLocation = {};
+      try {
+        this.$set(
+          this.latestEncounterAndLocationLookup,
+          element.item.individual.id,
+          {
+            lastStayIsLoading: true,
+          }
+        );
+        latestEncounterAndLocation = await Api.fetchLatestEncounterWithLocation(
+          element.item.individual.id
+        );
+
+        this.$set(
+          this.latestEncounterAndLocationLookup,
+          element.item.individual.id,
+          {
+            latestEncounterAndLocation,
+            lastStayIsLoading: false,
+            lastStayErrorMessage: "",
+          }
+
+        );
+      } catch (exc) {
+        this.$set(
+          this.latestEncounterAndLocationLookup,
+          element.item.individual.id,
+          {
+            latestEncounterAndLocation,
+            lastStayIsLoading: false,
+            lastStayErrorMessage: exc,
+          }
+        );
+      }
+    });
+
+    this.items.map(async (element) => {
+      let allRecommendedStudies = [];
+      let participatingStudies = [];
+      try {
+        this.$set(this.recommendationMarkerLookup, element.item.individual.id, {
+          markerIsLoading: true,
+        });
+        const allRecommendations = await Api.fetchAllRecommendationsByPatientId(
+          element.item.individual.id
+        );
+
+        // include only studies where the patient is not ineligible or withdrawn from
+        // the filter ensures that if a patient's recruitment status is
+        // set to `ineligible`, the referenced study is not included in the list of the patient's
+        // total recommendations
+        allRecommendedStudies = allRecommendations
+          .filter(
+            (resource) =>
+              resource.resourceType === "ResearchSubject" &&
+              resource.status !== "ineligible" &&
+              resource.status !== "withdrawn"
+          )
+          .map((researchSubject) => researchSubject.study);
+
+        participatingStudies = allRecommendations
+          .filter(
+            (resource) =>
+              resource.resourceType === "ResearchSubject" &&
+              resource.status === "on-study"
+          )
+          .map((researchSubject) => researchSubject.study);
+
+        this.$set(this.recommendationMarkerLookup, element.item.individual.id, {
+          allRecommendedStudies,
+          participatingStudies,
+          markerIsLoading: false,
+          markerErrorMessage: "",
+        });
+      } catch (exc) {
+        this.$set(this.recommendationMarkerLookup, element.item.individual.id, {
+          allRecommendedStudies,
+          participatingStudies,
+          markerIsLoading: false,
+          markerErrorMessage: exc,
+        });
+      }
+    });
   },
   methods: {
     getTypeFromStatus(status) {

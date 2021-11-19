@@ -1,0 +1,94 @@
+<template>
+  <div class="last-stay">
+    <template v-if="isLoading">
+        <span>Lädt weitere Informationen...</span>
+    </template>
+    <b-message v-else-if="errorMessage" type="is-danger">
+      Fehler beim Laden:
+      <br />
+      <pre>{{ errorMessage }}</pre>
+    </b-message>
+    <template v-else>
+      <b-field grouped group-multiline>
+          <div class="control">
+            <div v-if="allRecommendedStudies.length > 0" class="control">
+              <b-tooltip position="is-right" multilined>
+                <b-taglist attached>
+                  <b-tag type="is-dark"
+                    ><b-icon icon="lightbulb" size="is-small" type="is-white">
+                    </b-icon
+                  ></b-tag>
+                  <b-tag type="is-info" class="all-recommendations-count">{{
+                    allRecommendedStudies.length
+                  }}</b-tag>
+                </b-taglist>
+                <template #content>
+                  Der Patient ist Rekrutierungsvorschlag für folgende Studien:
+                  <ol type="1">
+                    <li
+                      v-for="(study, index) in allRecommendedStudies"
+                      :key="index"
+                    >
+                      {{ getAcronymFromStudy(study) || study.title }}
+                    </li>
+                  </ol>
+                </template>
+              </b-tooltip>
+            </div>
+          </div>
+        <div v-if="participatingStudies.length > 0" class="control">
+            <b-tooltip position="is-right" multilined>
+              <b-taglist attached>
+                <b-tag type="is-dark"
+                  ><b-icon icon="graduation-cap" size="is-small" type="is-white">
+                  </b-icon
+                ></b-tag>
+                <b-tag
+                  type="is-danger is-light"
+                  class="participating-studies-count"
+                  >{{ participatingStudies.length }}</b-tag
+                >
+              </b-taglist>
+              <template #content>
+                Der Patient ist bereits in folgende Studien eingeschlossen:
+                <ol type="1">
+                  <li v-for="(study, index) in participatingStudies" :key="index">
+                    {{ getAcronymFromStudy(study) || study.title }}
+                  </li>
+                </ol>
+              </template>
+            </b-tooltip>
+          </div>
+      </b-field>
+    </template>
+  </div>
+</template>
+
+<script>
+import fhirpath from "fhirpath";
+import Constants from "@/const";
+
+export default {
+  name: "RecommendationMarkers",
+  components: {},
+  props: {
+    // ResearchSubject.individual should be resolved and replaced with the actual Patient object
+    patientId: { default: () => null, type: String },
+    allRecommendedStudies: { default: () => null, type: Array },
+    participatingStudies: { default: () => null, type: Array },
+    isLoading:{ default: () => null, type: Boolean},
+    errorMessage:{default: () => "", type: String},
+  },
+  methods: {
+    getAcronymFromStudy(study) {
+      return fhirpath.evaluate(
+        study,
+        "ResearchStudy.extension(%acronymSystem).valueString",
+        {
+          acronymSystem: Constants.SYSTEM_STUDY_ACRONYM,
+        }
+      )[0];
+    },
+  },
+};
+</script>
