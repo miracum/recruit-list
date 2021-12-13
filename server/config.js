@@ -31,6 +31,9 @@ exports.config = {
       process.env.HIDE_DEMOGRAPHICS === "true" || process.env.HIDE_DEMOGRAPHICS === "1",
     hideLastVisit: process.env.HIDE_LAST_VISIT === "true" || process.env.HIDE_LAST_VISIT === "1",
     hideEhrButton: process.env.HIDE_EHR_BUTTON === "true" || process.env.HIDE_EHR_BUTTON === "1",
+    hideRecommendationDate:
+      process.env.HIDE_RECOMMENDATION_DATE === "true" ||
+      process.env.HIDE_RECOMMENDATION_DATE === "1",
   },
   proxy: {
     isSecureBackend:

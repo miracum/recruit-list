@@ -27,6 +27,7 @@
           :hide-demographics="hideDemographics"
           :hide-last-visit="hideLastVisit"
           :hide-ehr-button="hideEhrButton"
+          :hide-recommendation-date="hideRecommendationDate"
         />
         <p class="has-text-grey mt-6 mb-6">
           Letzte Änderung:
@@ -66,6 +67,7 @@ export default {
       hideDemographics: false,
       hideLastVisit: false,
       hideEhrButton: false,
+      hideRecommendationDate: false,
     };
   },
   async mounted() {
@@ -78,6 +80,7 @@ export default {
       this.hideDemographics = config.hideDemographics;
       this.hideLastVisit = config.hideLastVisit;
       this.hideEhrButton = config.hideEhrButton;
+      this.hideRecommendationDate = config.hideRecommendationDate;
     } catch (exc) {
       this.errorMessage = exc;
       this.failedToLoad = true;

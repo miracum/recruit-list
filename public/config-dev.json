@@ -6,5 +6,6 @@
   "isKeycloakDisabled": false,
   "hideDemographics": false,
   "hideLastVisit": false,
-  "hideEhrButton": false
+  "hideEhrButton": false,
+  "hideRecommendationDate": false
 }

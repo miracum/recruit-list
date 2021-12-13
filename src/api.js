@@ -119,10 +119,13 @@ const actions = {
       // reference resolution on arrays, ie. the List.entry field.
       // see https://github.com/smart-on-fhir/client-js/issues/73
       list.entry = list.entry.map((entry) => {
-        const r = fhirpath.evaluate(allResources, "ResearchSubject.where(id=%subjectId)", {
+        const subject = fhirpath.evaluate(allResources, "ResearchSubject.where(id=%subjectId)", {
           subjectId: entry.item.reference.split("/")[1],
         })[0];
-        return { item: r };
+
+        const entryWithResolvedItem = entry;
+        entryWithResolvedItem.item = subject;
+        return entryWithResolvedItem;
       });
     }
 

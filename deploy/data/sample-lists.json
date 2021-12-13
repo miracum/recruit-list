@@ -475,17 +475,28 @@
           {
             "item": {
               "reference": "ResearchSubject/2"
+            },
+            "date": "2021-12-12T13:28:17-05:00",
+            "flag": {
+              "coding": [
+                {
+                  "system": "https://fhir.miracum.org/uc1/CodeSystem/system-determined-subject-status",
+                  "code": "ineligible"
+                }
+              ]
             }
           },
           {
             "item": {
               "reference": "ResearchSubject/3"
-            }
+            },
+            "date": "2021-12-01T00:00:00.000Z"
           },
           {
             "item": {
               "reference": "ResearchSubject/4"
-            }
+            },
+            "date": "2021-11-01T00:00:00.000Z"
           }
         ]
       },

@@ -199,6 +199,7 @@ app.get("/config", (_req, res) =>
     hideLastVisit: config.ui.hideLastVisit,
     hideEhrButton: config.ui.hideEhrButton,
     isKeycloakDisabled: config.auth.disabled,
+    hideRecommendationDate: config.auth.hideRecommendationDate,
     authClientId: config.auth.clientId,
     authUrl: config.auth.url,
     authRealm: config.auth.realm,

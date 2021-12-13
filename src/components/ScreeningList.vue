@@ -32,11 +32,29 @@
       sort-icon="menu-up"
       :striped="true"
       :hoverable="true"
+      default-sort="date"
+      default-sort-direction="desc"
     >
+      <b-table-column
+        v-slot="props"
+        label="Vorschlagszeitpunkt"
+        field="date"
+        sortable
+        :visible="!hideRecommendationDate"
+      >
+        <p class="subject-recommendation-date">
+          <span v-if="props.row.date">
+            {{ props.row.date.toLocaleString() }}
+          </span>
+          <span v-else> unbekannt </span>
+        </p>
+      </b-table-column>
+
       <b-table-column v-slot="props" label="Marker">
         <recommendation-markers
           :all-recommended-studies="props.row.allRecommendedStudies"
           :participating-studies="props.row.participatingStudies"
+          :is-no-longer-eligible="props.row.isNoLongerEligible"
           :is-loading="props.row.markerIsLoading"
           :error-message="props.row.markerErrorMessage"
         ></recommendation-markers>
@@ -230,6 +248,10 @@ export default {
       default: () => false,
       type: Boolean,
     },
+    hideRecommendationDate: {
+      default: () => false,
+      type: Boolean,
+    },
   },
   data() {
     return {
@@ -249,52 +271,64 @@ export default {
   },
   computed: {
     patientViewModel() {
-      return this.items
-        .map((entry) => entry.item)
-        .map((subject) => {
-          const mrNumber = fhirpath.evaluate(
-            subject.individual,
-            "Patient.identifier.where(type.coding.system=%identifierType and type.coding.code='MR').value",
-            {
-              identifierType: Constants.SYSTEM_IDENTIFIER_TYPE,
-            }
-          )[0];
+      return this.items.map((entry) => {
+        const subject = entry.item;
+        const mrNumber = fhirpath.evaluate(
+          subject.individual,
+          "Patient.identifier.where(type.coding.system=%identifierType and type.coding.code='MR').value",
+          {
+            identifierType: Constants.SYSTEM_IDENTIFIER_TYPE,
+          }
+        )[0];
 
-          const note = fhirpath.evaluate(
-            subject,
-            "ResearchSubject.extension(%noteExtensionUrl).valueString",
-            {
-              noteExtensionUrl: Constants.URL_NOTE_EXTENSION,
-            }
-          )[0];
-          return {
-            id: subject.id,
-            mrNumber: mrNumber || subject.individual.id,
-            subject,
-            note,
-            latestEncounterAndLocation:
-              this.latestEncounterAndLocationLookup[subject.individual.id]
-                ?.latestEncounterAndLocation,
-            lastStayIsLoading:
-              this.latestEncounterAndLocationLookup[subject.individual.id]
-                ?.lastStayIsLoading,
-            lastStayErrorMessage:
-              this.latestEncounterAndLocationLookup[subject.individual.id]
-                ?.lastStayErrorMessage,
-            allRecommendedStudies:
-              this.recommendationMarkerLookup[subject.individual.id]
-                ?.allRecommendedStudies,
-            participatingStudies:
-              this.recommendationMarkerLookup[subject.individual.id]
-                ?.participatingStudies,
-            markerIsLoading:
-              this.recommendationMarkerLookup[subject.individual.id]
-                ?.markerIsLoading,
-            markerErrorMessage:
-              this.recommendationMarkerLookup[subject.individual.id]
-                ?.markerErrorMessage,
-          };
-        });
+        const note = fhirpath.evaluate(
+          subject,
+          "ResearchSubject.extension(%noteExtensionUrl).valueString",
+          {
+            noteExtensionUrl: Constants.URL_NOTE_EXTENSION,
+          }
+        )[0];
+
+        const statusCode = fhirpath.evaluate(
+          entry,
+          "flag.coding.where(system=%subjectStatus).code",
+          {
+            subjectStatus: Constants.SYSTEM_DETERMINED_SUBJECT_STATUS,
+          }
+        )[0];
+
+        const isNoLongerEligible = statusCode === "ineligible";
+
+        return {
+          id: subject.id,
+          mrNumber: mrNumber || subject.individual.id,
+          date: entry.date ? new Date(entry.date) : null,
+          isNoLongerEligible,
+          subject,
+          note,
+          latestEncounterAndLocation:
+            this.latestEncounterAndLocationLookup[subject.individual.id]
+              ?.latestEncounterAndLocation,
+          lastStayIsLoading:
+            this.latestEncounterAndLocationLookup[subject.individual.id]
+              ?.lastStayIsLoading,
+          lastStayErrorMessage:
+            this.latestEncounterAndLocationLookup[subject.individual.id]
+              ?.lastStayErrorMessage,
+          allRecommendedStudies:
+            this.recommendationMarkerLookup[subject.individual.id]
+              ?.allRecommendedStudies,
+          participatingStudies:
+            this.recommendationMarkerLookup[subject.individual.id]
+              ?.participatingStudies,
+          markerIsLoading:
+            this.recommendationMarkerLookup[subject.individual.id]
+              ?.markerIsLoading,
+          markerErrorMessage:
+            this.recommendationMarkerLookup[subject.individual.id]
+              ?.markerErrorMessage,
+        };
+      });
     },
     filteredSubjects() {
       return this.patientViewModel.filter(
@@ -325,7 +359,6 @@ export default {
             lastStayIsLoading: false,
             lastStayErrorMessage: "",
           }
-
         );
       } catch (exc) {
         this.$set(
