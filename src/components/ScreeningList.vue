@@ -37,7 +37,7 @@
     >
       <b-table-column
         v-slot="props"
-        label="Vorschlagszeitpunkt"
+        label="Vorschlagszeit"
         field="date"
         sortable
         :visible="!hideRecommendationDate"
