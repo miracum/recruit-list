@@ -44,7 +44,7 @@
       >
         <p class="subject-recommendation-date">
           <span v-if="props.row.date">
-            {{ props.row.date.toLocaleString() }}
+            {{ props.row.date.toLocaleDateString() }}
           </span>
           <span v-else> unbekannt </span>
         </p>
