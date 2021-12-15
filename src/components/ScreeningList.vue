@@ -37,14 +37,14 @@
     >
       <b-table-column
         v-slot="props"
-        label="Vorschlagszeitpunkt"
+        label="Vorschlagszeit"
         field="date"
         sortable
         :visible="!hideRecommendationDate"
       >
         <p class="subject-recommendation-date">
           <span v-if="props.row.date">
-            {{ props.row.date.toLocaleString() }}
+            {{ props.row.date.toLocaleDateString() }}
           </span>
           <span v-else> unbekannt </span>
         </p>
