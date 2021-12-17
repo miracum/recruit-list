@@ -197,12 +197,12 @@
         "identifier": [
           {
             "system": "https://diz.mii.de/fhir/CodeSystem/TestOrganisationAbteilungen",
-            "value": "MedizinischeKlinik1"
+            "value": "MedizinischeKlinik5"
           }
         ],
         "status": "active",
-        "name": "Medizinische Klinik 1",
-        "alias": ["Med 1"],
+        "name": "Hämatologie und Internistische Onkologie",
+        "alias": ["Med 5"],
         "mode": "instance",
         "telecom": [
           {
@@ -215,7 +215,7 @@
       "request": {
         "method": "POST",
         "url": "Location",
-        "ifNoneExist": "Location?identifier=https://diz.mii.de/fhir/CodeSystem/TestOrganisationAbteilungen|MedizinischeKlinik1"
+        "ifNoneExist": "Location?identifier=https://diz.mii.de/fhir/CodeSystem/TestOrganisationAbteilungen|MedizinischeKlinik5"
       }
     },
     {
@@ -475,17 +475,28 @@
           {
             "item": {
               "reference": "ResearchSubject/2"
+            },
+            "date": "2021-12-12T13:28:17-05:00",
+            "flag": {
+              "coding": [
+                {
+                  "system": "https://fhir.miracum.org/uc1/CodeSystem/system-determined-subject-status",
+                  "code": "ineligible"
+                }
+              ]
             }
           },
           {
             "item": {
               "reference": "ResearchSubject/3"
-            }
+            },
+            "date": "2021-12-01T00:00:00.000Z"
           },
           {
             "item": {
               "reference": "ResearchSubject/4"
-            }
+            },
+            "date": "2021-11-01T00:00:00.000Z"
           }
         ]
       },

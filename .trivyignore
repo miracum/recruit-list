@@ -1,3 +1,6 @@
 # ignored since there isn't really a fix available in the version
 # we are using. See <https://github.com/jonschlinkert/set-value/pull/33#issuecomment-934517528>
 CVE-2021-23440
+
+# no real solution available either: https://github.com/request/request/issues/3394
+CVE-2021-3918

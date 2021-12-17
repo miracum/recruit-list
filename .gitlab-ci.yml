@@ -43,6 +43,21 @@ e2e:
     - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml logs
     - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml down -v --remove-orphans
 
+staging:
+  stage: deploy
+  image:
+    name: quay.io/chgl/kube-powertools:latest
+    entrypoint: [""]
+  script:
+    - helm repo add miracum https://harbor.miracum.org/chartrepo/charts
+    - helm upgrade --install -n $KUBE_NAMESPACE -f deploy/staging/values.yaml --set list.image.tag=$CI_COMMIT_SHORT_SHA --version ^8.6.2 recruit miracum/recruit
+  environment:
+    name: staging
+    url: https://lists.recruit.miracum.org/
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+      when: manual
+
 push to miracum registry and sign:
   stage: release
   image: harbor.miracum.org/ci/docker:stable

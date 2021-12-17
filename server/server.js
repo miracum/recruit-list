@@ -157,10 +157,9 @@ const proxy = createProxyMiddleware(proxyRequestFilter, {
       }
 
       if (config.pseudonymization.enabled) {
-        logger.debug("De-pseudonymization is enabled. Modifying the response.");
-        if (body.resourceType !== "Patient" && body.resourceType !== "Encounter") {
-          modifiedBody = body;
-        } else {
+        logger.debug("De-pseudonymization is enabled.");
+        if (body.resourceType === "Patient") {
+          logger.child({ resourceId: body.id }).debug("De-pseudonymizing Patient resource");
           try {
             modifiedBody = await dePseudonymizer.dePseudonymize(config.pseudonymization, body);
           } catch (error) {
@@ -199,6 +198,7 @@ app.get("/config", (_req, res) =>
     hideLastVisit: config.ui.hideLastVisit,
     hideEhrButton: config.ui.hideEhrButton,
     isKeycloakDisabled: config.auth.disabled,
+    hideRecommendationDate: config.auth.hideRecommendationDate,
     authClientId: config.auth.clientId,
     authUrl: config.auth.url,
     authRealm: config.auth.realm,
