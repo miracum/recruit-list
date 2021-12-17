@@ -1,7 +1,9 @@
 <template>
   <div class="last-stay">
     <template v-if="isLoading">
-      <span>Suche letzten bekannten Aufenthalt...</span>
+      <b-skeleton width="30%" :animated="true"></b-skeleton>
+      <b-skeleton width="70%" :animated="true"></b-skeleton>
+      <b-skeleton width="70%" :animated="true"></b-skeleton>
     </template>
     <b-message v-else-if="errorMessage" type="is-danger">
       Fehler beim Laden:
@@ -98,3 +100,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.last-stay {
+  max-width: 200px;
+}
+</style>

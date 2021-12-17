@@ -12,7 +12,7 @@ describe("Recommendations ", () => {
       cy.server();
       cy.route("GET", listRequestUrl).as("getList");
       cy.route("PATCH", "**/ResearchSubject/**").as("patchSubject");
-      cy.visit("/recommendations/795", {
+      cy.visit("/recommendations/796", {
         onBeforeLoad: (win) => {
           // eslint-disable-next-line no-param-reassign
           win.fetch = null;
@@ -21,18 +21,21 @@ describe("Recommendations ", () => {
       cy.wait("@getList", { timeout: 30000 });
     });
 
-    it("displays PROSa sample study", () => {
-      cy.contains("PROSa");
+    it("displays AMICA sample study", () => {
+      cy.get("h1.title").contains("AMICA");
     });
 
     it("displays correct total recommendations and participating studies count", () => {
-      cy.get(":nth-child(1) > [data-label='Marker'] .all-recommendations-count").should(
+      cy.get(":nth-child(1) > [data-label='Patientennummer'] .all-recommendations-count").should(
         "contain.text",
         "1"
       );
-      cy.get(":nth-child(1) > [data-label='Marker'] .participating-studies-count").should(
+      cy.get(":nth-child(1) > [data-label='Patientennummer'] .participating-studies-count").should(
         "contain.text",
         "1"
+      );
+      cy.get(":nth-child(1) > [data-label='Patientennummer'] .is-no-longer-eligible").should(
+        "exist"
       );
     });
 
