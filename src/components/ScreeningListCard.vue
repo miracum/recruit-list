@@ -28,6 +28,10 @@
             }}</b-switch>
           </b-field>
         </div>
+        <div v-if="!isActive">
+          <b-button icon-left="trash" @click="deleteStudy"> Löschen </b-button>
+        </div>
+
       </div>
     </div>
   </div>
@@ -85,6 +89,9 @@ export default {
     onInput() {
       this.$emit("input", { event: !this.isActive, list: this.list });
     },
+    deleteStudy(){
+      this.$emit("delete", { list: this.list});
+    }
   },
 };
 </script>

@@ -32,6 +32,7 @@
           :list="list"
           :show-active-toggle="isLoggedInAsAdmin"
           @input="onListStatusToggled"
+          @delete="onListDelete"
         />
       </section>
     </div>
@@ -124,6 +125,36 @@ export default {
         });
       }
     },
+    async onListDelete(e) {
+      this.$log.debug(
+        `List deleted to for ${e.list}`,
+        e.event
+      );
+
+      try {
+        await Api.deleteList(e.list.id);
+        this.$buefy.toast.open({
+          message: "TEST wurde gelöscht!",
+          type: "is-success",
+        });
+
+        const listToDelete = this.screeningLists.find(
+          (l) => l.id === e.list.id
+        );
+        this.$log.debug(
+          `TEST for ${listToDelete.id}`
+        );
+
+
+      } catch (exc) {
+        this.$log.error(exc);
+        this.$buefy.toast.open({
+          message: `TEST Löschen fehlgeschlagen: ${exc.message}.`,
+          type: "is-danger",
+          duration: 30_000,
+        });
+      }
+    }
   },
 };
 </script>

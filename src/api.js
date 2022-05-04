@@ -60,6 +60,49 @@ const actions = {
       headers: { "Content-Type": "application/json-patch+json" },
     });
   },
+/*
+TODO: implement
+*/
+  async deleteList(listId){
+    const client = createFhirClient();
+
+    const screeningList = await client.request(
+      `List/${listId}`,
+      {
+        flat: true,
+        pageLimit: 0,
+      }
+    );
+    const studyReference = screeningList.extension[0].valueReference.reference;
+    Vue.$log.debug(`Found ${studyReference} for List/${listId}`);
+
+/*
+TODO: Multiple deletes not allowed by Hapi Server
+    const deleteSubjects = await client.request({
+      url: studyReference,
+      method: "GET",
+      headers: { "Content-Type": "application/json-patch+json" },
+    });
+
+    Vue.$log.debug(`Foun`)
+
+    await client.request({
+      url: `List/?_id=${listId}`,
+      method: "GET",
+      headers: { "Content-Type": "application/json-patch+json" },
+    });
+
+    const deletedSubjects = await client.request({
+      url: `ResearchSubject/?study=${studyReference}`,
+      method: "GET",
+      headers: { "Content-Type": "application/json-patch+json" },
+    });
+    return {};
+
+    */
+  },
+
+
   async updateListStatus(listId, status) {
     const client = createFhirClient();
     const patch = [];
