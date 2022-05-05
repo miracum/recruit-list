@@ -29,7 +29,18 @@
           </b-field>
         </div>
         <div v-if="!isActive">
-          <b-button icon-left="trash" @click="deleteStudy"> Löschen </b-button>
+          <b-tooltip
+            label="ALLE Daten zur Studie vom FHIR Server löschen"
+            position="is-left"
+          >
+          <b-button
+            size="is-small"
+            icon-left="trash"
+            target="_blank"
+            rel="noopener noreferrer"
+            @click="deleteStudy"
+          ></b-button>
+        </b-tooltip>
         </div>
 
       </div>

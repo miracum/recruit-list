@@ -64,6 +64,8 @@ const actions = {
 TODO: implement
 */
   async deleteList(listId){
+    let answer;
+
     const client = createFhirClient();
 
     const screeningList = await client.request(
@@ -73,33 +75,33 @@ TODO: implement
         pageLimit: 0,
       }
     );
+
     const studyReference = screeningList.extension[0].valueReference.reference;
     Vue.$log.debug(`Found ${studyReference} for List/${listId}`);
 
-/*
-TODO: Multiple deletes not allowed by Hapi Server
-    const deleteSubjects = await client.request({
-      url: studyReference,
-      method: "GET",
-      headers: { "Content-Type": "application/json-patch+json" },
-    });
-
-    Vue.$log.debug(`Foun`)
-
-    await client.request({
+    answer = await client.request({
       url: `List/?_id=${listId}`,
-      method: "GET",
+      method: "DELETE",
       headers: { "Content-Type": "application/json-patch+json" },
     });
+    Vue.$log.debug(`Delete List ${listId} response: ${JSON.stringify(answer)}`);
 
-    const deletedSubjects = await client.request({
+    answer = await client.request({
       url: `ResearchSubject/?study=${studyReference}`,
-      method: "GET",
+      method: "DELETE",
       headers: { "Content-Type": "application/json-patch+json" },
     });
+    Vue.$log.debug(`Delete subjects for ${studyReference} response: ${JSON.stringify(answer)}`);
+
+    answer = await client.request({
+      url: studyReference,
+      method: "DELETE",
+      headers: { "Content-Type": "application/json-patch+json" },
+    });
+    Vue.$log.debug(`Delete ${studyReference} response: ${JSON.stringify(answer)}`);
+
     return {};
 
-    */
   },
 
 
