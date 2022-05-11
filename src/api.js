@@ -60,9 +60,7 @@ const actions = {
       headers: { "Content-Type": "application/json-patch+json" },
     });
   },
-/*
-TODO: implement
-*/
+
   async deleteList(listId){
     let answer;
 
