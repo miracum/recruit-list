@@ -13,6 +13,7 @@
       Bitte wenden Sie sich an einen verantwortlichen Administrator.</b-message
     >
     <div v-else>
+      <h1></h1>
       <section class="active-screening-lists">
         <h1 class="title is-3">Laufende Studien</h1>
         <screening-list-card
@@ -23,8 +24,8 @@
           @input="onListStatusToggled"
         />
       </section>
-
       <section v-if="isLoggedInAsAdmin" class="inactive-screening-lists">
+        <h1></h1>
         <h1 class="title is-3">Inaktive Studien</h1>
         <screening-list-card
           v-for="(list, index) in inactiveScreeningLists"
@@ -32,6 +33,7 @@
           :list="list"
           :show-active-toggle="isLoggedInAsAdmin"
           @input="onListStatusToggled"
+          @delete="onListDelete"
         />
       </section>
     </div>
@@ -124,6 +126,39 @@ export default {
         });
       }
     },
+    async onListDelete(e) {
+      this.$log.debug(
+        `List deleted to for ${e.list}`,
+        e.event
+      );
+
+      try {
+        await Api.deleteList(e.list.id);
+        this.$buefy.toast.open({
+          message: "TEST wurde gelöscht!",
+          type: "is-danger",
+        });
+
+        const listToDelete = this.screeningLists.find(
+          (l) => l.id === e.list.id
+        );
+        this.$log.debug(
+          `TEST for ${listToDelete.id}`
+        );
+        const listIndex = this.screeningLists.findIndex(
+          (l) => l.id === e.list.id
+        );
+        this.screeningLists.splice(listIndex,1);
+
+      } catch (exc) {
+        this.$log.error(exc);
+        this.$buefy.toast.open({
+          message: `Löschen fehlgeschlagen: ${exc.message}.`,
+          type: "is-danger",
+          duration: 30_000,
+        });
+      }
+    }
   },
 };
 </script>
