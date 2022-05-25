@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { stringify } from "csv-stringify/dist/esm/sync";
+import { stringify } from "csv-stringify";
 
 export default {
   name: "SaveAsCsv",

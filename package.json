@@ -33,7 +33,7 @@
     "connect-history-api-fallback": "1.6.0",
     "core-js": "3.22.4",
     "cors": "2.8.5",
-    "csv-stringify": "6.0.5",
+    "csv-stringify": "^6.1.0",
     "debug": "4.3.4",
     "express": "4.18.1",
     "express-bearer-token": "2.4.0",
@@ -74,8 +74,5 @@
   },
   "optionalDependencies": {
     "@vue/cli-plugin-e2e-cypress": "5.0.4"
-  },
-  "resolutions": {
-    "minimist": "^2.6.0"
   }
 }
