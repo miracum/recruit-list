@@ -56,11 +56,11 @@
     "vuejs-logger": "1.5.5"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "4.5.17",
-    "@vue/cli-plugin-eslint": "4.5.17",
-    "@vue/cli-plugin-router": "4.5.17",
-    "@vue/cli-plugin-unit-jest": "4.5.17",
-    "@vue/cli-service": "4.5.17",
+    "@vue/cli-plugin-babel": "5.0.4",
+    "@vue/cli-plugin-eslint": "5.0.4",
+    "@vue/cli-plugin-router": "5.0.4",
+    "@vue/cli-plugin-unit-jest": "5.0.4",
+    "@vue/cli-service": "5.0.4",
     "@vue/eslint-config-airbnb": "5.3.0",
     "@vue/test-utils": "1.3.0",
     "babel-eslint": "10.1.0",
@@ -73,6 +73,9 @@
     "vue-template-compiler": "2.6.14"
   },
   "optionalDependencies": {
-    "@vue/cli-plugin-e2e-cypress": "4.5.17"
+    "@vue/cli-plugin-e2e-cypress": "5.0.4"
+  },
+  "resolutions": {
+    "minimist": "^2.6.0"
   }
 }
