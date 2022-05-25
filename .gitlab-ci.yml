@@ -24,24 +24,24 @@ unit:
     - docker build --target=test .
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
 
-e2e:
-  stage: test
-  image:
-    name: docker/compose:1.29.2
-    entrypoint: [""]
-  extends: .job_defaults
-  before_script:
-    - export IMAGE_TAG=$CI_COMMIT_SHORT_SHA
-    # removing babel.config.js prevents the error
-    # 'Error: Cannot find module '@vue/cli-plugin-babel/preset' from '/e2e' while rsing file: /e2e/tests/e2e/support/index.js'
-    # in cypress
-    - rm babel.config.js
-  script:
-    - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml run loader
-    - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml run e2e
-  after_script:
-    - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml logs
-    - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml down -v --remove-orphans
+#e2e:
+#  stage: test
+#  image:
+#    name: docker/compose:1.29.2
+#    entrypoint: [""]
+#  extends: .job_defaults
+#  before_script:
+#    - export IMAGE_TAG=$CI_COMMIT_SHORT_SHA
+#    # removing babel.config.js prevents the error
+#    # 'Error: Cannot find module '@vue/cli-plugin-babel/preset' from '/e2e' while rsing file: /e2e/tests/e2e/support/index.js'
+#    # in cypress
+#    - rm babel.config.js
+#  script:
+#    - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml run loader
+#    - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml run e2e
+#  after_script:
+#    - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml logs
+#    - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml down -v --remove-orphans
 
 staging:
   stage: deploy
