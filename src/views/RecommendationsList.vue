@@ -40,10 +40,10 @@
 
 <script>
 import fhirpath from "fhirpath";
-
 import Api from "@/api";
-import ScreeningList from "@/components/ScreeningList.vue";
 import Constants from "@/const";
+
+import ScreeningList from "@/components/ScreeningList.vue";
 
 export default {
   name: "RecommendationsList",
