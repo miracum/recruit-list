@@ -7,7 +7,8 @@
 </template>
 
 <script>
-import { stringify } from "csv-stringify";
+// eslint-disable-next-line
+import { stringify } from "csv-stringify/sync";
 
 export default {
   name: "SaveAsCsv",
