@@ -246,6 +246,7 @@
 import fhirpath from "fhirpath";
 import Constants from "@/const";
 import Api from "@/api";
+
 import LastStay from "@/components/LastStay.vue";
 import RecommendationMarkers from "@/components/RecommendationMarkers.vue";
 import SaveAsCsv from "@/components/SaveAsCsv.vue";
