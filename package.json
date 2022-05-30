@@ -51,9 +51,9 @@
       "node-polyfill-webpack-plugin": "^1.1.4",
       "path": "0.12.7",
       "pino": "7.11.0",
-      "pino-http": "6.6.0",
+      "pino-http": "7.1.0",
       "prom-client": "14.0.1",
-      "retry-axios": "2.6.0",
+      "retry-axios": "3.0.0",
       "vue": "2.6.14",
       "vue-router": "3.5.4",
       "vuejs-logger": "1.5.5"
