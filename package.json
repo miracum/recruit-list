@@ -55,7 +55,7 @@
       "prom-client": "14.0.1",
       "retry-axios": "2.6.0",
       "vue": "2.6.14",
-      "vue-router": "3.5.3",
+      "vue-router": "3.5.4",
       "vuejs-logger": "1.5.5"
   },
   "devDependencies": {
