@@ -11,7 +11,7 @@ module.exports = {
     "max-len": "off",
   },
   parserOptions: {
-    parser: "babel-eslint",
+    parser: "@babel/eslint-parser",
   },
   overrides: [
     {
