@@ -3,7 +3,7 @@
     <nav class="level">
       <!-- Left side -->
       <div class="level-left">
-        <b-dropdown v-model="selectedFilterOptions" multiple aria-role="list">
+        <b-dropdown v-model="selectedFilterOptions" multiple aria-roledescription="list">
           <template #trigger>
             <b-button type="is-primary" icon-right="sort-down">
               Vorschläge nach Status ausblenden:
@@ -14,7 +14,7 @@
           <b-dropdown-item
             v-for="(deFilterStatus, enFilterStatus) in recruitmentStatusOptions"
             :key="deFilterStatus"
-            aria-role="listitem"
+            aria-roledescription="listitem"
             :value="enFilterStatus"
           >
             <span class="status-option-container">
@@ -133,7 +133,7 @@
           field="subject.status"
           sortable
         >
-          <b-dropdown v-model="props.row.subject.status" aria-role="list">
+          <b-dropdown v-model="props.row.subject.status" aria-roledescription="list">
             <b-button
               slot="trigger"
               :class="[
@@ -151,7 +151,7 @@
             <b-dropdown-item
               v-for="option in Object.keys(recruitmentStatusOptions)"
               :key="option"
-              aria-role="listitem"
+              aria-roledescription="listitem"
               :value="option"
             >
               <span class="status-option-container">

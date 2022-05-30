@@ -13,7 +13,7 @@
       Bitte wenden Sie sich an einen verantwortlichen Administrator.</b-message
     >
     <div v-else>
-      <h1></h1>
+      <section></section>
       <section class="active-screening-lists">
         <h1 class="title is-3">Laufende Studien</h1>
         <screening-list-card
@@ -25,7 +25,7 @@
         />
       </section>
       <section v-if="isLoggedInAsAdmin" class="inactive-screening-lists">
-        <h1></h1>
+        <section></section>
         <h1 class="title is-3">Inaktive Studien</h1>
         <screening-list-card
           v-for="(list, index) in inactiveScreeningLists"
