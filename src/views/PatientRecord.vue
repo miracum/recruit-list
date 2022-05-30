@@ -87,13 +87,12 @@
 
 <script>
 import fhirpath from "fhirpath";
-import Constants from "@/const";
-import Api from "@/api";
-
 import ConditionList from "@/components/record/ConditionList.vue";
 import MedicationList from "@/components/record/MedicationList.vue";
 import ProcedureList from "@/components/record/ProcedureList.vue";
 import ObservationList from "@/components/record/ObservationList.vue";
+import Constants from "@/const";
+import Api from "@/api";
 
 export default {
   name: "PatientRecord",

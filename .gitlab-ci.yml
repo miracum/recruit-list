@@ -32,9 +32,9 @@ unit:
 #  extends: .job_defaults
 #  before_script:
 #    - export IMAGE_TAG=$CI_COMMIT_SHORT_SHA
-#    # removing babel.config.js prevents the error
-#    # 'Error: Cannot find module '@vue/cli-plugin-babel/preset' from '/e2e' while rsing file: /e2e/tests/e2e/support/index.js'
-#    # in cypress
+    # removing babel.config.js prevents the error
+    # 'Error: Cannot find module '@vue/cli-plugin-babel/preset' from '/e2e' while rsing file: /e2e/tests/e2e/support/index.js'
+    # in cypress
 #    - rm babel.config.js
 #  script:
 #    - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml run loader
