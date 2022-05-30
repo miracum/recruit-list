@@ -152,11 +152,19 @@ export default {
 
       } catch (exc) {
         this.$log.error(exc);
-        this.$buefy.toast.open({
-          message: `Löschen fehlgeschlagen: ${exc.message}.`,
-          type: "is-danger",
-          duration: 30_000,
-        });
+        if (`${exc.message}`.includes("Cannot DELETE")){
+          this.$buefy.toast.open({
+            message: "Ihr FHIR-Server erlaubt diese Operation nicht",
+            type: "is-danger",
+            duration: 30_000,
+          });
+        } else {
+          this.$buefy.toast.open({
+            message: `Löschen fehlgeschlagen: ${exc.message}.`,
+            type: "is-danger",
+            duration: 30_000,
+          });
+        }
       }
     }
   },
