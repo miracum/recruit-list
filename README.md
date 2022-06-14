@@ -90,6 +90,7 @@ docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.ym
 # runs the actual E2E tests by starting the container under test
 docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml run e2e
 
+# cleans up after the test
 docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.e2e.yml down -v --remove-orphans
 ```
 

@@ -76,6 +76,10 @@ const getEntriesToKeepFromBundle = (bundle, accessibleStudyAcronyms) =>
     return true;
   });
 
+exports.createDeleteFilter = (authConfig) => (user) => {
+  return userHasAdminRole(user, authConfig);
+};
+
 exports.createAccessFilter = (trialsConfig, authConfig) => (resource, user) => {
   if (userHasAdminRole(user, authConfig)) {
     return resource;

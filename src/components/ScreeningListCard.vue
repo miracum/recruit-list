@@ -4,17 +4,15 @@
       <div class="media">
         <div class="media-left">
           <b-tag type="is-primary" size="is-large" rounded>{{
-            numberOfResearchSubjects
+              numberOfResearchSubjects
           }}</b-tag>
         </div>
         <div class="media-content">
           <div class="content">
-            <router-link
-              :to="{
-                name: 'patient-recommendations-by-id',
-                params: { listId: list.id },
-              }"
-            >
+            <router-link :to="{
+              name: 'patient-recommendations-by-id',
+              params: { listId: list.id },
+            }">
               <h4 class="title is-4 mb-0">
                 {{ displayName }}
               </h4>
@@ -24,23 +22,15 @@
         <div v-if="showActiveToggle" class="media-right">
           <b-field>
             <b-switch :value="isActive" @click.native.prevent="onInput">{{
-              isActive ? "Aktiv" : "Inaktiv"
+                isActive ? "Aktiv" : "Inaktiv"
             }}</b-switch>
           </b-field>
         </div>
         <div v-if="!isActive">
-          <b-tooltip
-            label="ALLE Daten zur Studie vom FHIR Server löschen"
-            position="is-left"
-          >
-          <b-button
-            size="is-small"
-            icon-left="trash"
-            target="_blank"
-            rel="noopener noreferrer"
-            @click="deleteStudy"
-          ></b-button>
-        </b-tooltip>
+          <b-tooltip label="ALLE Daten zur Studie vom FHIR Server löschen" position="is-left">
+            <b-button size="is-small" icon-left="trash" target="_blank" rel="noopener noreferrer" @click="deleteStudy">
+            </b-button>
+          </b-tooltip>
         </div>
 
       </div>
@@ -100,8 +90,8 @@ export default {
     onInput() {
       this.$emit("input", { event: !this.isActive, list: this.list });
     },
-    deleteStudy(){
-      this.$emit("delete", { list: this.list});
+    deleteStudy() {
+      this.$emit("deleteList", { list: this.list });
     }
   },
 };

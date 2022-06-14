@@ -61,48 +61,6 @@ const actions = {
     });
   },
 
-  async deleteList(listId){
-    let answer;
-
-    const client = createFhirClient();
-
-    const screeningList = await client.request(
-      `List/${listId}`,
-      {
-        flat: true,
-        pageLimit: 0,
-      }
-    );
-
-    const studyReference = screeningList.extension[0].valueReference.reference;
-    Vue.$log.debug(`Found ${studyReference} for List/${listId}`);
-
-    answer = await client.request({
-      url: `List/?_id=${listId}`,
-      method: "DELETE",
-      headers: { "Content-Type": "application/json-patch+json" },
-    });
-    Vue.$log.debug(`Delete List ${listId} response: ${JSON.stringify(answer)}`);
-
-    answer = await client.request({
-      url: `ResearchSubject/?study=${studyReference}`,
-      method: "DELETE",
-      headers: { "Content-Type": "application/json-patch+json" },
-    });
-    Vue.$log.debug(`Delete subjects for ${studyReference} response: ${JSON.stringify(answer)}`);
-
-    answer = await client.request({
-      url: studyReference,
-      method: "DELETE",
-      headers: { "Content-Type": "application/json-patch+json" },
-    });
-    Vue.$log.debug(`Delete ${studyReference} response: ${JSON.stringify(answer)}`);
-
-    return {};
-
-  },
-
-
   async updateListStatus(listId, status) {
     const client = createFhirClient();
     const patch = [];
@@ -317,6 +275,28 @@ const actions = {
         resolveReferences: ["study"],
       }
     );
+  },
+  async deleteList(listId) {
+    let answer;
+
+    const client = createFhirClient();
+
+    const screeningList = await client.request(`List/${listId}`, {
+      flat: true,
+      pageLimit: 0,
+    });
+
+    const studyReference = screeningList.extension[0].valueReference.reference;
+    Vue.$log.debug(`Found ${studyReference} for List/${listId}`);
+
+    answer = await client.delete(`List/${listId}`);
+    Vue.$log.debug(`Delete List ${listId} response:`, answer);
+
+    answer = await client.delete(`ResearchSubject/?study=${studyReference}`);
+    Vue.$log.debug(`Delete subjects for ${studyReference} response:`, answer);
+
+    answer = await client.delete(studyReference);
+    Vue.$log.debug(`Delete ${studyReference} response:`, answer);
   },
 };
 
