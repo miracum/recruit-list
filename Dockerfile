@@ -1,9 +1,14 @@
-FROM node:18.2 AS build
+FROM node:16.15.1@sha256:57f6f35ef093186f2e57e8fac481acba4ba780c2a09cb18eddddfb24430f4d00 AS build
 WORKDIR /app
+RUN npm install -g pkg@5.7.0
+
 COPY package.json ./
 COPY package-lock.json ./
-RUN npm ci --no-optional
+
+RUN npm clean-install --no-optional
+
 COPY . .
+
 ARG VERSION=0.0.0
 ENV VUE_APP_VERSION=${VERSION} \
     NODE_ENV=production
@@ -13,24 +18,19 @@ FROM build AS test
 RUN npm run test:unit
 
 FROM build AS release
+
 RUN npm prune --production
+# hadolint ignore=DL3059
+RUN pkg .
 
-FROM node:18.2-slim
+FROM gcr.io/distroless/cc-debian11:nonroot@sha256:8cd94ff6028237ccfc5b12433a84fe5013184b1db09f0eed9d0484441c159c4f
 WORKDIR /app
-ENV NODE_ENV=production \
-    NO_UPDATE_NOTIFIER=true
-COPY package.json ./
-COPY package-lock.json ./
-COPY --from=release /app/node_modules node_modules
-COPY --from=release /app/server server
-COPY --from=release /app/dist dist
-
 USER 65534
 EXPOSE 8080
-CMD [ "node", "server/server.js" ]
-
-ARG VERSION="0.0.0"
-ARG GIT_REF=""
+COPY package.json ./
+COPY package-lock.json ./
+COPY --from=release /app/pkg-dist/list /app/list
+ENTRYPOINT [ "/app/list" ]
 ARG BUILD_TIME=""
 LABEL maintaner="miracum.org" \
     org.opencontainers.image.created=${BUILD_TIME} \

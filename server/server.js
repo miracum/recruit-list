@@ -13,7 +13,7 @@ const cors = require("cors");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 
 const { createJwtCheck } = require("./auth");
-const { createAccessFilter, createPatchFilter } = require("./fhirAccessFilter");
+const { createAccessFilter, createPatchFilter, createDeleteFilter } = require("./fhirAccessFilter");
 const { setupTracing } = require("./tracing");
 
 const { config } = require("./config");
@@ -29,6 +29,7 @@ const checkJwt = createJwtCheck(config);
 // eslint-disable-next-line no-unused-vars
 let filterAcessibleResources = (resource, _user) => resource;
 let isPatchRequestAllowed = (_resourceType, _user) => true;
+let isDeleteAllowed = (_user) => true;
 
 try {
   logger.child({ path: config.rulesFilePath }).debug("Trying to load trials config");
@@ -40,6 +41,7 @@ try {
 
   filterAcessibleResources = createAccessFilter(rulesConfig.notify.rules.trials, config.auth);
   isPatchRequestAllowed = createPatchFilter(config.auth);
+  isDeleteAllowed = createDeleteFilter(config.auth);
 } catch (error) {
   logger
     .child({ error })
@@ -92,7 +94,8 @@ app.use(metricsMiddleware);
 
 const allowedResourcesToPatch = /^\/\/(?<resourceType>ResearchSubject|List)/;
 
-const proxyRequestFilter = (_pathname, req) => req.method === "GET" || req.method === "PATCH";
+const proxyRequestFilter = (_pathname, req) =>
+  req.method === "GET" || req.method === "PATCH" || req.method === "DELETE";
 const proxy = createProxyMiddleware(proxyRequestFilter, {
   target: config.fhirUrl,
   changeOrigin: false,
@@ -115,6 +118,17 @@ const proxy = createProxyMiddleware(proxyRequestFilter, {
         proxyReq.setHeader("X-Forwarded-Proto", "https");
       } else {
         proxyReq.setHeader("X-Forwarded-Proto", "http");
+      }
+    }
+
+    // DELETE operations are only allowed for admins
+    if (req.method === "DELETE" && !config.auth.disabled) {
+      if (!isDeleteAllowed(req.user)) {
+        res
+          .writeHead(403, {
+            "Content-Type": "text/plain",
+          })
+          .end(`Operation unauthorized. DELETEing resources requires the "admin" role.`);
       }
     }
 

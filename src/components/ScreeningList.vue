@@ -3,7 +3,7 @@
     <nav class="level">
       <!-- Left side -->
       <div class="level-left">
-        <b-dropdown v-model="selectedFilterOptions" multiple aria-roledescription="list">
+        <b-dropdown v-model="selectedFilterOptions" multiple>
           <template #trigger>
             <b-button type="is-primary" icon-right="sort-down">
               Vorschläge nach Status ausblenden:
@@ -11,19 +11,10 @@
             </b-button>
           </template>
 
-          <b-dropdown-item
-            v-for="(deFilterStatus, enFilterStatus) in recruitmentStatusOptions"
-            :key="deFilterStatus"
-            aria-roledescription="listitem"
-            :value="enFilterStatus"
-          >
+          <b-dropdown-item v-for="(deFilterStatus, enFilterStatus) in recruitmentStatusOptions" :key="deFilterStatus"
+            :value="enFilterStatus">
             <span class="status-option-container">
-              <b-icon
-                pack="fas"
-                size="is-small"
-                icon="circle"
-                :type="getTypeFromStatus(enFilterStatus)"
-              ></b-icon>
+              <b-icon pack="fas" size="is-small" icon="circle" :type="getTypeFromStatus(enFilterStatus)"></b-icon>
 
               <span>{{ deFilterStatus }}</span>
             </span>
@@ -37,23 +28,9 @@
       </div>
     </nav>
     <section>
-      <b-table
-        :data="filteredSubjects"
-        :loading="isLoading"
-        :mobile-cards="true"
-        sort-icon="menu-up"
-        :striped="true"
-        :hoverable="true"
-        default-sort="date"
-        default-sort-direction="desc"
-      >
-        <b-table-column
-          v-slot="props"
-          label="Vorschlagsdatum"
-          field="date"
-          sortable
-          :visible="!hideRecommendationDate"
-        >
+      <b-table :data="filteredSubjects" :loading="isLoading" :mobile-cards="true" sort-icon="menu-up" :striped="true"
+        :hoverable="true" default-sort="date" default-sort-direction="desc">
+        <b-table-column v-slot="props" label="Vorschlagsdatum" field="date" sortable :visible="!hideRecommendationDate">
           <p class="subject-recommendation-date">
             <span v-if="props.row.date">
               {{ props.row.date.toLocaleDateString() }}
@@ -62,64 +39,42 @@
           </p>
         </b-table-column>
 
-        <b-table-column
-          v-slot="props"
-          label="Patientennummer"
-          field="mrNumber"
-          sortable
-        >
+        <b-table-column v-slot="props" label="Patientennummer" field="mrNumber" sortable>
           <p class="patient-id">
             {{ props.row.mrNumber }}
           </p>
 
-          <recommendation-markers
-            :all-recommended-studies="props.row.allRecommendedStudies"
+          <recommendation-markers :all-recommended-studies="props.row.allRecommendedStudies"
             :participating-studies="props.row.participatingStudies"
-            :is-no-longer-eligible="props.row.isNoLongerEligible"
-            :is-loading="props.row.markerIsLoading"
-            :error-message="props.row.markerErrorMessage"
-          ></recommendation-markers>
+            :is-no-longer-eligible="props.row.isNoLongerEligible" :is-loading="props.row.markerIsLoading"
+            :error-message="props.row.markerErrorMessage"></recommendation-markers>
         </b-table-column>
 
-        <b-table-column
-          v-slot="props"
-          label="Demografie"
-          field="subject.individual.birthDate"
-          sortable
-          :visible="!hideDemographics"
-        >
+        <b-table-column v-slot="props" label="Demografie" field="subject.individual.birthDate" sortable
+          :visible="!hideDemographics">
           <span>
             geb.
             {{
-              props.row.subject.individual.birthDate
-                ? new Date(props.row.subject.individual.birthDate).getFullYear()
-                : "unbekannt"
+                props.row.subject.individual.birthDate
+                  ? new Date(props.row.subject.individual.birthDate).getFullYear()
+                  : "unbekannt"
             }},
             {{
-              props.row.subject.individual
-                ? props.row.subject.individual.gender === "male"
-                  ? "m"
-                  : props.row.subject.individual.gender === "female"
-                  ? "w"
+                props.row.subject.individual
+                  ? props.row.subject.individual.gender === "male"
+                    ? "m"
+                    : props.row.subject.individual.gender === "female"
+                      ? "w"
+                      : "u"
                   : "u"
-                : "u"
             }}
           </span>
         </b-table-column>
 
-        <b-table-column
-          v-slot="props"
-          label="Letzter Aufenthalt"
-          :visible="!hideLastVisit"
-        >
-          <last-stay
-            :subject="props.row.subject"
-            :latest-encounter-and-location="
-              props.row.latestEncounterAndLocation
-            "
-            :is-loading="props.row.lastStayIsLoading"
-            :error-message="props.row.lastStayErrorMessage"
-          ></last-stay>
+        <b-table-column v-slot="props" label="Letzter Aufenthalt" :visible="!hideLastVisit">
+          <last-stay :subject="props.row.subject" :latest-encounter-and-location="
+            props.row.latestEncounterAndLocation
+          " :is-loading="props.row.lastStayIsLoading" :error-message="props.row.lastStayErrorMessage"></last-stay>
         </b-table-column>
         <b-table-column v-slot="props" label="Notiz" field="note">
           <b-field>
@@ -127,40 +82,18 @@
           </b-field>
         </b-table-column>
 
-        <b-table-column
-          v-slot="props"
-          label="Status"
-          field="subject.status"
-          sortable
-        >
-          <b-dropdown v-model="props.row.subject.status" aria-roledescription="list">
-            <b-button
-              slot="trigger"
-              :class="[
-                'button',
-                'recruitment-status-select',
-                getTypeFromStatus(props.row.subject.status),
-              ]"
-              type="button"
-              size="is-small"
-              icon-right="sort-down"
-              >{{
-                recruitmentStatusOptions[props.row.subject.status]
-              }}</b-button
-            >
-            <b-dropdown-item
-              v-for="option in Object.keys(recruitmentStatusOptions)"
-              :key="option"
-              aria-roledescription="listitem"
-              :value="option"
-            >
+        <b-table-column v-slot="props" label="Status" field="subject.status" sortable>
+          <b-dropdown v-model="props.row.subject.status">
+            <b-button slot="trigger" :class="[
+              'button',
+              'recruitment-status-select',
+              getTypeFromStatus(props.row.subject.status),
+            ]" type="button" size="is-small" icon-right="sort-down">{{
+    recruitmentStatusOptions[props.row.subject.status]
+}}</b-button>
+            <b-dropdown-item v-for="option in Object.keys(recruitmentStatusOptions)" :key="option" :value="option">
               <span class="status-option-container">
-                <b-icon
-                  pack="fas"
-                  size="is-small"
-                  icon="circle"
-                  :type="getTypeFromStatus(option)"
-                ></b-icon>
+                <b-icon pack="fas" size="is-small" icon="circle" :type="getTypeFromStatus(option)"></b-icon>
                 <span>{{ recruitmentStatusOptions[option] }}</span>
               </span>
             </b-dropdown-item>
@@ -171,57 +104,27 @@
           <div class="columns is-mobile">
             <div class="column">
               <b-tooltip label="Änderungen Speichern" position="is-bottom">
-                <b-button
-                  class="save-status"
-                  type="is-primary"
-                  size="is-small"
-                  icon-left="save"
-                  @click="onSaveRowChanges($event, props.row)"
-                  >Speichern</b-button
-                >
+                <b-button class="save-status" type="is-primary" size="is-small" icon-left="save"
+                  @click="onSaveRowChanges($event, props.row)">Speichern</b-button>
               </b-tooltip>
             </div>
           </div>
 
           <div class="columns is-vcentered">
             <div class="column">
-              <b-tooltip
-                v-if="!hideEhrButton"
-                label="Patientenakte anzeigen"
-                position="is-bottom"
-                class="mr-2"
-              >
-                <b-button
-                  tag="router-link"
-                  :to="{
-                    name: 'patient-record',
-                    params: { patientId: props.row.subject.individual.id },
-                  }"
-                  type="is-primary"
-                  size="is-small"
-                  icon-left="notes-medical"
-                  outlined
-                  target="_blank"
-                  rel="noopener noreferrer"
-                ></b-button>
+              <b-tooltip v-if="!hideEhrButton" label="Patientenakte anzeigen" position="is-bottom" class="mr-2">
+                <b-button tag="router-link" :to="{
+                  name: 'patient-record',
+                  params: { patientId: props.row.subject.individual.id },
+                }" type="is-primary" size="is-small" icon-left="notes-medical" outlined target="_blank"
+                  rel="noopener noreferrer"></b-button>
               </b-tooltip>
-              <b-tooltip
-                label="Änderungshistorie anzeigen"
-                position="is-bottom"
-              >
-                <b-button
-                  tag="router-link"
-                  :to="{
-                    name: 'researchsubject-history',
-                    params: { subjectId: props.row.id },
-                  }"
-                  type="is-primary"
-                  size="is-small"
-                  icon-left="history"
-                  outlined
-                  target="_blank"
-                  rel="noopener noreferrer"
-                ></b-button>
+              <b-tooltip label="Änderungshistorie anzeigen" position="is-bottom">
+                <b-button tag="router-link" :to="{
+                  name: 'researchsubject-history',
+                  params: { subjectId: props.row.id },
+                }" type="is-primary" size="is-small" icon-left="history" outlined target="_blank"
+                  rel="noopener noreferrer"></b-button>
               </b-tooltip>
             </div>
           </div>
@@ -489,12 +392,12 @@ export default {
 </script>
 
 <style scoped>
-.status-option-container > .icon {
+.status-option-container>.icon {
   vertical-align: middle;
   margin-right: 1rem;
 }
 
-.status-option-container > span {
+.status-option-container>span {
   vertical-align: middle;
 }
 

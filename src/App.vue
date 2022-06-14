@@ -9,39 +9,20 @@
               <source srcset="@/assets/miracum-logo.png" type="image/png" />
               <img src="@/assets/miracum-logo.png" alt="MIRACUM Logo" />
             </picture>
-            <span class="navbar-item has-text-white"
-              >MIRACUM Rekrutierungsunterstützung</span
-            >
+            <span class="navbar-item has-text-white">MIRACUM Rekrutierungsunterstützung</span>
           </b-navbar-item>
         </template>
 
         <template #end>
           <b-navbar-item type="is-primary" tag="div">
-            <b-icon
-              pack="fas"
-              size="is-small"
-              type="is-white"
-              icon="user"
-            ></b-icon>
+            <b-icon pack="fas" size="is-small" type="is-white" icon="user"></b-icon>
             <span class="mr-3 ml-3 has-text-white">{{ username }}</span>
             <div class="buttons">
-              <b-button
-                v-if="isAuthenticated"
-                outlined
-                type="is-white"
-                size="is-small"
-                @click="logout"
-                >Ausloggen</b-button
-              >
+              <b-button v-if="isAuthenticated" outlined type="is-white" size="is-small" @click="logout">Ausloggen
+              </b-button>
               <b-tooltip label="Benutzerhilfe öffnen" position="is-left">
-                <b-button
-                  tag="a"
-                  outlined
-                  size="is-small"
-                  type="is-white"
-                  icon-left="question"
-                  href="/help/manual.pdf"
-                ></b-button>
+                <b-button tag="a" outlined size="is-small" type="is-white" icon-left="question" href="/help/manual.pdf">
+                </b-button>
               </b-tooltip>
             </div>
           </b-navbar-item>
@@ -97,44 +78,34 @@ $success-invert: findColorInvert($success);
 
 // Setup $colors to use as bulma classes (e.g. 'is-twitter')
 $colors: (
-  "white": (
-    $white,
+  "white": ($white,
     $black,
   ),
-  "black": (
-    $black,
+  "black": ($black,
     $white,
   ),
-  "light": (
-    $light,
+  "light": ($light,
     $light-invert,
   ),
-  "dark": (
-    $dark,
+  "dark": ($dark,
     $dark-invert,
   ),
-  "primary": (
-    $primary,
+  "primary": ($primary,
     $primary-invert,
   ),
-  "primary-muted": (
-    $primary-muted,
+  "primary-muted": ($primary-muted,
     $primary-muted-invert,
   ),
-  "info": (
-    $info,
+  "info": ($info,
     $info-invert,
   ),
-  "success": (
-    $success,
+  "success": ($success,
     $success-invert,
   ),
-  "warning": (
-    $warning,
+  "warning": ($warning,
     $warning-invert,
   ),
-  "danger": (
-    $danger,
+  "danger": ($danger,
     $danger-invert,
   ),
 );
@@ -166,7 +137,7 @@ main {
   margin-top: 15px;
 }
 
-.navbar-brand > .navbar-item > picture > img {
+.navbar-brand>.navbar-item>picture>img {
   border-radius: 50%;
   min-height: 3rem;
 }

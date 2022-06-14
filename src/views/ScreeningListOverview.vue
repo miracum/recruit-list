@@ -6,35 +6,23 @@
       <br />
       <pre>{{ errorMessage }}</pre>
     </b-message>
-    <b-message v-else-if="noLists" type="is-warning"
-      >Keine Rekrutierungsvorschläge vorhanden. <br />
+    <b-message v-else-if="noLists" type="is-warning">Keine Rekrutierungsvorschläge vorhanden. <br />
       Ggf. fehlen die notwendingen Berechtigungen um Rekrutierungsvorschläge
       einsehen zu können. <br />
-      Bitte wenden Sie sich an einen verantwortlichen Administrator.</b-message
-    >
+      Bitte wenden Sie sich an einen verantwortlichen Administrator.</b-message>
     <div v-else>
       <section></section>
       <section class="active-screening-lists">
         <h1 class="title is-3">Laufende Studien</h1>
-        <screening-list-card
-          v-for="(list, index) in activeScreeningLists"
-          :key="'active-list-' + index"
-          :list="list"
-          :show-active-toggle="isLoggedInAsAdmin"
-          @input="onListStatusToggled"
-        />
+        <screening-list-card v-for="(list, index) in activeScreeningLists" :key="'active-list-' + index" :list="list"
+          :show-active-toggle="isLoggedInAsAdmin" @input="onListStatusToggled" />
       </section>
       <section v-if="isLoggedInAsAdmin" class="inactive-screening-lists">
         <section></section>
         <h1 class="title is-3">Inaktive Studien</h1>
-        <screening-list-card
-          v-for="(list, index) in inactiveScreeningLists"
-          :key="'inactive-list-' + index"
-          :list="list"
-          :show-active-toggle="isLoggedInAsAdmin"
-          @input="onListStatusToggled"
-          @delete="onListDelete"
-        />
+        <screening-list-card v-for="(list, index) in inactiveScreeningLists" :key="'inactive-list-' + index"
+          :list="list" :show-active-toggle="isLoggedInAsAdmin" @input="onListStatusToggled"
+          @deleteList="onListDelete" />
       </section>
     </div>
   </div>
@@ -135,24 +123,17 @@ export default {
       try {
         await Api.deleteList(e.list.id);
         this.$buefy.toast.open({
-          message: "TEST wurde gelöscht!",
-          type: "is-danger",
+          message: "Liste wurde gelöscht!",
+          type: "is-success",
         });
-
-        const listToDelete = this.screeningLists.find(
-          (l) => l.id === e.list.id
-        );
-        this.$log.debug(
-          `TEST for ${listToDelete.id}`
-        );
         const listIndex = this.screeningLists.findIndex(
           (l) => l.id === e.list.id
         );
-        this.screeningLists.splice(listIndex,1);
+        this.screeningLists.splice(listIndex, 1);
 
       } catch (exc) {
         this.$log.error(exc);
-        if (`${exc.message}`.includes("Cannot DELETE")){
+        if (`${exc.message}`.includes("Cannot DELETE")) {
           this.$buefy.toast.open({
             message: "Ihr FHIR-Server erlaubt diese Operation nicht",
             type: "is-danger",
