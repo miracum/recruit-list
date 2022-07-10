@@ -1,4 +1,4 @@
-FROM node:16.15.1@sha256:57f6f35ef093186f2e57e8fac481acba4ba780c2a09cb18eddddfb24430f4d00 AS build
+FROM docker.io/library/node:16.16.0@sha256:8951351b7c6a2f8ff9ec25eccc087d37a8aeccf9bf911888ff13c76223467466 AS build
 WORKDIR /app
 RUN npm install -g pkg@5.7.0
 
@@ -19,11 +19,13 @@ RUN npm run test:unit
 
 FROM build AS release
 
+# Prune dependencies for production
 RUN npm prune --production
+
 # hadolint ignore=DL3059
 RUN pkg .
 
-FROM gcr.io/distroless/cc-debian11:nonroot@sha256:8cd94ff6028237ccfc5b12433a84fe5013184b1db09f0eed9d0484441c159c4f
+FROM gcr.io/distroless/cc-debian11:nonroot@sha256:10798c5d3c3cee4d740037fbf932a8c73d0b920afd5ba5b3d4acd9ae05565b50
 WORKDIR /app
 USER 65534
 EXPOSE 8080
