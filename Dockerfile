@@ -1,11 +1,10 @@
-FROM docker.io/library/node:16.16.0@sha256:8951351b7c6a2f8ff9ec25eccc087d37a8aeccf9bf911888ff13c76223467466 AS build
+FROM docker.io/library/node:18.7.0@sha256:a6f295c2354992f827693a2603c8b9b5b487db4da0714f5913a917ed588d6d41 AS build
 WORKDIR /app
-RUN npm install -g pkg@5.7.0
 
 COPY package.json ./
 COPY package-lock.json ./
 
-RUN npm clean-install --no-optional
+RUN npm clean-install --omit=optional
 
 COPY . .
 
@@ -18,21 +17,23 @@ FROM build AS test
 RUN npm run test:unit
 
 FROM build AS release
-
 # Prune dependencies for production
-RUN npm prune --production
+RUN npm prune --omit=dev
 
-# hadolint ignore=DL3059
-RUN pkg .
-
-FROM gcr.io/distroless/cc-debian11:nonroot@sha256:10798c5d3c3cee4d740037fbf932a8c73d0b920afd5ba5b3d4acd9ae05565b50
+FROM gcr.io/distroless/nodejs:18@sha256:1c03ff9d14da154b8d19fc28da20534b6d906be249a412cc43426b9d24350a55
 WORKDIR /app
 USER 65534
 EXPOSE 8080
+
 COPY package.json ./
 COPY package-lock.json ./
-COPY --from=release /app/pkg-dist/list /app/list
-ENTRYPOINT [ "/app/list" ]
+COPY server/ server/
+
+COPY --from=release /app/node_modules node_modules
+COPY --from=release /app/dist dist
+
+CMD [ "/app/server/server.js" ]
+
 ARG BUILD_TIME=""
 LABEL maintaner="miracum.org" \
     org.opencontainers.image.created=${BUILD_TIME} \
@@ -41,5 +42,5 @@ LABEL maintaner="miracum.org" \
     org.opencontainers.image.version=${VERSION} \
     org.opencontainers.image.revision=${GIT_REF} \
     org.opencontainers.image.vendor="miracum.org" \
-    org.opencontainers.image.title="uc1-recruit-list" \
-    org.opencontainers.image.description="Web-based screening list for the MIRACUM patient recruitment system."
+    org.opencontainers.image.title="recruit-list" \
+    org.opencontainers.image.description="Web-based screening list component of MIRACUM recruIT"
