@@ -36,7 +36,7 @@ services:
       - 4317:4317
 
   keycloak:
-    image: quay.io/keycloak/keycloak:15.1.1
+    image: quay.io/keycloak/keycloak:19.0.3@sha256:979743420b63a7c45fcd2cbaf0a0c528473fd28d6f4cd627969e1b4c39f6fcc0
     command:
       - -Dkeycloak.migration.action=import
       - -Dkeycloak.migration.provider=singleFile
