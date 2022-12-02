@@ -14,7 +14,7 @@ include:
 
 unit:
   stage: test
-  image: docker:stable
+  image: docker:stable@sha256:fd4d028713fd05a1fb896412805daed82c4a0cc84331d8dad00cb596d7ce3e3a
   extends:
     - .job_defaults
   variables:
@@ -46,7 +46,7 @@ unit:
 staging:
   stage: deploy
   image:
-    name: quay.io/chgl/kube-powertools:latest
+    name: quay.io/chgl/kube-powertools:latest@sha256:1e03ae35e7ca2f73686b1a74aed5720214d08e94eb039c7c62e9cbf286a47a38
     entrypoint: [""]
   script:
     - helm repo add miracum https://harbor.miracum.org/chartrepo/charts
@@ -60,7 +60,7 @@ staging:
 
 push to miracum registry and sign:
   stage: release
-  image: harbor.miracum.org/ci/docker:stable
+  image: harbor.miracum.org/ci/docker:stable@sha256:8f71deccd0856d8a36db659a8c82894be97546b47c1817de27d5ee7eea860162
   # login to GHCR.io to pull the image before re-tagging it to harbor.miracum.org
   before_script:
     - echo $GHCR_REGISTRY_PASSWORD | docker login -u $GHCR_REGISTRY_USERNAME $CONTAINER_REGISTRY_HOST --password-stdin
