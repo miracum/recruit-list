@@ -30,7 +30,7 @@
     "@opentelemetry/sdk-trace-base": "1.5.0",
     "@opentelemetry/sdk-trace-node": "1.5.0",
     "@opentelemetry/semantic-conventions": "1.5.0",
-    "axios": "0.27.2",
+    "axios": "1.2.2",
     "buefy": "0.9.21",
     "connect-history-api-fallback": "2.0.0",
     "core-js": "3.24.1",
