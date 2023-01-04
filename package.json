@@ -53,7 +53,7 @@
     "pino-http": "8.2.0",
     "prom-client": "14.0.1",
     "retry-axios": "2.6.0",
-    "vue": "2.7.8",
+    "vue": "3.2.45",
     "vue-router": "3.5.4",
     "vuejs-logger": "1.5.5"
   },
