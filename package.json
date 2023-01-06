@@ -42,7 +42,7 @@
     "express-jwt": "6.1.2",
     "express-prom-bundle": "6.5.0",
     "fhirclient": "2.4.0",
-    "fhirpath": "2.14.6",
+    "fhirpath": "3.3.1",
     "helmet": "5.1.1",
     "http-proxy-middleware": "2.0.6",
     "js-yaml": "4.1.0",
