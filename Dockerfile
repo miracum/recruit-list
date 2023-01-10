@@ -20,7 +20,7 @@ FROM build AS release
 # Prune dependencies for production
 RUN npm prune --omit=dev
 
-FROM gcr.io/distroless/nodejs:18@sha256:1c03ff9d14da154b8d19fc28da20534b6d906be249a412cc43426b9d24350a55
+FROM gcr.io/distroless/nodejs:18@sha256:0ed0c6ee9d1845b4d6f1e707b583c2b6641f402848ce9e98e294f4701ff6ae87
 WORKDIR /app
 USER 65534
 EXPOSE 8080
